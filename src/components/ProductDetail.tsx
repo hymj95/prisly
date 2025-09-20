@@ -8,7 +8,7 @@ import { useWishlist } from '@/hooks/useWishlist';
 import { usePriceAlerts } from '@/hooks/usePriceAlerts';
 import { useRatings, type ProductRatingStats } from '@/hooks/useRatings';
 import PriceAlertDialog from '@/components/PriceAlertDialog';
-import RatingDialog from '@/components/RatingDialog';
+import ProductRatingDialog from '@/components/ProductRatingDialog';
 import { 
   ArrowLeft, 
   TrendingDown, 
@@ -219,7 +219,7 @@ const ProductDetail: React.FC<ProductDetailProps> = ({ product, onBack }) => {
           <p className="text-xs text-muted-foreground">{t('product.youSave')}</p>
         </Card>
         <Card className="p-3 text-center">
-          <RatingDialog 
+          <ProductRatingDialog 
             product={product} 
             trigger={
               <Button variant="ghost" className="h-auto p-0 flex flex-col items-center">
