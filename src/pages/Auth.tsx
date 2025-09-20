@@ -36,10 +36,9 @@ export default function Auth() {
   return (
     <div className="min-h-screen bg-background flex items-center justify-center p-4">
       <div className="w-full max-w-md space-y-6">
-        <div className="text-center space-y-2">
-          <PrislyLogo size="xl" />
-          <h1 className="text-2xl font-bold text-foreground">Welcome to Prisly</h1>
-          <p className="text-muted-foreground">Find the best grocery deals and track prices</p>
+        <div className="text-center space-y-8 mb-8">
+          <PrislyLogo size="2xl" />
+          <h1 className="text-3xl font-bold text-foreground">Welcome to Prisly</h1>
         </div>
 
         <Card className="border-border bg-card">
