@@ -3,6 +3,7 @@ import { Card } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { Badge } from '@/components/ui/badge';
+import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
 import { 
   ArrowLeft, 
   Plus, 
@@ -12,7 +13,9 @@ import {
   X,
   MapPin,
   CheckCircle2,
-  Save
+  Save,
+  ShoppingBag,
+  Package
 } from 'lucide-react';
 import { ShoppingList, ShoppingItem, useShoppingLists } from '@/hooks/useShoppingLists';
 import { useCurrency } from '@/hooks/useCurrency';
@@ -30,8 +33,26 @@ const ShoppingListEditor: React.FC<ShoppingListEditorProps> = ({ list, onBack, o
   const [editingItem, setEditingItem] = useState<string | null>(null);
   const [newItemName, setNewItemName] = useState('');
   const [newItemQuantity, setNewItemQuantity] = useState('1');
+  const [newItemUnit, setNewItemUnit] = useState('item');
   const [newItemPrice, setNewItemPrice] = useState('');
   const [showAddItem, setShowAddItem] = useState(false);
+  
+  const unitOptions = [
+    { value: 'item', label: 'Item(s)' },
+    { value: 'lbs', label: 'Pounds' },
+    { value: 'kg', label: 'Kilograms' },
+    { value: 'oz', label: 'Ounces' },
+    { value: 'g', label: 'Grams' },
+    { value: 'pack', label: 'Pack(s)' },
+    { value: 'box', label: 'Box(es)' },
+    { value: 'bottle', label: 'Bottle(s)' },
+    { value: 'can', label: 'Can(s)' },
+    { value: 'bag', label: 'Bag(s)' },
+    { value: 'dozen', label: 'Dozen' },
+    { value: 'gallon', label: 'Gallon(s)' },
+    { value: 'liter', label: 'Liter(s)' },
+    { value: 'ml', label: 'Milliliters' }
+  ];
   
   const { formatPrice } = useCurrency();
   const { updateList, addItemToList, updateItemInList, removeItemFromList } = useShoppingLists();
@@ -48,7 +69,7 @@ const ShoppingListEditor: React.FC<ShoppingListEditorProps> = ({ list, onBack, o
       const newItem = {
         product: newItemName.trim(),
         quantity: parseInt(newItemQuantity) || 1,
-        unit: 'item',
+        unit: newItemUnit,
         bestPrice: parseFloat(newItemPrice),
         bestStore: 'Store',
         avgPrice: parseFloat(newItemPrice) * 1.1,
@@ -58,6 +79,7 @@ const ShoppingListEditor: React.FC<ShoppingListEditorProps> = ({ list, onBack, o
       addItemToList(list.id, newItem);
       setNewItemName('');
       setNewItemQuantity('1');
+      setNewItemUnit('item');
       setNewItemPrice('');
       setShowAddItem(false);
     }
@@ -133,49 +155,102 @@ const ShoppingListEditor: React.FC<ShoppingListEditorProps> = ({ list, onBack, o
       </div>
 
       {/* List Summary */}
-      <Card className="p-4 bg-success-solid border-0 text-white">
+      <Card className="p-4 bg-gradient-to-r from-success via-success-solid to-success border-0 text-white">
         <div className="flex items-center justify-between">
           <div className="space-y-1">
-            <h3 className="font-semibold">{listName}</h3>
+            <h3 className="font-semibold flex items-center gap-2">
+              <ShoppingBag size={18} />
+              {listName}
+            </h3>
             <p className="text-sm opacity-90">
               {list.items.filter(item => !item.checked).length} {t('editor.remaining')} • 
               {list.items.filter(item => item.checked).length} {t('editor.completed')}
             </p>
+            
+            {/* Progress Bar */}
+            <div className="w-full bg-white/20 rounded-full h-2 mt-2">
+              <div 
+                className="bg-white h-2 rounded-full transition-all duration-300" 
+                style={{ 
+                  width: `${list.items.length > 0 ? (list.items.filter(item => item.checked).length / list.items.length) * 100 : 0}%` 
+                }}
+              />
+            </div>
           </div>
           <div className="text-right">
             <p className="text-2xl font-bold">{formatPrice(list.estimatedTotal)}</p>
             <p className="text-sm opacity-90">{t('editor.estimatedTotal')}</p>
+            <p className="text-xs opacity-75">
+              {Math.round(list.items.length > 0 ? (list.items.filter(item => item.checked).length / list.items.length) * 100 : 0)}% Complete
+            </p>
           </div>
         </div>
       </Card>
 
       {/* Add New Item */}
       {showAddItem ? (
-        <Card className="p-4">
-          <div className="space-y-3">
-            <h3 className="font-semibold">{t('editor.addNewItem')}</h3>
-            <div className="grid grid-cols-2 gap-2">
+        <Card className="p-4 border-2 border-dashed border-primary/20 bg-primary/5">
+          <div className="space-y-4">
+            <div className="flex items-center gap-2">
+              <Package className="text-primary" size={20} />
+              <h3 className="font-semibold">{t('editor.addNewItem')}</h3>
+            </div>
+            
+            <div className="space-y-3">
               <Input
                 placeholder={t('editor.productName')}
                 value={newItemName}
                 onChange={(e) => setNewItemName(e.target.value)}
+                className="text-base"
               />
-              <Input
-                type="number"
-                placeholder={t('editor.qty')}
-                value={newItemQuantity}
-                onChange={(e) => setNewItemQuantity(e.target.value)}
-              />
+              
+              <div className="grid grid-cols-2 gap-3">
+                <div className="space-y-1">
+                  <label className="text-sm font-medium text-muted-foreground">Quantity</label>
+                  <Input
+                    type="number"
+                    placeholder="1"
+                    value={newItemQuantity}
+                    onChange={(e) => setNewItemQuantity(e.target.value)}
+                    min="0.01"
+                    step="0.01"
+                    className="text-base"
+                  />
+                </div>
+                
+                <div className="space-y-1">
+                  <label className="text-sm font-medium text-muted-foreground">Unit</label>
+                  <Select value={newItemUnit} onValueChange={setNewItemUnit}>
+                    <SelectTrigger>
+                      <SelectValue placeholder="Select unit" />
+                    </SelectTrigger>
+                    <SelectContent>
+                      {unitOptions.map((unit) => (
+                        <SelectItem key={unit.value} value={unit.value}>
+                          {unit.label}
+                        </SelectItem>
+                      ))}
+                    </SelectContent>
+                  </Select>
+                </div>
+              </div>
+              
+              <div className="space-y-1">
+                <label className="text-sm font-medium text-muted-foreground">Expected Price</label>
+                <Input
+                  type="number"
+                  step="0.01"
+                  placeholder="0.00"
+                  value={newItemPrice}
+                  onChange={(e) => setNewItemPrice(e.target.value)}
+                  className="text-base"
+                />
+              </div>
             </div>
-            <Input
-              type="number"
-              step="0.01"
-              placeholder={t('editor.expectedPrice')}
-              value={newItemPrice}
-              onChange={(e) => setNewItemPrice(e.target.value)}
-            />
-            <div className="flex gap-2">
-              <Button onClick={handleAddItem} className="bg-primary-solid text-white">
+            
+            <div className="flex gap-2 pt-2">
+              <Button onClick={handleAddItem} className="bg-primary-solid text-white flex-1">
+                <Plus className="mr-2" size={16} />
                 {t('editor.addItem')}
               </Button>
               <Button variant="outline" onClick={() => setShowAddItem(false)}>
@@ -212,55 +287,116 @@ const ShoppingListEditor: React.FC<ShoppingListEditorProps> = ({ list, onBack, o
         ) : (
           <div className="space-y-2">
             {list.items.map((item) => (
-              <Card key={item.id} className={`p-4 ${item.checked ? 'opacity-60' : ''}`}>
+              <Card 
+                key={item.id} 
+                className={`p-4 cursor-pointer transition-all duration-200 ${
+                  item.checked 
+                    ? 'opacity-60 bg-success/5 border-success/20' 
+                    : 'hover:shadow-md hover:scale-[1.01] border-l-4 border-l-primary/20 hover:border-l-primary'
+                }`}
+                onClick={() => handleToggleCheck(item.id, !item.checked)}
+              >
                 <div className="flex items-center gap-3">
-                  <Button
-                    variant="outline"
-                    size="icon"
-                    className={`rounded-full w-8 h-8 ${item.checked ? 'bg-success-solid text-white' : ''}`}
-                    onClick={() => handleToggleCheck(item.id, !item.checked)}
-                  >
-                    {item.checked && <CheckCircle2 size={16} />}
-                  </Button>
+                  <div className="flex-shrink-0">
+                    <div
+                      className={`w-8 h-8 rounded-full border-2 flex items-center justify-center transition-all duration-200 ${
+                        item.checked
+                          ? 'bg-success text-white border-success'
+                          : 'border-gray-300 hover:border-primary'
+                      }`}
+                    >
+                      {item.checked && <CheckCircle2 size={16} />}
+                    </div>
+                  </div>
                   
-                  <div className="flex-1 space-y-1">
-                    <div className="flex items-center justify-between">
-                      <h4 className={`font-medium ${item.checked ? 'line-through' : ''}`}>
-                        {item.product}
-                      </h4>
-                      <div className="text-right">
-                        <p className="font-bold">{formatPrice(item.bestPrice)}</p>
+                  <div className="flex-1 space-y-2">
+                    <div className="flex items-start justify-between">
+                      <div className="flex-1">
+                        <h4 className={`font-medium text-base ${item.checked ? 'line-through text-muted-foreground' : ''}`}>
+                          {item.product}
+                        </h4>
+                        <div className="flex items-center gap-2 mt-1">
+                          <Badge 
+                            variant={item.checked ? 'secondary' : 'outline'} 
+                            className="text-xs"
+                          >
+                            {item.quantity} {item.unit}
+                          </Badge>
+                          <div className="flex items-center gap-1 text-xs text-muted-foreground">
+                            <MapPin size={10} />
+                            <span>{item.bestStore}</span>
+                          </div>
+                        </div>
+                      </div>
+                      
+                      <div className="text-right flex-shrink-0">
+                        <p className={`font-bold ${item.checked ? 'text-muted-foreground' : ''}`}>
+                          {formatPrice(item.bestPrice * item.quantity)}
+                        </p>
                         <p className="text-xs text-muted-foreground line-through">
-                          {formatPrice(item.avgPrice)}
+                          {formatPrice(item.avgPrice * item.quantity)}
+                        </p>
+                        <p className="text-xs text-muted-foreground">
+                          {formatPrice(item.bestPrice)} each
                         </p>
                       </div>
                     </div>
                     
-                    <div className="flex items-center justify-between text-sm text-muted-foreground">
+                    {/* Quantity Controls */}
+                    <div className="flex items-center justify-between">
                       <div className="flex items-center gap-2">
-                        <Input
-                          type="number"
-                          value={item.quantity}
-                          onChange={(e) => handleUpdateItemQuantity(item.id, parseInt(e.target.value) || 1)}
-                          className="w-16 h-6 text-xs"
-                          min="1"
-                        />
-                        <span>{item.unit}</span>
-                      </div>
-                      <div className="flex items-center gap-2">
+                        <span className="text-sm text-muted-foreground">Qty:</span>
                         <div className="flex items-center gap-1">
-                          <MapPin size={12} />
-                          <span>{item.bestStore}</span>
+                          <Button
+                            variant="outline"
+                            size="sm"
+                            className="h-6 w-6 p-0"
+                            onClick={(e) => {
+                              e.stopPropagation();
+                              if (item.quantity > 1) {
+                                handleUpdateItemQuantity(item.id, item.quantity - 1);
+                              }
+                            }}
+                          >
+                            -
+                          </Button>
+                          <Input
+                            type="number"
+                            value={item.quantity}
+                            onChange={(e) => {
+                              e.stopPropagation();
+                              handleUpdateItemQuantity(item.id, parseFloat(e.target.value) || 1);
+                            }}
+                            onClick={(e) => e.stopPropagation()}
+                            className="w-16 h-6 text-xs text-center"
+                            min="0.01"
+                            step="0.01"
+                          />
+                          <Button
+                            variant="outline"
+                            size="sm"
+                            className="h-6 w-6 p-0"
+                            onClick={(e) => {
+                              e.stopPropagation();
+                              handleUpdateItemQuantity(item.id, item.quantity + 1);
+                            }}
+                          >
+                            +
+                          </Button>
                         </div>
-                        <Button
-                          variant="ghost"
-                          size="icon"
-                          className="h-6 w-6 text-destructive hover:bg-destructive/10"
-                          onClick={() => handleRemoveItem(item.id)}
-                        >
-                          <Trash2 size={12} />
-                        </Button>
                       </div>
+                      
+                      <Button
+                        variant="ghost"
+                        size="sm"
+                        className="text-destructive hover:bg-destructive/10 h-6 px-2"
+                        onClick={(e) => {
+                          e.stopPropagation();
+                          handleRemoveItem(item.id);
+                        }}
+                      >
+                        <Trash2 size={12} />
+                      </Button>
                     </div>
                   </div>
                 </div>
