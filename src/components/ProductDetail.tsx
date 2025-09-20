@@ -1,4 +1,4 @@
-import React from 'react';
+import React, { useState, useEffect } from 'react';
 import { Card } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
 import { Badge } from '@/components/ui/badge';
@@ -6,7 +6,9 @@ import { useCurrency } from '@/hooks/useCurrency';
 import { useLanguage } from '@/hooks/useLanguage';
 import { useWishlist } from '@/hooks/useWishlist';
 import { usePriceAlerts } from '@/hooks/usePriceAlerts';
+import { useRatings, type ProductRatingStats } from '@/hooks/useRatings';
 import PriceAlertDialog from '@/components/PriceAlertDialog';
+import RatingDialog from '@/components/RatingDialog';
 import { 
   ArrowLeft, 
   TrendingDown, 
@@ -48,10 +50,22 @@ const ProductDetail: React.FC<ProductDetailProps> = ({ product, onBack }) => {
   const { t } = useLanguage();
   const { addToWishlist, isInWishlist } = useWishlist();
   const { hasActiveAlert } = usePriceAlerts();
+  const { getProductRatingStats } = useRatings();
+  
+  const [ratingStats, setRatingStats] = useState<ProductRatingStats | null>(null);
 
   const currentPrice = product.price || product.salePrice || 0;
   const isWishlisted = isInWishlist(product.product, product.store);
   const hasAlert = hasActiveAlert(product.product, product.store);
+
+  useEffect(() => {
+    loadRatingStats();
+  }, []);
+
+  const loadRatingStats = async () => {
+    const stats = await getProductRatingStats(product.product, product.brand, product.store);
+    setRatingStats(stats);
+  };
 
   const handleAddToWishlist = async () => {
     await addToWishlist({
@@ -205,8 +219,28 @@ const ProductDetail: React.FC<ProductDetailProps> = ({ product, onBack }) => {
           <p className="text-xs text-muted-foreground">{t('product.youSave')}</p>
         </Card>
         <Card className="p-3 text-center">
-          <p className="text-lg font-bold text-primary">4.2★</p>
-          <p className="text-xs text-muted-foreground">{t('product.userRating')}</p>
+          <RatingDialog 
+            product={product} 
+            trigger={
+              <Button variant="ghost" className="h-auto p-0 flex flex-col items-center">
+                <div className="flex items-center gap-1">
+                  {[1, 2, 3, 4, 5].map((star) => (
+                    <Star
+                      key={star}
+                      size={16}
+                      className={star <= Math.round(ratingStats?.averageRating || 0) ? 'fill-yellow-400 text-yellow-400' : 'text-gray-300'}
+                    />
+                  ))}
+                </div>
+                <p className="text-lg font-bold text-primary mt-1">
+                  {ratingStats?.averageRating ? ratingStats.averageRating.toFixed(1) : '0.0'}★
+                </p>
+                <p className="text-xs text-muted-foreground">
+                  {ratingStats?.totalRatings || 0} {ratingStats?.totalRatings === 1 ? 'review' : 'reviews'}
+                </p>
+              </Button>
+            }
+          />
         </Card>
       </div>
 

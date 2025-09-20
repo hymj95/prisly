@@ -86,6 +86,45 @@ export type Database = {
         }
         Relationships: []
       }
+      ratings: {
+        Row: {
+          created_at: string
+          id: string
+          product_brand: string | null
+          product_name: string
+          rating: number
+          review: string | null
+          store_location: string | null
+          store_name: string | null
+          updated_at: string
+          user_id: string
+        }
+        Insert: {
+          created_at?: string
+          id?: string
+          product_brand?: string | null
+          product_name: string
+          rating: number
+          review?: string | null
+          store_location?: string | null
+          store_name?: string | null
+          updated_at?: string
+          user_id: string
+        }
+        Update: {
+          created_at?: string
+          id?: string
+          product_brand?: string | null
+          product_name?: string
+          rating?: number
+          review?: string | null
+          store_location?: string | null
+          store_name?: string | null
+          updated_at?: string
+          user_id?: string
+        }
+        Relationships: []
+      }
       wishlists: {
         Row: {
           created_at: string
