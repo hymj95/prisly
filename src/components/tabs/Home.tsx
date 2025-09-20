@@ -87,14 +87,14 @@ const Home: React.FC = () => {
         </Card>
         <Card className="p-4 text-center bg-card-subtle border-0">
           <div className="space-y-1">
-            <p className="text-2xl font-bold text-accent">24</p>
+            <p className="text-2xl font-bold text-secondary">24</p>
             <p className="text-xs text-muted-foreground">Price Alerts</p>
           </div>
         </Card>
       </div>
 
       {/* Quick Scan Button */}
-      <Card className="p-3 bg-leaf-solid border-0">
+      <Card className="p-3 bg-sage-solid border-0">
         <div className="flex items-center gap-3">
           <div className="flex-shrink-0">
             <Zap className="text-white" size={24} />
