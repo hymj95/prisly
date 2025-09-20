@@ -1155,6 +1155,97 @@ const translations: Translations = {
     sv: 'Nya Marknadsinsikter',
     de: 'Aktuelle Markteinblicke'
   },
+  'trends.insight1': {
+    en: 'Fresh produce prices dropped 3.2% this week at farmer\'s markets',
+    no: 'Priser på ferske råvarer falt 3,2% denne uken på bondemarkeder',
+    da: 'Priser på friske råvarer faldt 3,2% denne uge på bondemarkeder',
+    sv: 'Priserna på färska råvaror sjönk 3,2% denna vecka på bondemarknaderna',
+    de: 'Preise für frische Produkte sanken diese Woche um 3,2% auf Bauernmärkten'
+  },
+  'trends.insight2': {
+    en: 'Organic items show 12% savings compared to conventional stores',
+    no: 'Økologiske varer viser 12% besparelser sammenlignet med vanlige butikker',
+    da: 'Økologiske varer viser 12% besparelser sammenlignet med almindelige butikker',
+    sv: 'Ekologiska varor visar 12% besparingar jämfört med vanliga butiker',
+    de: 'Bio-Artikel zeigen 12% Ersparnis im Vergleich zu herkömmlichen Geschäften'
+  },
+  'trends.insight3': {
+    en: 'Best shopping time: Early morning for freshest selection & deals',
+    no: 'Beste handletid: Tidlig morgen for ferskeste utvalg og tilbud',
+    da: 'Bedste indkøbstid: Tidlig morgen for friskeste udvalg og tilbud',
+    sv: 'Bästa shoppingstid: Tidig morgon för färskaste urval och erbjudanden',
+    de: 'Beste Einkaufszeit: Früh am Morgen für frischeste Auswahl und Angebote'
+  },
+  'trends.filters': {
+    en: 'Filters',
+    no: 'Filtre',
+    da: 'Filtre',
+    sv: 'Filter',
+    de: 'Filter'
+  },
+  'trends.category': {
+    en: 'Category',
+    no: 'Kategori',
+    da: 'Kategori',
+    sv: 'Kategori',
+    de: 'Kategorie'
+  },
+  'trends.priceRange': {
+    en: 'Price Range',
+    no: 'Prisområde',
+    da: 'Prisområde',
+    sv: 'Prisområde',
+    de: 'Preisbereich'
+  },
+  'trends.trend': {
+    en: 'Trend',
+    no: 'Trend',
+    da: 'Trend',
+    sv: 'Trend',
+    de: 'Trend'
+  },
+  'trends.allCategories': {
+    en: 'All Categories',
+    no: 'Alle Kategorier',
+    da: 'Alle Kategorier',
+    sv: 'Alla Kategorier',
+    de: 'Alle Kategorien'
+  },
+  'trends.trendingUp': {
+    en: 'Trending Up',
+    no: 'Stigende Trend',
+    da: 'Stigende Trend',
+    sv: 'Stigande Trend',
+    de: 'Steigender Trend'
+  },
+  'trends.trendingDown': {
+    en: 'Trending Down',
+    no: 'Synkende Trend',
+    da: 'Faldende Trend',
+    sv: 'Fallande Trend',
+    de: 'Fallender Trend'
+  },
+  'trends.allTrends': {
+    en: 'All Trends',
+    no: 'Alle Trender',
+    da: 'Alle Trends',
+    sv: 'Alla Trender',
+    de: 'Alle Trends'
+  },
+  'trends.applyFilters': {
+    en: 'Apply Filters',
+    no: 'Bruk Filtre',
+    da: 'Anvend Filtre',
+    sv: 'Tillämpa Filter',
+    de: 'Filter Anwenden'
+  },
+  'trends.clearFilters': {
+    en: 'Clear All',
+    no: 'Tøm Alle',
+    da: 'Ryd Alle',
+    sv: 'Rensa Alla',
+    de: 'Alle Löschen'
+  },
   // Shopping List Editor
   'editor.saved': {
     en: 'Saved',

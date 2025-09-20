@@ -3,6 +3,9 @@ import { Card } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
 import { Badge } from '@/components/ui/badge';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
+import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogTrigger } from '@/components/ui/dialog';
+import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
+import { Slider } from '@/components/ui/slider';
 import { TrendingUp, TrendingDown, BarChart3, Calendar, MapPin, Filter } from 'lucide-react';
 import { useCurrency } from '@/hooks/useCurrency';
 import { useLanguage } from '@/hooks/useLanguage';
@@ -53,8 +56,28 @@ const mockCategories = [
 const Trends: React.FC = () => {
   const [activeTab, setActiveTab] = useState('products');
   const [timeRange, setTimeRange] = useState('7d');
+  const [filterOpen, setFilterOpen] = useState(false);
+  const [selectedCategory, setSelectedCategory] = useState('all');
+  const [selectedTrend, setSelectedTrend] = useState('all');
+  const [priceRange, setPriceRange] = useState([0, 1000]);
   const { formatPrice } = useCurrency();
   const { t } = useLanguage();
+
+  const categories = ['Electronics', 'Gaming', 'Groceries', 'Fashion', 'Home & Garden'];
+  
+  const filteredProducts = mockTrendingProducts.filter(product => {
+    const categoryMatch = selectedCategory === 'all' || product.category === selectedCategory;
+    const trendMatch = selectedTrend === 'all' || product.trend === selectedTrend;
+    const priceMatch = product.currentPrice >= priceRange[0] && product.currentPrice <= priceRange[1];
+    
+    return categoryMatch && trendMatch && priceMatch;
+  });
+
+  const clearFilters = () => {
+    setSelectedCategory('all');
+    setSelectedTrend('all');
+    setPriceRange([0, 1000]);
+  };
 
   const MiniChart = ({ data, trend }: { data: number[], trend: 'up' | 'down' }) => (
     <div className="w-20 h-8 relative">
@@ -109,15 +132,88 @@ const Trends: React.FC = () => {
           {/* Filters */}
           <div className="flex items-center justify-between">
             <h3 className="font-semibold">{t('trends.hotProducts')}</h3>
-            <Button variant="outline" size="sm">
-              <Filter size={16} className="mr-2" />
-              {t('trends.filter')}
-            </Button>
+            <Dialog open={filterOpen} onOpenChange={setFilterOpen}>
+              <DialogTrigger asChild>
+                <Button variant="outline" size="sm">
+                  <Filter size={16} className="mr-2" />
+                  {t('trends.filter')}
+                </Button>
+              </DialogTrigger>
+              <DialogContent className="sm:max-w-md">
+                <DialogHeader>
+                  <DialogTitle>{t('trends.filters')}</DialogTitle>
+                </DialogHeader>
+                <div className="space-y-6 py-4">
+                  {/* Category Filter */}
+                  <div className="space-y-2">
+                    <label className="text-sm font-medium">{t('trends.category')}</label>
+                    <Select value={selectedCategory} onValueChange={setSelectedCategory}>
+                      <SelectTrigger>
+                        <SelectValue />
+                      </SelectTrigger>
+                      <SelectContent>
+                        <SelectItem value="all">{t('trends.allCategories')}</SelectItem>
+                        {categories.map(category => (
+                          <SelectItem key={category} value={category}>{category}</SelectItem>
+                        ))}
+                      </SelectContent>
+                    </Select>
+                  </div>
+
+                  {/* Trend Filter */}
+                  <div className="space-y-2">
+                    <label className="text-sm font-medium">{t('trends.trend')}</label>
+                    <Select value={selectedTrend} onValueChange={setSelectedTrend}>
+                      <SelectTrigger>
+                        <SelectValue />
+                      </SelectTrigger>
+                      <SelectContent>
+                        <SelectItem value="all">{t('trends.allTrends')}</SelectItem>
+                        <SelectItem value="up">{t('trends.trendingUp')}</SelectItem>
+                        <SelectItem value="down">{t('trends.trendingDown')}</SelectItem>
+                      </SelectContent>
+                    </Select>
+                  </div>
+
+                  {/* Price Range Filter */}
+                  <div className="space-y-3">
+                    <label className="text-sm font-medium">{t('trends.priceRange')}</label>
+                    <div className="px-3">
+                      <Slider
+                        value={priceRange}
+                        onValueChange={setPriceRange}
+                        max={1000}
+                        min={0}
+                        step={10}
+                        className="w-full"
+                      />
+                      <div className="flex justify-between text-xs text-muted-foreground mt-2">
+                        <span>{formatPrice(priceRange[0])}</span>
+                        <span>{formatPrice(priceRange[1])}</span>
+                      </div>
+                    </div>
+                  </div>
+
+                  {/* Action Buttons */}
+                  <div className="flex gap-2 pt-4">
+                    <Button 
+                      className="flex-1 bg-primary-solid text-white"
+                      onClick={() => setFilterOpen(false)}
+                    >
+                      {t('trends.applyFilters')}
+                    </Button>
+                    <Button variant="outline" onClick={clearFilters}>
+                      {t('trends.clearFilters')}
+                    </Button>
+                  </div>
+                </div>
+              </DialogContent>
+            </Dialog>
           </div>
 
           {/* Product List */}
           <div className="space-y-3">
-            {mockTrendingProducts.map((product) => (
+            {filteredProducts.map((product) => (
               <Card key={product.id} className="p-4">
                 <div className="flex items-center justify-between">
                   <div className="flex-1 space-y-2">
@@ -203,17 +299,17 @@ const Trends: React.FC = () => {
               <BarChart3 className="text-primary" size={20} />
               <h3 className="font-semibold">{t('trends.freshInsights')}</h3>
             </div>
-          <div className="space-y-2 text-sm">
-            <p className="text-muted-foreground">
-              • Fresh produce prices dropped 3.2% this week at farmer's markets
-            </p>
-            <p className="text-muted-foreground">
-              • Organic items show 12% savings compared to conventional stores
-            </p>
-            <p className="text-muted-foreground">
-              • Best shopping time: Early morning for freshest selection & deals
-            </p>
-          </div>
+            <div className="space-y-2 text-sm">
+              <p className="text-muted-foreground">
+                • {t('trends.insight1')}
+              </p>
+              <p className="text-muted-foreground">
+                • {t('trends.insight2')}
+              </p>
+              <p className="text-muted-foreground">
+                • {t('trends.insight3')}
+              </p>
+            </div>
         </div>
       </Card>
     </div>
