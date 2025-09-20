@@ -41,11 +41,13 @@ const App = () => {
     <QueryClientProvider client={queryClient}>
       <LanguageContext.Provider value={languageProvider}>
         <TooltipProvider>
-          <div className="min-h-screen bg-background">
-            <main className="animate-fade-in">
+          <div className="min-h-screen bg-background animate-fade-in" style={{ animationDelay: '0.2s' }}>
+            <main className="animate-fade-in" style={{ animationDelay: '0.4s' }}>
               {renderActiveTab()}
             </main>
-            <BottomNavigation activeTab={activeTab} onTabChange={setActiveTab} />
+            <div className="animate-fade-in" style={{ animationDelay: '0.6s' }}>
+              <BottomNavigation activeTab={activeTab} onTabChange={setActiveTab} />
+            </div>
           </div>
           <Toaster />
           <Sonner />
