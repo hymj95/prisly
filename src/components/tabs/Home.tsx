@@ -4,6 +4,7 @@ import { Badge } from '@/components/ui/badge';
 import { Button } from '@/components/ui/button';
 import { TrendingDown, TrendingUp, MapPin, Clock, Zap } from 'lucide-react';
 import { useCurrency } from '@/hooks/useCurrency';
+import PrislyLogo from '../PrislyLogo';
 import ProductDetail from '../ProductDetail';
 
 const mockRecentScans = [
@@ -60,9 +61,14 @@ const Home: React.FC = () => {
   return (
     <div className="pb-20 px-4 pt-6 space-y-6">
       {/* Welcome Header */}
-      <div className="text-center space-y-2">
-        <h1 className="text-2xl font-bold text-gradient">Welcome to Prisly</h1>
-        <p className="text-muted-foreground">Find fresh deals and save on your groceries</p>
+      <div className="text-center space-y-4">
+        <div className="flex justify-center">
+          <PrislyLogo size="lg" />
+        </div>
+        <div>
+          <h1 className="text-2xl font-bold text-primary">Welcome to Prisly</h1>
+          <p className="text-muted-foreground">Your smart grocery shopping companion</p>
+        </div>
       </div>
 
       {/* Quick Stats */}
@@ -88,7 +94,7 @@ const Home: React.FC = () => {
       </div>
 
       {/* Quick Scan Button */}
-      <Card className="p-3 gradient-scan border-0">
+      <Card className="p-3 gradient-leaf border-0">
         <div className="flex items-center gap-3">
           <div className="flex-shrink-0">
             <Zap className="text-white" size={24} />
@@ -97,7 +103,7 @@ const Home: React.FC = () => {
             <h3 className="font-semibold text-white text-sm">Quick Scan</h3>
             <p className="text-xs text-white/80">Get instant price comparison</p>
           </div>
-          <Button variant="secondary" size="sm" className="flex-shrink-0">
+          <Button variant="secondary" size="sm" className="flex-shrink-0 bg-white text-primary hover:bg-white/90">
             Scan
           </Button>
         </div>
