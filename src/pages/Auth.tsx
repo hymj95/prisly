@@ -37,7 +37,7 @@ export default function Auth() {
     <div className="min-h-screen bg-background flex items-center justify-center p-4">
       <div className="w-full max-w-md space-y-6">
         <div className="flex flex-col items-center justify-center space-y-8 mb-8">
-          <PrislyLogo size="4xl" />
+          <PrislyLogo size="6xl" />
           <h1 className="text-3xl font-bold text-foreground">Welcome to Prisly</h1>
         </div>
 
