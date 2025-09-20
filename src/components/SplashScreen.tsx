@@ -17,7 +17,7 @@ const SplashScreen: React.FC<SplashScreenProps> = ({ onComplete }) => {
   return (
     <div className="fixed inset-0 bg-background flex items-center justify-center animate-fade-in">
       <div className="animate-scale-in">
-        <PrislyLogo size="quarter-screen" className="animate-pulse" />
+        <PrislyLogo size="quarter-screen" />
       </div>
     </div>
   );
