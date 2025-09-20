@@ -15,16 +15,17 @@ interface LoginPromptProps {
 const LoginPrompt: React.FC<LoginPromptProps> = ({ onClose }) => {
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
+  const [fullName, setFullName] = useState('');
   const [loading, setLoading] = useState(false);
   const [showForms, setShowForms] = useState(false);
   const { signUp, signIn } = useAuth();
 
   const handleSignUp = async (e: React.FormEvent) => {
     e.preventDefault();
-    if (!email || !password) return;
+    if (!email || !password || !fullName) return;
     
     setLoading(true);
-    await signUp(email, password);
+    await signUp(email, password, fullName);
     setLoading(false);
   };
 
@@ -173,6 +174,22 @@ const LoginPrompt: React.FC<LoginPromptProps> = ({ onClose }) => {
               
               <TabsContent value="signup" className="space-y-4">
                 <form onSubmit={handleSignUp} className="space-y-4">
+                  <div className="space-y-2">
+                    <Label htmlFor="signup-name">Full Name</Label>
+                    <div className="relative">
+                      <User className="absolute left-3 top-1/2 transform -translate-y-1/2 text-muted-foreground" size={16} />
+                      <Input
+                        id="signup-name"
+                        type="text"
+                        placeholder="Enter your full name"
+                        value={fullName}
+                        onChange={(e) => setFullName(e.target.value)}
+                        className="pl-10"
+                        required
+                      />
+                    </div>
+                  </div>
+                  
                   <div className="space-y-2">
                     <Label htmlFor="signup-email">Email</Label>
                     <div className="relative">

@@ -28,7 +28,7 @@ export const useAuth = () => {
     return () => subscription.unsubscribe();
   }, []);
 
-  const signUp = async (email: string, password: string) => {
+  const signUp = async (email: string, password: string, fullName?: string) => {
     try {
       const redirectUrl = `${window.location.origin}/`;
       
@@ -36,7 +36,10 @@ export const useAuth = () => {
         email,
         password,
         options: {
-          emailRedirectTo: redirectUrl
+          emailRedirectTo: redirectUrl,
+          data: {
+            full_name: fullName
+          }
         }
       });
 

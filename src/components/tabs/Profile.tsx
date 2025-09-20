@@ -3,14 +3,18 @@ import { Card } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
 import { Badge } from '@/components/ui/badge';
 import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui/avatar';
+import { Input } from '@/components/ui/input';
+import { Label } from '@/components/ui/label';
 import CurrencySelector from '../CurrencySelector';
 import LanguageSelector from '../LanguageSelector';
 import LocationSelector from '../LocationSelector';
 import ProfileFeatures from '../ProfileFeatures';
 import LoginPrompt from '../LoginPrompt';
+import AvatarUpload from '../AvatarUpload';
 import { useCurrency } from '@/hooks/useCurrency';
 import { useLanguage } from '@/hooks/useLanguage';
 import { useAuth } from '@/hooks/useAuth';
+import { useProfile } from '@/hooks/useProfile';
 import { 
   User, 
   Settings, 
@@ -78,14 +82,34 @@ const Profile: React.FC = () => {
   const { formatPrice } = useCurrency();
   const { t } = useLanguage();
   const { signOut, user } = useAuth();
+  const { profile, updateProfile } = useProfile();
   const [activeFeature, setActiveFeature] = useState<string | null>(null);
   const [showLocationSelector, setShowLocationSelector] = useState(false);
   const [showLoginPrompt, setShowLoginPrompt] = useState(false);
+  const [editingName, setEditingName] = useState(false);
+  const [newName, setNewName] = useState('');
   const [userLocation, setUserLocation] = useState<{ lat: number; lng: number; address: string; radius: number } | null>(null);
 
   const handleLocationSelect = (location: { lat: number; lng: number; address: string; radius: number }) => {
     setUserLocation(location);
     setShowLocationSelector(false);
+  };
+
+  const handleEditName = () => {
+    setNewName(profile?.full_name || '');
+    setEditingName(true);
+  };
+
+  const handleSaveName = async () => {
+    if (newName.trim()) {
+      await updateProfile({ full_name: newName.trim() });
+    }
+    setEditingName(false);
+  };
+
+  const handleCancelEdit = () => {
+    setEditingName(false);
+    setNewName('');
   };
 
   // Show login prompt if user is not authenticated
@@ -215,22 +239,39 @@ const Profile: React.FC = () => {
       {/* Profile Header */}
       <Card className="p-6 bg-card-subtle border-0">
         <div className="flex items-center gap-4">
-          <Avatar className="w-16 h-16">
-            <AvatarImage src="/placeholder-avatar.jpg" />
-            <AvatarFallback className="bg-primary text-white text-xl">
-              {mockUserStats.name.split(' ').map(n => n[0]).join('')}
-            </AvatarFallback>
-          </Avatar>
+          <div>
+            <AvatarUpload size="lg" />
+          </div>
           
-          <div className="flex-1 space-y-1">
+          <div className="flex-1 space-y-2">
             <div className="flex items-center gap-2">
-              <h2 className="text-xl font-bold">{user?.email?.split('@')[0] || mockUserStats.name}</h2>
+              {editingName ? (
+                <div className="flex items-center gap-2 flex-1">
+                  <Input
+                    value={newName}
+                    onChange={(e) => setNewName(e.target.value)}
+                    className="text-xl font-bold"
+                    placeholder="Enter your name"
+                  />
+                  <Button size="sm" onClick={handleSaveName}>Save</Button>
+                  <Button size="sm" variant="outline" onClick={handleCancelEdit}>Cancel</Button>
+                </div>
+              ) : (
+                <div className="flex items-center gap-2">
+                  <h2 className="text-xl font-bold">
+                    {profile?.full_name || user?.email?.split('@')[0] || 'User'}
+                  </h2>
+                  <Button size="sm" variant="ghost" onClick={handleEditName}>
+                    Edit
+                  </Button>
+                </div>
+              )}
               <Badge variant="secondary" className="text-xs">
                 <Crown size={12} className="mr-1" />
                 {t('profile.powerSaver')}
               </Badge>
             </div>
-            <p className="text-muted-foreground">{user?.email || mockUserStats.email}</p>
+            <p className="text-muted-foreground">{user?.email}</p>
             <div className="flex items-center gap-4 text-sm text-muted-foreground">
               <span>{t('profile.rank')} #{mockUserStats.rank}</span>
               <span>•</span>
