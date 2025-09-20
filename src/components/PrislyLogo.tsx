@@ -1,8 +1,8 @@
 import React from 'react';
-import prislyLogo from '@/assets/prisly-logo-green.png';
+import prislyLogo from '@/assets/prisly-logo.png';
 
 interface PrislyLogoProps {
-  size?: 'sm' | 'md' | 'lg' | 'xl' | '2xl';
+  size?: 'sm' | 'md' | 'lg' | 'xl' | '2xl' | '3xl' | '4xl';
   className?: string;
 }
 
@@ -12,7 +12,9 @@ const PrislyLogo: React.FC<PrislyLogoProps> = ({ size = 'md', className = '' }) 
     md: 'h-12',
     lg: 'h-16',
     xl: 'h-24',
-    '2xl': 'h-32'
+    '2xl': 'h-32',
+    '3xl': 'h-48',
+    '4xl': 'h-64'
   };
 
   return (
