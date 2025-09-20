@@ -9,6 +9,7 @@ import LocationSelector from '../LocationSelector';
 import ProfileFeatures from '../ProfileFeatures';
 import { useCurrency } from '@/hooks/useCurrency';
 import { useLanguage } from '@/hooks/useLanguage';
+import { useAuth } from '@/hooks/useAuth';
 import { 
   User, 
   Settings, 
@@ -22,7 +23,8 @@ import {
   Award,
   ChevronRight,
   Globe,
-  Languages
+  Languages,
+  LogOut
 } from 'lucide-react';
 
 const mockUserStats = {
@@ -74,6 +76,7 @@ const mockAchievements = [
 const Profile: React.FC = () => {
   const { formatPrice } = useCurrency();
   const { t } = useLanguage();
+  const { signOut, user } = useAuth();
   const [activeFeature, setActiveFeature] = useState<string | null>(null);
   const [showLocationSelector, setShowLocationSelector] = useState(false);
   const [userLocation, setUserLocation] = useState<{ lat: number; lng: number; address: string; radius: number } | null>(null);
@@ -125,13 +128,13 @@ const Profile: React.FC = () => {
           
           <div className="flex-1 space-y-1">
             <div className="flex items-center gap-2">
-              <h2 className="text-xl font-bold">{mockUserStats.name}</h2>
+              <h2 className="text-xl font-bold">{user?.email?.split('@')[0] || mockUserStats.name}</h2>
               <Badge variant="secondary" className="text-xs">
                 <Crown size={12} className="mr-1" />
                 {t('profile.powerSaver')}
               </Badge>
             </div>
-            <p className="text-muted-foreground">{mockUserStats.email}</p>
+            <p className="text-muted-foreground">{user?.email || mockUserStats.email}</p>
             <div className="flex items-center gap-4 text-sm text-muted-foreground">
               <span>{t('profile.rank')} #{mockUserStats.rank}</span>
               <span>•</span>
@@ -249,6 +252,13 @@ const Profile: React.FC = () => {
                 <span className="font-medium">{t('profile.settings')}</span>
               </div>
               <ChevronRight className="text-muted-foreground" size={16} />
+            </div>
+          </Card>
+
+          <Card className="p-3 hover:bg-muted/50 transition-colors cursor-pointer" onClick={signOut}>
+            <div className="flex items-center gap-3">
+              <LogOut className="text-destructive" size={20} />
+              <span className="font-medium text-destructive">Sign Out</span>
             </div>
           </Card>
         </div>
