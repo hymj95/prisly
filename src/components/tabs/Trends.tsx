@@ -9,40 +9,65 @@ import { Slider } from '@/components/ui/slider';
 import { TrendingUp, TrendingDown, BarChart3, Calendar, MapPin, Filter } from 'lucide-react';
 import { useCurrency } from '@/hooks/useCurrency';
 import { useLanguage } from '@/hooks/useLanguage';
+import ProductDetail from '../ProductDetail';
 
 const mockTrendingProducts = [
   {
     id: 1,
     product: 'iPhone 15 Pro',
+    brand: 'Apple',
     category: 'Electronics',
     currentPrice: 999.99,
+    originalPrice: 1049.99,
+    avgPrice: 1024.99,
+    price: 999.99,
+    salePrice: 999.99,
     trend: 'down',
     change: -50,
     changePercent: -4.8,
+    trendPercentage: 4.8,
     chartData: [1050, 1020, 1010, 999.99],
-    volume: 1250
+    volume: 1250,
+    store: 'Apple Store',
+    location: 'Downtown Mall'
   },
   {
     id: 2,
     product: 'PlayStation 5',
+    brand: 'Sony',
     category: 'Gaming',
     currentPrice: 499.99,
+    originalPrice: 469.99,
+    avgPrice: 485.00,
+    price: 499.99,
+    salePrice: 499.99,
     trend: 'up',
     change: 30,
     changePercent: 6.4,
+    trendPercentage: 6.4,
     chartData: [470, 485, 490, 499.99],
-    volume: 890
+    volume: 890,
+    store: 'GameStop',
+    location: 'Shopping Center'
   },
   {
     id: 3,
     product: 'Organic Milk 1L',
+    brand: 'Organic Valley',
     category: 'Groceries',
     currentPrice: 3.49,
+    originalPrice: 3.69,
+    avgPrice: 3.59,
+    price: 3.49,
+    salePrice: 3.49,
     trend: 'down',
     change: -0.20,
     changePercent: -5.4,
+    trendPercentage: 5.4,
     chartData: [3.69, 3.59, 3.55, 3.49],
-    volume: 2100
+    volume: 2100,
+    store: 'Whole Foods',
+    location: 'Main Street'
   }
 ];
 
@@ -60,6 +85,7 @@ const Trends: React.FC = () => {
   const [selectedCategory, setSelectedCategory] = useState('all');
   const [selectedTrend, setSelectedTrend] = useState('all');
   const [priceRange, setPriceRange] = useState([0, 1000]);
+  const [selectedProduct, setSelectedProduct] = useState<any>(null);
   const { formatPrice } = useCurrency();
   const { t } = useLanguage();
 
@@ -78,6 +104,19 @@ const Trends: React.FC = () => {
     setSelectedTrend('all');
     setPriceRange([0, 1000]);
   };
+
+  const handleProductClick = (product: any) => {
+    setSelectedProduct(product);
+  };
+
+  const handleBackToTrends = () => {
+    setSelectedProduct(null);
+  };
+
+  // Show product detail if a product is selected
+  if (selectedProduct) {
+    return <ProductDetail product={selectedProduct} onBack={handleBackToTrends} />;
+  }
 
   const MiniChart = ({ data, trend }: { data: number[], trend: 'up' | 'down' }) => (
     <div className="w-20 h-8 relative">
@@ -214,7 +253,11 @@ const Trends: React.FC = () => {
           {/* Product List */}
           <div className="space-y-3">
             {filteredProducts.map((product) => (
-              <Card key={product.id} className="p-4">
+              <Card 
+                key={product.id} 
+                className="p-4 cursor-pointer hover:bg-muted/50 transition-colors" 
+                onClick={() => handleProductClick(product)}
+              >
                 <div className="flex items-center justify-between">
                   <div className="flex-1 space-y-2">
                     <div className="flex items-center gap-2">
