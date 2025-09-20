@@ -31,6 +31,7 @@ const ShoppingListEditor: React.FC<ShoppingListEditorProps> = ({ list, onBack, o
   const [editingName, setEditingName] = useState(false);
   const [listName, setListName] = useState(list.name);
   const [editingItem, setEditingItem] = useState<string | null>(null);
+  const [editingUnit, setEditingUnit] = useState<string | null>(null);
   const [newItemName, setNewItemName] = useState('');
   const [newItemQuantity, setNewItemQuantity] = useState('1');
   const [newItemUnit, setNewItemUnit] = useState('item');
@@ -94,7 +95,25 @@ const ShoppingListEditor: React.FC<ShoppingListEditorProps> = ({ list, onBack, o
   };
 
   const handleUpdateItemQuantity = (itemId: string, quantity: number) => {
-    updateItemInList(list.id, itemId, { quantity });
+    if (quantity > 0) {
+      updateItemInList(list.id, itemId, { quantity });
+    }
+  };
+
+  const handleUpdateItemUnit = (itemId: string, unit: string) => {
+    updateItemInList(list.id, itemId, { unit });
+    setEditingUnit(null);
+  };
+
+  const incrementQuantity = (itemId: string, currentQuantity: number) => {
+    const increment = currentQuantity >= 1 ? 1 : 0.25; // Smaller increments for fractional amounts
+    handleUpdateItemQuantity(itemId, currentQuantity + increment);
+  };
+
+  const decrementQuantity = (itemId: string, currentQuantity: number) => {
+    const decrement = currentQuantity > 1 ? 1 : 0.25; // Smaller decrements for fractional amounts
+    const newQuantity = Math.max(0.25, currentQuantity - decrement); // Minimum 0.25
+    handleUpdateItemQuantity(itemId, newQuantity);
   };
 
   return (
@@ -221,10 +240,10 @@ const ShoppingListEditor: React.FC<ShoppingListEditorProps> = ({ list, onBack, o
                 <div className="space-y-1">
                   <label className="text-sm font-medium text-muted-foreground">Unit</label>
                   <Select value={newItemUnit} onValueChange={setNewItemUnit}>
-                    <SelectTrigger>
+                    <SelectTrigger className="bg-background border z-50">
                       <SelectValue placeholder="Select unit" />
                     </SelectTrigger>
-                    <SelectContent>
+                    <SelectContent className="bg-background border shadow-lg z-50 max-h-60 overflow-y-auto">
                       {unitOptions.map((unit) => (
                         <SelectItem key={unit.value} value={unit.value}>
                           {unit.label}
@@ -342,20 +361,17 @@ const ShoppingListEditor: React.FC<ShoppingListEditorProps> = ({ list, onBack, o
                       </div>
                     </div>
                     
-                    {/* Quantity Controls */}
+                    {/* Quantity and Unit Controls */}
                     <div className="flex items-center justify-between">
-                      <div className="flex items-center gap-2">
-                        <span className="text-sm text-muted-foreground">Qty:</span>
+                      <div className="flex items-center gap-3">
                         <div className="flex items-center gap-1">
                           <Button
                             variant="outline"
                             size="sm"
-                            className="h-6 w-6 p-0"
+                            className="h-7 w-7 p-0 hover:bg-primary/10"
                             onClick={(e) => {
                               e.stopPropagation();
-                              if (item.quantity > 1) {
-                                handleUpdateItemQuantity(item.id, item.quantity - 1);
-                              }
+                              decrementQuantity(item.id, item.quantity);
                             }}
                           >
                             -
@@ -365,31 +381,68 @@ const ShoppingListEditor: React.FC<ShoppingListEditorProps> = ({ list, onBack, o
                             value={item.quantity}
                             onChange={(e) => {
                               e.stopPropagation();
-                              handleUpdateItemQuantity(item.id, parseFloat(e.target.value) || 1);
+                              const value = parseFloat(e.target.value);
+                              if (!isNaN(value) && value > 0) {
+                                handleUpdateItemQuantity(item.id, value);
+                              }
                             }}
                             onClick={(e) => e.stopPropagation()}
-                            className="w-16 h-6 text-xs text-center"
+                            className="w-16 h-7 text-xs text-center"
                             min="0.01"
                             step="0.01"
                           />
                           <Button
                             variant="outline"
                             size="sm"
-                            className="h-6 w-6 p-0"
+                            className="h-7 w-7 p-0 hover:bg-primary/10"
                             onClick={(e) => {
                               e.stopPropagation();
-                              handleUpdateItemQuantity(item.id, item.quantity + 1);
+                              incrementQuantity(item.id, item.quantity);
                             }}
                           >
                             +
                           </Button>
+                        </div>
+                        
+                        {/* Unit Selector */}
+                        <div className="relative">
+                          {editingUnit === item.id ? (
+                            <Select 
+                              value={item.unit} 
+                              onValueChange={(value) => handleUpdateItemUnit(item.id, value)}
+                              onOpenChange={(open) => !open && setEditingUnit(null)}
+                            >
+                              <SelectTrigger className="h-7 w-20 text-xs bg-background border z-50">
+                                <SelectValue />
+                              </SelectTrigger>
+                              <SelectContent className="bg-background border shadow-lg z-50">
+                                {unitOptions.map((unit) => (
+                                  <SelectItem key={unit.value} value={unit.value} className="text-xs">
+                                    {unit.label}
+                                  </SelectItem>
+                                ))}
+                              </SelectContent>
+                            </Select>
+                          ) : (
+                            <Button
+                              variant="ghost"
+                              size="sm"
+                              className="h-7 px-2 text-xs text-muted-foreground hover:text-primary"
+                              onClick={(e) => {
+                                e.stopPropagation();
+                                setEditingUnit(item.id);
+                              }}
+                            >
+                              {item.unit}
+                            </Button>
+                          )}
                         </div>
                       </div>
                       
                       <Button
                         variant="ghost"
                         size="sm"
-                        className="text-destructive hover:bg-destructive/10 h-6 px-2"
+                        className="text-destructive hover:bg-destructive/10 h-7 px-2"
                         onClick={(e) => {
                           e.stopPropagation();
                           handleRemoveItem(item.id);
