@@ -43,6 +43,8 @@ const ShoppingAreaSelector: React.FC<ShoppingAreaSelectorProps> = ({ onStoreSele
   const [stores, setStores] = useState<Store[]>([]);
   const [showMap, setShowMap] = useState(false);
   const [mapboxToken, setMapboxToken] = useState('');
+  const [activeTab, setActiveTab] = useState('search');
+  const [selectedStore, setSelectedStore] = useState<Store | null>(null);
   const [popularAreas] = useState([
     'Downtown', 'Shopping District', 'Mall Area', 'Suburban Center', 'Business District'
   ]);
@@ -264,21 +266,25 @@ const ShoppingAreaSelector: React.FC<ShoppingAreaSelectorProps> = ({ onStoreSele
       `);
 
       const marker = new mapboxgl.Marker({
-        color: store.verified ? '#10b981' : '#6b7280'
+        color: store.id === selectedStore?.id ? '#ef4444' : (store.verified ? '#10b981' : '#6b7280')
       })
         .setLngLat([store.longitude, store.latitude])
         .setPopup(popup)
         .addTo(map.current!);
 
       marker.getElement().addEventListener('click', () => {
+        setSelectedStore(store);
         onStoreSelect?.(store);
       });
 
       markers.current.push(marker);
     });
 
-    // Fit map to show all markers
-    if (filteredStores.length > 0) {
+    // Focus on selected store or fit all markers
+    if (selectedStore && filteredStores.find(s => s.id === selectedStore.id)) {
+      map.current.setCenter([selectedStore.longitude, selectedStore.latitude]);
+      map.current.setZoom(16);
+    } else if (filteredStores.length > 0) {
       const bounds = new mapboxgl.LngLatBounds();
       filteredStores.forEach(store => {
         bounds.extend([store.longitude, store.latitude]);
@@ -291,11 +297,19 @@ const ShoppingAreaSelector: React.FC<ShoppingAreaSelectorProps> = ({ onStoreSele
         map.current.fitBounds(bounds, { padding: 50 });
       }
     }
-  }, [filteredStores, showMap, onStoreSelect]);
+  }, [filteredStores, showMap, selectedStore, onStoreSelect]);
+
+  // Handle store selection from list
+  const handleStoreClick = (store: Store) => {
+    setSelectedStore(store);
+    setActiveTab('map');
+    setShowMap(true);
+    onStoreSelect?.(store);
+  };
 
   return (
     <div className="space-y-4">
-      <Tabs defaultValue="search" className="w-full">
+      <Tabs value={activeTab} onValueChange={setActiveTab} className="w-full">
         <TabsList className="grid w-full grid-cols-3">
           <TabsTrigger value="search">Search Area</TabsTrigger>
           <TabsTrigger value="browse">Browse Stores</TabsTrigger>
@@ -447,8 +461,16 @@ const ShoppingAreaSelector: React.FC<ShoppingAreaSelectorProps> = ({ onStoreSele
                 />
                 
                 {filteredStores.length > 0 && (
-                  <div className="text-sm text-muted-foreground">
-                    Showing {filteredStores.length} stores on map. Click markers to select stores.
+                  <div className="flex items-center justify-between text-sm">
+                    <span className="text-muted-foreground">
+                      Showing {filteredStores.length} stores on map. Click markers to select stores.
+                    </span>
+                    {selectedStore && (
+                      <div className="flex items-center gap-2 px-2 py-1 bg-destructive/10 text-destructive rounded text-xs">
+                        <MapPin size={12} />
+                        {selectedStore.name}
+                      </div>
+                    )}
                   </div>
                 )}
               </div>
@@ -476,8 +498,12 @@ const ShoppingAreaSelector: React.FC<ShoppingAreaSelectorProps> = ({ onStoreSele
           {filteredStores.map((store) => (
             <Card 
               key={store.id} 
-              className="p-4 hover:shadow-md transition-all cursor-pointer border-l-4 border-l-primary/20 hover:border-l-primary"
-              onClick={() => onStoreSelect?.(store)}
+              className={`p-4 hover:shadow-md transition-all cursor-pointer border-l-4 ${
+                selectedStore?.id === store.id 
+                  ? 'border-l-destructive bg-destructive/5' 
+                  : 'border-l-primary/20 hover:border-l-primary'
+              }`}
+              onClick={() => handleStoreClick(store)}
             >
               <div className="flex items-start justify-between">
                 <div className="flex-1">
