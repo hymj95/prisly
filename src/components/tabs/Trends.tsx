@@ -86,6 +86,7 @@ const Trends: React.FC = () => {
   const [selectedTrend, setSelectedTrend] = useState('all');
   const [priceRange, setPriceRange] = useState([0, 1000]);
   const [selectedProduct, setSelectedProduct] = useState<any>(null);
+  const [showDetailedView, setShowDetailedView] = useState(false);
   const { formatPrice } = useCurrency();
   const { t } = useLanguage();
 
@@ -111,6 +112,10 @@ const Trends: React.FC = () => {
 
   const handleBackToTrends = () => {
     setSelectedProduct(null);
+  };
+
+  const handleDetailedView = () => {
+    setShowDetailedView(!showDetailedView);
   };
 
   // Show product detail if a product is selected
@@ -300,9 +305,9 @@ const Trends: React.FC = () => {
         <TabsContent value="categories" className="space-y-4 mt-6">
           <div className="flex items-center justify-between">
             <h3 className="font-semibold">{t('trends.categoryOverview')}</h3>
-            <Button variant="outline" size="sm">
+            <Button variant="outline" size="sm" onClick={handleDetailedView}>
               <BarChart3 size={16} className="mr-2" />
-              {t('trends.detailedView')}
+              {showDetailedView ? 'Simple View' : t('trends.detailedView')}
             </Button>
           </div>
 
@@ -315,6 +320,20 @@ const Trends: React.FC = () => {
                     <p className="text-sm text-muted-foreground">
                       {category.products} {t('trends.productsTracked')}
                     </p>
+                    {showDetailedView && (
+                      <div className="mt-2 space-y-1">
+                        <div className="flex items-center gap-4 text-xs text-muted-foreground">
+                          <span>Weekly volume: {(category.products * 2.3).toFixed(0)}k scans</span>
+                          <span>•</span>
+                          <span>Growth: +{(Math.abs(category.avgChange) * 0.5).toFixed(1)}% MoM</span>
+                        </div>
+                        <div className="flex items-center gap-4 text-xs text-muted-foreground">
+                          <span>Top stores: Walmart, Target, Amazon</span>
+                          <span>•</span>
+                          <span>Peak hours: 6-8 PM</span>
+                        </div>
+                      </div>
+                    )}
                   </div>
                   
                   <div className="text-right space-y-1">
@@ -327,8 +346,36 @@ const Trends: React.FC = () => {
                       </span>
                     </div>
                     <p className="text-xs text-muted-foreground">{t('trends.avgChange')}</p>
+                    {showDetailedView && (
+                      <div className="mt-2 space-y-1">
+                        <div className="text-xs font-medium">
+                          Best deal: {formatPrice(Math.random() * 50 + 10)}
+                        </div>
+                        <div className="text-xs text-muted-foreground">
+                          Volatility: {(Math.random() * 20 + 5).toFixed(1)}%
+                        </div>
+                      </div>
+                    )}
                   </div>
                 </div>
+                {showDetailedView && (
+                  <div className="mt-4 pt-4 border-t border-border">
+                    <div className="grid grid-cols-3 gap-4 text-center">
+                      <div>
+                        <p className="text-lg font-bold text-success">${(Math.random() * 5 + 2).toFixed(2)}</p>
+                        <p className="text-xs text-muted-foreground">Avg Savings</p>
+                      </div>
+                      <div>
+                        <p className="text-lg font-bold text-primary">{Math.floor(Math.random() * 500 + 100)}</p>
+                        <p className="text-xs text-muted-foreground">Active Deals</p>
+                      </div>
+                      <div>
+                        <p className="text-lg font-bold text-warning">4.{Math.floor(Math.random() * 9)}★</p>
+                        <p className="text-xs text-muted-foreground">User Rating</p>
+                      </div>
+                    </div>
+                  </div>
+                )}
               </Card>
             ))}
           </div>
