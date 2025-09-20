@@ -1,8 +1,9 @@
-import React from 'react';
+import React, { useState } from 'react';
 import { Card } from '@/components/ui/card';
 import { Badge } from '@/components/ui/badge';
 import { Button } from '@/components/ui/button';
 import { TrendingDown, TrendingUp, MapPin, Clock, Zap } from 'lucide-react';
+import ProductDetail from '../ProductDetail';
 
 const mockRecentScans = [
   {
@@ -44,6 +45,16 @@ const mockRecentScans = [
 ];
 
 const Home: React.FC = () => {
+  const [selectedProduct, setSelectedProduct] = useState<any>(null);
+
+  if (selectedProduct) {
+    return (
+      <ProductDetail 
+        product={selectedProduct} 
+        onBack={() => setSelectedProduct(null)} 
+      />
+    );
+  }
   return (
     <div className="pb-20 px-4 pt-6 space-y-6">
       {/* Welcome Header */}
@@ -99,7 +110,11 @@ const Home: React.FC = () => {
 
         <div className="space-y-3">
           {mockRecentScans.map((scan) => (
-            <Card key={scan.id} className="p-4">
+            <Card 
+              key={scan.id} 
+              className="p-4 cursor-pointer hover:shadow-md transition-all duration-200 hover:scale-[1.02]"
+              onClick={() => setSelectedProduct(scan)}
+            >
               <div className="flex items-start justify-between">
                 <div className="flex-1 space-y-1">
                   <div className="flex items-center gap-2">
