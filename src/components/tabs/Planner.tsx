@@ -7,6 +7,7 @@ import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
 import { Plus, MapPin, Clock, CheckCircle2, ShoppingCart, DollarSign, Route } from 'lucide-react';
 import { useCurrency } from '@/hooks/useCurrency';
 import { useShoppingLists } from '@/hooks/useShoppingLists';
+import { useLanguage } from '@/hooks/useLanguage';
 import ShoppingListEditor from '../ShoppingListEditor';
 
 const Planner: React.FC = () => {
@@ -15,6 +16,7 @@ const Planner: React.FC = () => {
   const [editingList, setEditingList] = useState<any>(null);
   const { formatPrice } = useCurrency();
   const { lists, addList } = useShoppingLists();
+  const { t } = useLanguage();
 
   const handleCreateList = () => {
     if (newListName.trim()) {
@@ -39,16 +41,16 @@ const Planner: React.FC = () => {
     <div className="pb-20 px-4 pt-6 space-y-6">
       {/* Header */}
       <div className="text-center space-y-2">
-        <h1 className="text-2xl font-bold text-gradient">Shopping Planner</h1>
-        <p className="text-muted-foreground">Plan your grocery trips and save money</p>
+        <h1 className="text-2xl font-bold text-gradient">{t('planner.title')}</h1>
+        <p className="text-muted-foreground">{t('planner.subtitle')}</p>
       </div>
 
       {/* Tabs */}
       <Tabs value={activeTab} onValueChange={setActiveTab}>
         <TabsList className="grid w-full grid-cols-3">
-          <TabsTrigger value="lists">My Lists</TabsTrigger>
-          <TabsTrigger value="current">Current List</TabsTrigger>
-          <TabsTrigger value="route">Route Plan</TabsTrigger>
+          <TabsTrigger value="lists">{t('planner.myLists')}</TabsTrigger>
+          <TabsTrigger value="current">{t('planner.currentList')}</TabsTrigger>
+          <TabsTrigger value="route">{t('planner.routePlan')}</TabsTrigger>
         </TabsList>
 
         <TabsContent value="lists" className="space-y-4 mt-6">
@@ -58,13 +60,13 @@ const Planner: React.FC = () => {
               <div className="flex items-center gap-3">
                 <Plus className="text-primary" size={24} />
                 <div className="flex-1">
-                  <h3 className="font-semibold">Create New Shopping List</h3>
-                  <p className="text-sm text-muted-foreground">Start planning your next shopping trip</p>
+                  <h3 className="font-semibold">{t('planner.createNewList')}</h3>
+                  <p className="text-sm text-muted-foreground">{t('planner.startPlanning')}</p>
                 </div>
               </div>
               <div className="flex gap-2">
                 <Input
-                  placeholder="Enter list name..."
+                  placeholder={t('planner.enterListName')}
                   value={newListName}
                   onChange={(e) => setNewListName(e.target.value)}
                   className="flex-1"
@@ -73,7 +75,7 @@ const Planner: React.FC = () => {
                   onClick={handleCreateList}
                   className="bg-primary-solid text-white"
                 >
-                  Create
+                  {t('planner.create')}
                 </Button>
               </div>
             </div>
@@ -81,7 +83,7 @@ const Planner: React.FC = () => {
 
           {/* Existing Lists */}
           <div className="space-y-3">
-            <h3 className="font-semibold">Your Shopping Lists</h3>
+            <h3 className="font-semibold">{t('planner.yourShoppingLists')}</h3>
             {lists.map((list) => (
               <Card 
                 key={list.id} 
@@ -97,7 +99,7 @@ const Planner: React.FC = () => {
                       </Badge>
                     </div>
                     <div className="flex items-center gap-4 text-sm text-muted-foreground">
-                      <span>{list.items.length} items</span>
+                      <span>{list.items.length} {t('planner.items')}</span>
                       <span>•</span>
                       <span>{list.stores.join(', ')}</span>
                     </div>
@@ -105,7 +107,7 @@ const Planner: React.FC = () => {
                   
                   <div className="text-right space-y-1">
                     <p className="font-bold text-lg">{formatPrice(list.estimatedTotal)}</p>
-                    <p className="text-xs text-muted-foreground">Estimated</p>
+                    <p className="text-xs text-muted-foreground">{t('planner.estimated')}</p>
                   </div>
                 </div>
               </Card>
@@ -116,15 +118,15 @@ const Planner: React.FC = () => {
         <TabsContent value="current" className="space-y-4 mt-6">
           <Card className="p-6 text-center">
             <ShoppingCart className="mx-auto mb-4 text-muted-foreground" size={48} />
-            <h3 className="font-semibold mb-2">Select a Shopping List</h3>
+            <h3 className="font-semibold mb-2">{t('planner.selectList')}</h3>
             <p className="text-muted-foreground mb-4">
-              Choose a list from the "My Lists" tab to view and edit items
+              {t('planner.chooseList')}
             </p>
             <Button 
               onClick={() => setActiveTab('lists')}
               className="bg-primary-solid text-white"
             >
-              View My Lists
+              {t('planner.viewMyLists')}
             </Button>
           </Card>
         </TabsContent>
@@ -132,32 +134,32 @@ const Planner: React.FC = () => {
         <TabsContent value="route" className="space-y-4 mt-6">
           {/* Route Summary */}
           <Card className="p-4 bg-primary-solid border-0 text-white">
-            <div className="space-y-3">
-              <div className="flex items-center gap-2">
-                <Route size={24} />
-                <h3 className="font-semibold">Optimized Route</h3>
-              </div>
+              <div className="space-y-3">
+                <div className="flex items-center gap-2">
+                  <Route size={24} />
+                  <h3 className="font-semibold">{t('planner.optimizedRoute')}</h3>
+                </div>
               
-              <div className="grid grid-cols-3 gap-4">
-                <div className="text-center">
-                  <p className="text-2xl font-bold">12.4 miles</p>
-                  <p className="text-sm opacity-90">Total Distance</p>
+                <div className="grid grid-cols-3 gap-4">
+                  <div className="text-center">
+                    <p className="text-2xl font-bold">12.4 miles</p>
+                    <p className="text-sm opacity-90">{t('planner.totalDistance')}</p>
+                  </div>
+                  <div className="text-center">
+                    <p className="text-2xl font-bold">45 minutes</p>
+                    <p className="text-sm opacity-90">{t('planner.estTime')}</p>
+                  </div>
+                  <div className="text-center">
+                    <p className="text-2xl font-bold">{formatPrice(23.50)}</p>
+                    <p className="text-sm opacity-90">{t('planner.totalSavings')}</p>
+                  </div>
                 </div>
-                <div className="text-center">
-                  <p className="text-2xl font-bold">45 minutes</p>
-                  <p className="text-sm opacity-90">Est. Time</p>
-                </div>
-                <div className="text-center">
-                  <p className="text-2xl font-bold">{formatPrice(23.50)}</p>
-                  <p className="text-sm opacity-90">Total Savings</p>
-                </div>
-              </div>
             </div>
           </Card>
 
           {/* Store Stops */}
           <div className="space-y-3">
-            <h3 className="font-semibold">Your Route</h3>
+            <h3 className="font-semibold">{t('planner.yourRoute')}</h3>
             <Card className="p-4">
               <div className="flex items-center gap-3">
                 <div className="w-8 h-8 bg-primary text-white rounded-full flex items-center justify-center font-bold">
@@ -178,7 +180,7 @@ const Planner: React.FC = () => {
                       <MapPin size={12} />
                       <span>123 Main St</span>
                     </div>
-                    <span>3 items</span>
+                    <span>3 {t('planner.items')}</span>
                   </div>
                 </div>
               </div>
@@ -204,7 +206,7 @@ const Planner: React.FC = () => {
                       <MapPin size={12} />
                       <span>456 Oak Ave</span>
                     </div>
-                    <span>2 items</span>
+                    <span>2 {t('planner.items')}</span>
                   </div>
                 </div>
               </div>
@@ -215,10 +217,10 @@ const Planner: React.FC = () => {
           <div className="space-y-3">
             <Button className="w-full bg-primary-solid text-white">
               <MapPin className="mr-2" size={16} />
-              Open in Maps
+              {t('planner.openInMaps')}
             </Button>
             <Button variant="outline" className="w-full">
-              Start Shopping Trip
+              {t('planner.startTrip')}
             </Button>
           </div>
         </TabsContent>

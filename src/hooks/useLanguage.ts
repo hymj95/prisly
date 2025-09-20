@@ -907,6 +907,352 @@ const translations: Translations = {
     da: 'Skift',
     sv: 'Ändra',
     de: 'Ändern'
+  },
+  // Planner page
+  'planner.title': {
+    en: 'Shopping Planner',
+    no: 'Handleplanlegger',
+    da: 'Indkøbsplanner',
+    sv: 'Shoppingplanerare',
+    de: 'Einkaufsplaner'
+  },
+  'planner.subtitle': {
+    en: 'Plan your grocery trips and save money',
+    no: 'Planlegg handleturer og spar penger',
+    da: 'Planlæg dine indkøbsture og spar penge',
+    sv: 'Planera dina shoppingturer och spara pengar',
+    de: 'Planen Sie Ihre Einkäufe und sparen Sie Geld'
+  },
+  'planner.myLists': {
+    en: 'My Lists',
+    no: 'Mine Lister',
+    da: 'Mine Lister',
+    sv: 'Mina Listor',
+    de: 'Meine Listen'
+  },
+  'planner.currentList': {
+    en: 'Current List',
+    no: 'Nåværende Liste',
+    da: 'Nuværende Liste',
+    sv: 'Nuvarande Lista',
+    de: 'Aktuelle Liste'
+  },
+  'planner.routePlan': {
+    en: 'Route Plan',
+    no: 'Ruteplan',
+    da: 'Ruteplan',
+    sv: 'Ruttplan',
+    de: 'Routenplan'
+  },
+  'planner.createNewList': {
+    en: 'Create New Shopping List',
+    no: 'Opprett Ny Handleliste',
+    da: 'Opret Ny Indkøbsliste',
+    sv: 'Skapa Ny Shoppinglista',
+    de: 'Neue Einkaufsliste Erstellen'
+  },
+  'planner.startPlanning': {
+    en: 'Start planning your next shopping trip',
+    no: 'Begynn å planlegge din neste handletur',
+    da: 'Begynd at planlægge din næste indkøbstur',
+    sv: 'Börja planera din nästa shoppingtur',
+    de: 'Beginnen Sie mit der Planung Ihres nächsten Einkaufs'
+  },
+  'planner.enterListName': {
+    en: 'Enter list name...',
+    no: 'Skriv inn listenavn...',
+    da: 'Indtast listenavn...',
+    sv: 'Ange listnamn...',
+    de: 'Listenname eingeben...'
+  },
+  'planner.create': {
+    en: 'Create',
+    no: 'Opprett',
+    da: 'Opret',
+    sv: 'Skapa',
+    de: 'Erstellen'
+  },
+  'planner.yourShoppingLists': {
+    en: 'Your Shopping Lists',
+    no: 'Dine Handlelister',
+    da: 'Dine Indkøbslister',
+    sv: 'Dina Shoppinglistor',
+    de: 'Ihre Einkaufslisten'
+  },
+  'planner.items': {
+    en: 'items',
+    no: 'produkter',
+    da: 'varer',
+    sv: 'artiklar',
+    de: 'Artikel'
+  },
+  'planner.estimated': {
+    en: 'Estimated',
+    no: 'Estimert',
+    da: 'Estimeret',
+    sv: 'Uppskattat',
+    de: 'Geschätzt'
+  },
+  'planner.selectList': {
+    en: 'Select a Shopping List',
+    no: 'Velg en Handleliste',
+    da: 'Vælg en Indkøbsliste',
+    sv: 'Välj en Shoppinglista',
+    de: 'Einkaufsliste Auswählen'
+  },
+  'planner.chooseList': {
+    en: 'Choose a list from the "My Lists" tab to view and edit items',
+    no: 'Velg en liste fra "Mine Lister" fanen for å se og redigere varer',
+    da: 'Vælg en liste fra "Mine Lister" fanen for at se og redigere varer',
+    sv: 'Välj en lista från "Mina Listor" fliken för att visa och redigera artiklar',
+    de: 'Wählen Sie eine Liste aus der Registerkarte "Meine Listen", um Artikel anzuzeigen und zu bearbeiten'
+  },
+  'planner.viewMyLists': {
+    en: 'View My Lists',
+    no: 'Se Mine Lister',
+    da: 'Se Mine Lister',
+    sv: 'Visa Mina Listor',
+    de: 'Meine Listen Anzeigen'
+  },
+  'planner.optimizedRoute': {
+    en: 'Optimized Route',
+    no: 'Optimalisert Rute',
+    da: 'Optimeret Rute',
+    sv: 'Optimerad Rutt',
+    de: 'Optimierte Route'
+  },
+  'planner.totalDistance': {
+    en: 'Total Distance',
+    no: 'Total Avstand',
+    da: 'Total Afstand',
+    sv: 'Total Avstånd',
+    de: 'Gesamtentfernung'
+  },
+  'planner.estTime': {
+    en: 'Est. Time',
+    no: 'Beregnet Tid',
+    da: 'Beregnet Tid',
+    sv: 'Beräknad Tid',
+    de: 'Geschätzte Zeit'
+  },
+  'planner.totalSavings': {
+    en: 'Total Savings',
+    no: 'Totale Besparelser',
+    da: 'Samlede Besparelser',
+    sv: 'Totala Besparingar',
+    de: 'Gesamtersparnis'
+  },
+  'planner.yourRoute': {
+    en: 'Your Route',
+    no: 'Din Rute',
+    da: 'Din Rute',
+    sv: 'Din Rutt',
+    de: 'Ihre Route'
+  },
+  'planner.openInMaps': {
+    en: 'Open in Maps',
+    no: 'Åpne i Kart',
+    da: 'Åbn i Kort',
+    sv: 'Öppna i Kartor',
+    de: 'In Karten Öffnen'
+  },
+  'planner.startTrip': {
+    en: 'Start Shopping Trip',
+    no: 'Start Handletur',
+    da: 'Start Indkøbstur',
+    sv: 'Starta Shoppingtur',
+    de: 'Einkaufsreise Starten'
+  },
+  // Trends page
+  'trends.title': {
+    en: 'Price Trends',
+    no: 'Pristrender',
+    da: 'Pristendenser',
+    sv: 'Pristrender',
+    de: 'Preistrends'
+  },
+  'trends.subtitle': {
+    en: 'Track market movements and find fresh opportunities',
+    no: 'Spor markedsbevegelser og finn ferske muligheter',
+    da: 'Spor markedsbevægelser og find friske muligheder',
+    sv: 'Spåra marknadsrörelser och hitta nya möjligheter',
+    de: 'Verfolgen Sie Marktbewegungen und finden Sie neue Möglichkeiten'
+  },
+  'trends.trendingProducts': {
+    en: 'Trending Products',
+    no: 'Populære Produkter',
+    da: 'Populære Produkter',
+    sv: 'Populära Produkter',
+    de: 'Trending-Produkte'
+  },
+  'trends.categories': {
+    en: 'Categories',
+    no: 'Kategorier',
+    da: 'Kategorier',
+    sv: 'Kategorier',
+    de: 'Kategorien'
+  },
+  'trends.hotProducts': {
+    en: 'Hot Products',
+    no: 'Populære Produkter',
+    da: 'Populære Produkter',
+    sv: 'Populära Produkter',
+    de: 'Beliebte Produkte'
+  },
+  'trends.filter': {
+    en: 'Filter',
+    no: 'Filter',
+    da: 'Filter',
+    sv: 'Filter',
+    de: 'Filter'
+  },
+  'trends.priceReports': {
+    en: 'price reports',
+    no: 'prisrapporter',
+    da: 'prisrapporter',
+    sv: 'prisrapporter',
+    de: 'Preisberichte'
+  },
+  'trends.viewMore': {
+    en: 'View More Products',
+    no: 'Se Flere Produkter',
+    da: 'Se Flere Produkter',
+    sv: 'Visa Fler Produkter',
+    de: 'Weitere Produkte Anzeigen'
+  },
+  'trends.categoryOverview': {
+    en: 'Category Overview',
+    no: 'Kategorioversikt',
+    da: 'Kategorioversigt',
+    sv: 'Kategoriöversikt',
+    de: 'Kategorieübersicht'
+  },
+  'trends.detailedView': {
+    en: 'Detailed View',
+    no: 'Detaljert Visning',
+    da: 'Detaljeret Visning',
+    sv: 'Detaljerad Vy',
+    de: 'Detailansicht'
+  },
+  'trends.productsTracked': {
+    en: 'products tracked',
+    no: 'produkter sporet',
+    da: 'produkter sporet',
+    sv: 'produkter spårade',
+    de: 'Produkte verfolgt'
+  },
+  'trends.avgChange': {
+    en: 'Avg change',
+    no: 'Gjennomsnittlig endring',
+    da: 'Gennemsnitlig ændring',
+    sv: 'Genomsnittlig förändring',
+    de: 'Durchschnittliche Änderung'
+  },
+  'trends.freshInsights': {
+    en: 'Fresh Market Insights',
+    no: 'Ferske Markedsinnsikter',
+    da: 'Friske Markedsindsigter',
+    sv: 'Nya Marknadsinsikter',
+    de: 'Aktuelle Markteinblicke'
+  },
+  // Shopping List Editor
+  'editor.saved': {
+    en: 'Saved',
+    no: 'Lagret',
+    da: 'Gemt',
+    sv: 'Sparad',
+    de: 'Gespeichert'
+  },
+  'editor.remaining': {
+    en: 'remaining',
+    no: 'gjenstår',
+    da: 'tilbage',
+    sv: 'kvar',
+    de: 'verbleibend'
+  },
+  'editor.completed': {
+    en: 'completed',
+    no: 'fullført',
+    da: 'fuldført',
+    sv: 'slutförda',
+    de: 'abgeschlossen'
+  },
+  'editor.estimatedTotal': {
+    en: 'Estimated total',
+    no: 'Estimert totalt',
+    da: 'Estimeret total',
+    sv: 'Uppskattat totalt',
+    de: 'Geschätzte Gesamtsumme'
+  },
+  'editor.addNewItem': {
+    en: 'Add New Item',
+    no: 'Legg til Ny Vare',
+    da: 'Tilføj Ny Vare',
+    sv: 'Lägg till Ny Artikel',
+    de: 'Neuen Artikel Hinzufügen'
+  },
+  'editor.productName': {
+    en: 'Product name',
+    no: 'Produktnavn',
+    da: 'Produktnavn',
+    sv: 'Produktnamn',
+    de: 'Produktname'
+  },
+  'editor.qty': {
+    en: 'Qty',
+    no: 'Ant',
+    da: 'Antal',
+    sv: 'Antal',
+    de: 'Menge'
+  },
+  'editor.expectedPrice': {
+    en: 'Expected price',
+    no: 'Forventet pris',
+    da: 'Forventet pris',
+    sv: 'Förväntat pris',
+    de: 'Erwarteter Preis'
+  },
+  'editor.addItem': {
+    en: 'Add Item',
+    no: 'Legg til Vare',
+    da: 'Tilføj Vare',
+    sv: 'Lägg till Artikel',
+    de: 'Artikel Hinzufügen'
+  },
+  'editor.shoppingItems': {
+    en: 'Shopping Items',
+    no: 'Handlevarer',
+    da: 'Indkøbsvarer',
+    sv: 'Shoppingartiklar',
+    de: 'Einkaufsartikel'
+  },
+  'editor.noItems': {
+    en: 'No items in this list yet',
+    no: 'Ingen varer i denne listen ennå',
+    da: 'Ingen varer i denne liste endnu',
+    sv: 'Inga artiklar i denna lista än',
+    de: 'Noch keine Artikel in dieser Liste'
+  },
+  'editor.addFirstItem': {
+    en: 'Add Your First Item',
+    no: 'Legg til Din Første Vare',
+    da: 'Tilføj Din Første Vare',
+    sv: 'Lägg till Din Första Artikel',
+    de: 'Ihren Ersten Artikel Hinzufügen'
+  },
+  'editor.planRoute': {
+    en: 'Plan Shopping Route',
+    no: 'Planlegg Handlerute',
+    da: 'Planlæg Indkøbsrute',
+    sv: 'Planera Shoppingrutt',
+    de: 'Einkaufsroute Planen'
+  },
+  'editor.shareList': {
+    en: 'Share List',
+    no: 'Del Liste',
+    da: 'Del Liste',
+    sv: 'Dela Lista',
+    de: 'Liste Teilen'
   }
 };
 

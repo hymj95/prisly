@@ -5,6 +5,7 @@ import { Badge } from '@/components/ui/badge';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
 import { TrendingUp, TrendingDown, BarChart3, Calendar, MapPin, Filter } from 'lucide-react';
 import { useCurrency } from '@/hooks/useCurrency';
+import { useLanguage } from '@/hooks/useLanguage';
 
 const mockTrendingProducts = [
   {
@@ -53,6 +54,7 @@ const Trends: React.FC = () => {
   const [activeTab, setActiveTab] = useState('products');
   const [timeRange, setTimeRange] = useState('7d');
   const { formatPrice } = useCurrency();
+  const { t } = useLanguage();
 
   const MiniChart = ({ data, trend }: { data: number[], trend: 'up' | 'down' }) => (
     <div className="w-20 h-8 relative">
@@ -75,8 +77,8 @@ const Trends: React.FC = () => {
     <div className="pb-20 px-4 pt-6 space-y-6">
       {/* Header */}
       <div className="text-center space-y-2">
-        <h1 className="text-2xl font-bold text-gradient">Price Trends</h1>
-        <p className="text-muted-foreground">Track market movements and find fresh opportunities</p>
+        <h1 className="text-2xl font-bold text-gradient">{t('trends.title')}</h1>
+        <p className="text-muted-foreground">{t('trends.subtitle')}</p>
       </div>
 
       {/* Time Range Selector */}
@@ -99,17 +101,17 @@ const Trends: React.FC = () => {
       {/* Tabs */}
       <Tabs value={activeTab} onValueChange={setActiveTab}>
         <TabsList className="grid w-full grid-cols-2">
-          <TabsTrigger value="products">Trending Products</TabsTrigger>
-          <TabsTrigger value="categories">Categories</TabsTrigger>
+          <TabsTrigger value="products">{t('trends.trendingProducts')}</TabsTrigger>
+          <TabsTrigger value="categories">{t('trends.categories')}</TabsTrigger>
         </TabsList>
 
         <TabsContent value="products" className="space-y-4 mt-6">
           {/* Filters */}
           <div className="flex items-center justify-between">
-            <h3 className="font-semibold">Hot Products</h3>
+            <h3 className="font-semibold">{t('trends.hotProducts')}</h3>
             <Button variant="outline" size="sm">
               <Filter size={16} className="mr-2" />
-              Filter
+              {t('trends.filter')}
             </Button>
           </div>
 
@@ -125,7 +127,7 @@ const Trends: React.FC = () => {
                     </div>
                     
                     <div className="flex items-center gap-4 text-sm text-muted-foreground">
-                      <span>{product.volume} price reports</span>
+                      <span>{product.volume} {t('trends.priceReports')}</span>
                       <span>•</span>
                       <span>Last {timeRange}</span>
                     </div>
@@ -152,16 +154,16 @@ const Trends: React.FC = () => {
 
           {/* View More */}
           <Button variant="outline" className="w-full">
-            View More Products
+            {t('trends.viewMore')}
           </Button>
         </TabsContent>
 
         <TabsContent value="categories" className="space-y-4 mt-6">
           <div className="flex items-center justify-between">
-            <h3 className="font-semibold">Category Overview</h3>
+            <h3 className="font-semibold">{t('trends.categoryOverview')}</h3>
             <Button variant="outline" size="sm">
               <BarChart3 size={16} className="mr-2" />
-              Detailed View
+              {t('trends.detailedView')}
             </Button>
           </div>
 
@@ -172,7 +174,7 @@ const Trends: React.FC = () => {
                   <div className="space-y-1">
                     <h4 className="font-medium">{category.name}</h4>
                     <p className="text-sm text-muted-foreground">
-                      {category.products} products tracked
+                      {category.products} {t('trends.productsTracked')}
                     </p>
                   </div>
                   
@@ -185,7 +187,7 @@ const Trends: React.FC = () => {
                         {category.avgChange > 0 ? '+' : ''}{category.avgChange}%
                       </span>
                     </div>
-                    <p className="text-xs text-muted-foreground">Avg change</p>
+                    <p className="text-xs text-muted-foreground">{t('trends.avgChange')}</p>
                   </div>
                 </div>
               </Card>
@@ -196,11 +198,11 @@ const Trends: React.FC = () => {
 
       {/* Market Insights */}
       <Card className="p-4 bg-card-subtle border-0">
-        <div className="space-y-3">
-          <div className="flex items-center gap-2">
-            <BarChart3 className="text-primary" size={20} />
-            <h3 className="font-semibold">Fresh Market Insights</h3>
-          </div>
+          <div className="space-y-3">
+            <div className="flex items-center gap-2">
+              <BarChart3 className="text-primary" size={20} />
+              <h3 className="font-semibold">{t('trends.freshInsights')}</h3>
+            </div>
           <div className="space-y-2 text-sm">
             <p className="text-muted-foreground">
               • Fresh produce prices dropped 3.2% this week at farmer's markets

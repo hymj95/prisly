@@ -16,6 +16,7 @@ import {
 } from 'lucide-react';
 import { ShoppingList, ShoppingItem, useShoppingLists } from '@/hooks/useShoppingLists';
 import { useCurrency } from '@/hooks/useCurrency';
+import { useLanguage } from '@/hooks/useLanguage';
 
 interface ShoppingListEditorProps {
   list: ShoppingList;
@@ -34,6 +35,7 @@ const ShoppingListEditor: React.FC<ShoppingListEditorProps> = ({ list, onBack, o
   
   const { formatPrice } = useCurrency();
   const { updateList, addItemToList, updateItemInList, removeItemFromList } = useShoppingLists();
+  const { t } = useLanguage();
 
   const handleSaveListName = () => {
     updateList(list.id, { name: listName });
@@ -119,14 +121,14 @@ const ShoppingListEditor: React.FC<ShoppingListEditorProps> = ({ list, onBack, o
               {list.status}
             </Badge>
             <span className="text-sm text-muted-foreground">
-              {list.items.length} items
+              {list.items.length} {t('planner.items')}
             </span>
           </div>
         </div>
 
         <Button className="bg-primary-solid text-white">
           <Save size={16} className="mr-2" />
-          Saved
+          {t('editor.saved')}
         </Button>
       </div>
 
@@ -136,13 +138,13 @@ const ShoppingListEditor: React.FC<ShoppingListEditorProps> = ({ list, onBack, o
           <div className="space-y-1">
             <h3 className="font-semibold">{listName}</h3>
             <p className="text-sm opacity-90">
-              {list.items.filter(item => !item.checked).length} remaining • 
-              {list.items.filter(item => item.checked).length} completed
+              {list.items.filter(item => !item.checked).length} {t('editor.remaining')} • 
+              {list.items.filter(item => item.checked).length} {t('editor.completed')}
             </p>
           </div>
           <div className="text-right">
             <p className="text-2xl font-bold">{formatPrice(list.estimatedTotal)}</p>
-            <p className="text-sm opacity-90">Estimated total</p>
+            <p className="text-sm opacity-90">{t('editor.estimatedTotal')}</p>
           </div>
         </div>
       </Card>
@@ -151,16 +153,16 @@ const ShoppingListEditor: React.FC<ShoppingListEditorProps> = ({ list, onBack, o
       {showAddItem ? (
         <Card className="p-4">
           <div className="space-y-3">
-            <h3 className="font-semibold">Add New Item</h3>
+            <h3 className="font-semibold">{t('editor.addNewItem')}</h3>
             <div className="grid grid-cols-2 gap-2">
               <Input
-                placeholder="Product name"
+                placeholder={t('editor.productName')}
                 value={newItemName}
                 onChange={(e) => setNewItemName(e.target.value)}
               />
               <Input
                 type="number"
-                placeholder="Qty"
+                placeholder={t('editor.qty')}
                 value={newItemQuantity}
                 onChange={(e) => setNewItemQuantity(e.target.value)}
               />
@@ -168,16 +170,16 @@ const ShoppingListEditor: React.FC<ShoppingListEditorProps> = ({ list, onBack, o
             <Input
               type="number"
               step="0.01"
-              placeholder="Expected price"
+              placeholder={t('editor.expectedPrice')}
               value={newItemPrice}
               onChange={(e) => setNewItemPrice(e.target.value)}
             />
             <div className="flex gap-2">
               <Button onClick={handleAddItem} className="bg-primary-solid text-white">
-                Add Item
+                {t('editor.addItem')}
               </Button>
               <Button variant="outline" onClick={() => setShowAddItem(false)}>
-                Cancel
+                {t('common.cancel')}
               </Button>
             </div>
           </div>
@@ -189,22 +191,22 @@ const ShoppingListEditor: React.FC<ShoppingListEditorProps> = ({ list, onBack, o
           onClick={() => setShowAddItem(true)}
         >
           <Plus className="mr-2" size={16} />
-          Add New Item
+          {t('editor.addNewItem')}
         </Button>
       )}
 
       {/* Shopping Items */}
       <div className="space-y-3">
-        <h3 className="font-semibold">Shopping Items</h3>
+        <h3 className="font-semibold">{t('editor.shoppingItems')}</h3>
         
         {list.items.length === 0 ? (
           <Card className="p-6 text-center">
-            <p className="text-muted-foreground">No items in this list yet</p>
+            <p className="text-muted-foreground">{t('editor.noItems')}</p>
             <Button 
               className="mt-3 bg-primary-solid text-white"
               onClick={() => setShowAddItem(true)}
             >
-              Add Your First Item
+              {t('editor.addFirstItem')}
             </Button>
           </Card>
         ) : (
@@ -272,10 +274,10 @@ const ShoppingListEditor: React.FC<ShoppingListEditorProps> = ({ list, onBack, o
       <div className="space-y-3">
         <Button className="w-full bg-primary-solid text-white">
           <MapPin className="mr-2" size={16} />
-          Plan Shopping Route
+          {t('editor.planRoute')}
         </Button>
         <Button variant="outline" className="w-full">
-          Share List
+          {t('editor.shareList')}
         </Button>
       </div>
     </div>
