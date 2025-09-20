@@ -158,7 +158,63 @@ const translations: Translations = {
     sv: 'Ställ in Butik',
     de: 'Laden Festlegen'
   },
+  'home.avg': {
+    en: 'Avg',
+    no: 'Snitt',
+    da: 'Gnsn',
+    sv: 'Snitt',
+    de: 'Durchschn'
+  },
   // Profile page
+  'profile.powerSaver': {
+    en: 'Power Saver',
+    no: 'Kraftspar',
+    da: 'Kraftspar',
+    sv: 'Kraftspar',
+    de: 'Kraftsparer'
+  },
+  'profile.rank': {
+    en: 'Rank',
+    no: 'Rang',
+    da: 'Rang',
+    sv: 'Rang',
+    de: 'Rang'
+  },
+  'profile.accuracy': {
+    en: 'accuracy',
+    no: 'nøyaktighet',
+    da: 'nøjagtighed',
+    sv: 'noggrannhet',
+    de: 'Genauigkeit'
+  },
+  'profile.totalScans': {
+    en: 'Products Scanned',
+    no: 'Produkter Skannet',
+    da: 'Produkter Scannet',
+    sv: 'Produkter Skannade',
+    de: 'Produkte Gescannt'
+  },
+  'profile.totalSavings': {
+    en: 'Total Savings',
+    no: 'Totale Besparelser',
+    da: 'Samlede Besparelser',
+    sv: 'Totala Besparingar',
+    de: 'Gesamtersparnis'
+  },
+  'profile.priceReports': {
+    en: 'Price Reports',
+    no: 'Prisrapporter',
+    da: 'Prisrapporter',
+    sv: 'Prisrapporter',
+    de: 'Preisberichte'
+  },
+  'profile.achievements': {
+    en: 'Achievements',
+    no: 'Prestasjoner',
+    da: 'Præstationer',
+    sv: 'Prestationer',
+    de: 'Erfolge'
+  },
   'profile.currency': {
     en: 'Currency',
     no: 'Valuta',
@@ -200,13 +256,6 @@ const translations: Translations = {
     da: 'Scanningshistorik',
     sv: 'Skanningshistorik',
     de: 'Scan-Verlauf'
-  },
-  'profile.achievements': {
-    en: 'Achievements',
-    no: 'Prestasjoner',
-    da: 'Præstationer',
-    sv: 'Prestationer',
-    de: 'Erfolge'
   },
   'profile.priceAlertsMenu': {
     en: 'Price Alerts',
@@ -250,6 +299,106 @@ const translations: Translations = {
     sv: 'Du har sparat över $1000! Fortsätt hitta bra erbjudanden!',
     de: 'Sie haben über $1000 gespart! Finden Sie weiterhin tolle Angebote!'
   },
+  // Activity types
+  'activity.scannedProduct': {
+    en: 'Scanned product',
+    no: 'Skannet produkt',
+    da: 'Scannede produkt',
+    sv: 'Skannade produkt',
+    de: 'Produkt gescannt'
+  },
+  'activity.addedPriceData': {
+    en: 'Added price data',
+    no: 'Lagt til prisdata',
+    da: 'Tilføjet prisdata',
+    sv: 'Lagt till prisdata',
+    de: 'Preisdaten hinzugefügt'
+  },
+  'activity.reachedMilestone': {
+    en: 'Reached 100 scans milestone',
+    no: 'Nådde 100 skanninger milepæl',
+    da: 'Nåede 100 scanninger milepæl',
+    sv: 'Nådde 100 skanningar milstolpe',
+    de: 'Erreichte 100-Scan-Meilenstein'
+  },
+  'activity.timeAgo': {
+    en: 'ago',
+    no: 'siden',
+    da: 'siden',
+    sv: 'sedan',
+    de: 'vor'
+  },
+  // Achievements
+  'achievement.firstScan': {
+    en: 'First Scan',
+    no: 'Første Skanning',
+    da: 'Første Scanning',
+    sv: 'Första Skanning',
+    de: 'Erster Scan'
+  },
+  'achievement.firstScanDesc': {
+    en: 'Scanned your first product',
+    no: 'Skannet ditt første produkt',
+    da: 'Scannede dit første produkt',
+    sv: 'Skannade din första produkt',
+    de: 'Ihr erstes Produkt gescannt'
+  },
+  'achievement.priceHunter': {
+    en: 'Price Hunter',
+    no: 'Prisjeger',
+    da: 'Prisjæger',
+    sv: 'Prisjägare',
+    de: 'Preisjäger'
+  },
+  'achievement.priceHunterDesc': {
+    en: 'Found 10 best deals',
+    no: 'Fant 10 beste tilbud',
+    da: 'Fandt 10 bedste tilbud',
+    sv: 'Hittade 10 bästa erbjudanden',
+    de: '10 beste Angebote gefunden'
+  },
+  'achievement.communityHelper': {
+    en: 'Community Helper',
+    no: 'Samfunnshjelper',
+    da: 'Fællesskabshjælper',
+    sv: 'Gemenskapshjälpare',
+    de: 'Community-Helfer'
+  },
+  'achievement.communityHelperDesc': {
+    en: 'Added 50 price contributions',
+    no: 'Lagt til 50 prisbidrag',
+    da: 'Tilføjet 50 prisbidrag',
+    sv: 'Lagt till 50 prisbidrag',
+    de: '50 Preisbeiträge hinzugefügt'
+  },
+  'achievement.topContributor': {
+    en: 'Top Contributor',
+    no: 'Toppbidragsyter',
+    da: 'Topbidragsyder',
+    sv: 'Toppbidragsgivare',
+    de: 'Top-Beitragender'
+  },
+  'achievement.topContributorDesc': {
+    en: 'Be in top 10 contributors',
+    no: 'Vær blant topp 10 bidragsytere',
+    da: 'Vær blandt top 10 bidragsydere',
+    sv: 'Var bland topp 10 bidragsgivare',
+    de: 'Unter den Top 10 Beitragenden sein'
+  },
+  'achievement.earned': {
+    en: 'Earned',
+    no: 'Oppnådd',
+    da: 'Opnået',
+    sv: 'Uppnådd',
+    de: 'Erreicht'
+  },
+  'achievement.earnedOn': {
+    en: 'Earned on',
+    no: 'Oppnådd på',
+    da: 'Opnået på',
+    sv: 'Uppnådd på',
+    de: 'Erreicht am'
+  },
   // Deals page
   'deals.title': {
     en: 'All Deals',
@@ -271,6 +420,13 @@ const translations: Translations = {
     da: 'tilbud',
     sv: 'erbjudanden',
     de: 'angebote'
+  },
+  'deals.save': {
+    en: 'Save',
+    no: 'Spar',
+    da: 'Spar',
+    sv: 'Spara',
+    de: 'Sparen'
   },
   // Product Detail
   'product.currentBestPrice': {
@@ -498,6 +654,56 @@ const translations: Translations = {
     sv: 'Prova Auto-Upptäckt',
     de: 'Auto-Erkennung Versuchen'
   },
+  // Time units
+  'time.hoursAgo': {
+    en: 'h ago',
+    no: 't siden',
+    da: 't siden',
+    sv: 't sedan',
+    de: 'h vor'
+  },
+  'time.daysAgo': {
+    en: 'd ago',
+    no: 'd siden',
+    da: 'd siden',
+    sv: 'd sedan',
+    de: 'd vor'
+  },
+  'time.hoursLeft': {
+    en: 'hours left',
+    no: 'timer igjen',
+    da: 'timer tilbage',
+    sv: 'timmar kvar',
+    de: 'Stunden übrig'
+  },
+  'time.daysLeft': {
+    en: 'days left',
+    no: 'dager igjen',
+    da: 'dage tilbage',
+    sv: 'dagar kvar',
+    de: 'Tage übrig'
+  },
+  'time.todayOnly': {
+    en: 'Today only',
+    no: 'Kun i dag',
+    da: 'Kun i dag',
+    sv: 'Bara idag',
+    de: 'Nur heute'
+  },
+  'time.weekendOnly': {
+    en: 'Weekend only',
+    no: 'Kun helg',
+    da: 'Kun weekend',
+    sv: 'Bara helger',
+    de: 'Nur Wochenende'
+  },
+  'time.until9PM': {
+    en: 'Until 9 PM',
+    no: 'Til kl 21',
+    da: 'Indtil kl 21',
+    sv: 'Till kl 21',
+    de: 'Bis 21 Uhr'
+  },
   // Common
   'common.save': {
     en: 'Save',
@@ -533,6 +739,13 @@ const translations: Translations = {
     da: 'Online',
     sv: 'Online',
     de: 'Online'
+  },
+  'common.change': {
+    en: 'Change',
+    no: 'Endre',
+    da: 'Skift',
+    sv: 'Ändra',
+    de: 'Ändern'
   }
 };
 

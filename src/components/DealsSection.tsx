@@ -86,9 +86,9 @@ const DealsSection: React.FC<DealsSectionProps> = ({ title, icon, deals, onDealC
                   </p>
                 </div>
                 
-                 <p className="text-xs text-success font-medium">
-                   Save {formatPrice(deal.originalPrice - deal.salePrice)}
-                 </p>
+                <p className="text-xs text-success font-medium">
+                  {t('deals.save')} {formatPrice(deal.originalPrice - deal.salePrice)}
+                </p>
               </div>
             </div>
           </Card>

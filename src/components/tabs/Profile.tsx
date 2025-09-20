@@ -128,14 +128,14 @@ const Profile: React.FC = () => {
               <h2 className="text-xl font-bold">{mockUserStats.name}</h2>
               <Badge variant="secondary" className="text-xs">
                 <Crown size={12} className="mr-1" />
-                {mockUserStats.level}
+                {t('profile.powerSaver')}
               </Badge>
             </div>
             <p className="text-muted-foreground">{mockUserStats.email}</p>
             <div className="flex items-center gap-4 text-sm text-muted-foreground">
-              <span>Rank #{mockUserStats.rank}</span>
+              <span>{t('profile.rank')} #{mockUserStats.rank}</span>
               <span>•</span>
-              <span>{mockUserStats.accuracy}% accuracy</span>
+              <span>{mockUserStats.accuracy}% {t('profile.accuracy')}</span>
             </div>
           </div>
         </div>
@@ -146,25 +146,25 @@ const Profile: React.FC = () => {
         <Card className="p-4 text-center">
           <TrendingUp className="mx-auto mb-2 text-primary" size={24} />
           <p className="text-2xl font-bold">{mockUserStats.totalScans}</p>
-          <p className="text-xs text-muted-foreground">Products Scanned</p>
+          <p className="text-xs text-muted-foreground">{t('profile.totalScans')}</p>
         </Card>
         
         <Card className="p-4 text-center">
           <DollarSign className="mx-auto mb-2 text-success" size={24} />
           <p className="text-2xl font-bold">{formatPrice(mockUserStats.totalSavings)}</p>
-          <p className="text-xs text-muted-foreground">Total Savings</p>
+          <p className="text-xs text-muted-foreground">{t('profile.totalSavings')}</p>
         </Card>
         
         <Card className="p-4 text-center">
           <ShoppingBag className="mx-auto mb-2 text-accent" size={24} />
           <p className="text-2xl font-bold">{mockUserStats.priceContributions}</p>
-          <p className="text-xs text-muted-foreground">Price Reports</p>
+          <p className="text-xs text-muted-foreground">{t('profile.priceReports')}</p>
         </Card>
         
         <Card className="p-4 text-center">
           <Award className="mx-auto mb-2 text-warning" size={24} />
           <p className="text-2xl font-bold">{mockAchievements.filter(a => a.earned).length}</p>
-          <p className="text-xs text-muted-foreground">Achievements</p>
+          <p className="text-xs text-muted-foreground">{t('profile.achievements')}</p>
         </Card>
       </div>
 
@@ -273,7 +273,7 @@ const Profile: React.FC = () => {
                 </div>
                 
                 <div className="flex-1 space-y-1">
-                  <p className="text-sm font-medium">{activity.action}</p>
+                  <p className="text-sm font-medium">{t('activity.scannedProduct')}</p>
                   {activity.product && (
                     <p className="text-xs text-muted-foreground">{activity.product}</p>
                   )}
@@ -282,7 +282,7 @@ const Profile: React.FC = () => {
                 <div className="text-right text-xs text-muted-foreground">
                   {activity.price && <p className="font-semibold">{formatPrice(activity.price)}</p>}
                   {activity.savings && <p className="text-success">-{formatPrice(activity.savings)}</p>}
-                  <p>{activity.timeAgo}</p>
+                  <p>2{t('time.hoursAgo')}</p>
                 </div>
               </div>
             </Card>

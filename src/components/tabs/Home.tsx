@@ -328,7 +328,7 @@ const Home: React.FC<HomeProps> = ({ onNavigateToDeals }) => {
                       </div>
                     )}
                   </div>
-                  <p className="text-xs text-muted-foreground">Avg: {formatPrice(scan.avgPrice)}</p>
+                  <p className="text-xs text-muted-foreground">{t('home.avg')}: {formatPrice(scan.avgPrice)}</p>
                 </div>
               </div>
             </Card>

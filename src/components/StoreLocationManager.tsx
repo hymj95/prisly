@@ -263,7 +263,7 @@ const StoreLocationManager: React.FC<StoreLocationManagerProps> = ({ onStoreSele
       {showManualInput && (
         <Card className="p-4 space-y-4">
           <div className="flex items-center justify-between">
-            <h4 className="font-medium">Add Store Manually</h4>
+            <h4 className="font-medium mb-2">{t('store.addManually')}</h4>
             <Button variant="ghost" size="sm" onClick={() => setShowManualInput(false)}>
               <X size={14} />
             </Button>
