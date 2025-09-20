@@ -174,7 +174,7 @@ const StoreLocationManager: React.FC<StoreLocationManagerProps> = ({ onStoreSele
     <div className="space-y-4">
       {/* Header */}
       <div className="flex items-center justify-between">
-        <h3 className="font-semibold">Store Location</h3>
+        <h3 className="font-semibold">{t('store.storeLocation')}</h3>
         <Button 
           variant="outline" 
           size="sm"
@@ -184,12 +184,12 @@ const StoreLocationManager: React.FC<StoreLocationManagerProps> = ({ onStoreSele
           {isDetecting ? (
             <>
               <Loader2 size={14} className="mr-2 animate-spin" />
-              Detecting...
+              {t('store.detecting')}
             </>
           ) : (
             <>
               <Navigation size={14} className="mr-2" />
-              Auto-Detect
+              {t('store.autoDetect')}
             </>
           )}
         </Button>
@@ -207,7 +207,7 @@ const StoreLocationManager: React.FC<StoreLocationManagerProps> = ({ onStoreSele
       {isDetecting && (
         <Card className="p-4 text-center">
           <Loader2 className="mx-auto mb-2 animate-spin" size={24} />
-          <p className="text-sm text-muted-foreground">Detecting nearby stores...</p>
+          <p className="text-sm text-muted-foreground">{t('store.detectingStores')}</p>
         </Card>
       )}
 
@@ -215,7 +215,7 @@ const StoreLocationManager: React.FC<StoreLocationManagerProps> = ({ onStoreSele
       {detectedStores.length > 0 && (
         <div className="space-y-2">
           <h4 className="text-sm font-medium text-muted-foreground">
-            {userLocation ? 'Nearby Stores' : 'Available Stores'}
+            {userLocation ? t('store.nearbyStores') : t('store.availableStores')}
           </h4>
           {detectedStores.map((store) => (
             <Card key={store.id} className="p-3 hover:shadow-md transition-all cursor-pointer" onClick={() => onStoreSelect?.(store)}>
@@ -225,18 +225,18 @@ const StoreLocationManager: React.FC<StoreLocationManagerProps> = ({ onStoreSele
                     <h5 className="font-medium">{store.name}</h5>
                     {store.verified ? (
                       <Badge variant="secondary" className="text-xs bg-success/10 text-success">
-                        Verified
+                        {t('store.verified')}
                       </Badge>
                     ) : (
                       <Badge variant="outline" className="text-xs">
-                        Manual
+                        {t('store.manual')}
                       </Badge>
                     )}
                   </div>
                   <p className="text-sm text-muted-foreground">{store.address}</p>
                   {store.distance !== undefined && (
                     <p className="text-xs text-muted-foreground mt-1">
-                      {store.distance.toFixed(1)} km away
+                      {store.distance.toFixed(1)} {t('store.kmAway')}
                     </p>
                   )}
                 </div>
@@ -255,7 +255,7 @@ const StoreLocationManager: React.FC<StoreLocationManagerProps> = ({ onStoreSele
           onClick={() => setShowManualInput(!showManualInput)}
         >
           <Plus size={14} className="mr-2" />
-          Add Store Manually
+          {t('store.addManually')}
         </Button>
       </div>
 
@@ -271,7 +271,7 @@ const StoreLocationManager: React.FC<StoreLocationManagerProps> = ({ onStoreSele
           
           <div className="space-y-3">
             <div>
-              <label className="text-sm font-medium mb-1 block">Store Name *</label>
+              <label className="text-sm font-medium mb-1 block">{t('store.storeName')} *</label>
               <Input
                 placeholder="e.g., Target, Walmart"
                 value={manualStore.name}
@@ -280,7 +280,7 @@ const StoreLocationManager: React.FC<StoreLocationManagerProps> = ({ onStoreSele
             </div>
             
             <div>
-              <label className="text-sm font-medium mb-1 block">Address *</label>
+              <label className="text-sm font-medium mb-1 block">{t('store.address')} *</label>
               <Input
                 placeholder="123 Main St, City, State"
                 value={manualStore.address}
@@ -290,7 +290,7 @@ const StoreLocationManager: React.FC<StoreLocationManagerProps> = ({ onStoreSele
             
             <div className="grid grid-cols-2 gap-3">
               <div>
-                <label className="text-sm font-medium mb-1 block">Latitude (Optional)</label>
+                <label className="text-sm font-medium mb-1 block">{t('store.latitude')}</label>
                 <Input
                   type="number"
                   step="any"
@@ -300,7 +300,7 @@ const StoreLocationManager: React.FC<StoreLocationManagerProps> = ({ onStoreSele
                 />
               </div>
               <div>
-                <label className="text-sm font-medium mb-1 block">Longitude (Optional)</label>
+                <label className="text-sm font-medium mb-1 block">{t('store.longitude')}</label>
                 <Input
                   type="number"
                   step="any"
@@ -317,7 +317,7 @@ const StoreLocationManager: React.FC<StoreLocationManagerProps> = ({ onStoreSele
               className="w-full"
             >
               <Check size={14} className="mr-2" />
-              Add Store
+              {t('store.addStore')}
             </Button>
           </div>
         </Card>
@@ -327,18 +327,18 @@ const StoreLocationManager: React.FC<StoreLocationManagerProps> = ({ onStoreSele
       {!isDetecting && detectedStores.length === 0 && !detectionError && (
         <Card className="p-8 text-center">
           <MapPin className="mx-auto mb-3 text-muted-foreground" size={32} />
-          <h4 className="font-medium mb-2">No Stores Detected</h4>
+          <h4 className="font-medium mb-2">{t('store.noStoresDetected')}</h4>
           <p className="text-sm text-muted-foreground mb-4">
-            Enable location services to detect nearby stores or add them manually.
+            {t('store.enableLocation')}
           </p>
           <div className="space-y-2">
             <Button onClick={getCurrentLocation} className="w-full">
               <Navigation size={14} className="mr-2" />
-              Try Auto-Detection
+              {t('store.tryAutoDetection')}
             </Button>
             <Button variant="outline" onClick={() => setShowManualInput(true)} className="w-full">
               <Plus size={14} className="mr-2" />
-              Add Store Manually
+              {t('store.addManually')}
             </Button>
           </div>
         </Card>

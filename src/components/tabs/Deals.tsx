@@ -198,6 +198,7 @@ interface DealSectionProps {
 
 const DealSection: React.FC<DealSectionProps> = ({ title, icon, deals, isOpen, onToggle, onDealClick }) => {
   const { formatPrice } = useCurrency();
+  const { t } = useLanguage();
 
   return (
     <Card className="overflow-hidden">
@@ -208,7 +209,7 @@ const DealSection: React.FC<DealSectionProps> = ({ title, icon, deals, isOpen, o
               <div className="flex items-center gap-3">
                 {icon}
                 <h2 className="text-lg font-semibold">{title}</h2>
-                <Badge variant="secondary">{deals.length} deals</Badge>
+                <Badge variant="secondary">{deals.length} {t('deals.deals')}</Badge>
               </div>
               {isOpen ? <ChevronUp size={20} /> : <ChevronDown size={20} />}
             </div>
@@ -316,8 +317,8 @@ const Deals: React.FC = () => {
     <div className="pb-20 px-4 pt-6 space-y-6">
       {/* Header */}
       <div className="text-center space-y-2">
-        <h1 className="text-2xl font-bold text-primary">All Deals</h1>
-        <p className="text-muted-foreground">Discover the best deals in your area</p>
+        <h1 className="text-2xl font-bold text-primary">{t('deals.title')}</h1>
+        <p className="text-muted-foreground">{t('deals.description')}</p>
       </div>
 
       {/* Deal Categories */}

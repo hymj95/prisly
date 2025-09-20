@@ -168,7 +168,7 @@ const Home: React.FC<HomeProps> = ({ onNavigateToDeals }) => {
           <Button variant="outline" size="icon" onClick={() => setShowStoreManager(false)}>
             <MapPin size={20} />
           </Button>
-          <h2 className="text-xl font-bold">Store Location</h2>
+          <h2 className="text-xl font-bold">{t('store.storeLocation')}</h2>
         </div>
         <StoreLocationManager onStoreSelect={handleStoreSelect} />
       </div>
@@ -223,8 +223,8 @@ const Home: React.FC<HomeProps> = ({ onNavigateToDeals }) => {
         <div className="flex items-center gap-4">
           <MapPin className="text-primary" size={20} />
           <div className="flex-1">
-            <h3 className="font-medium text-sm">Current Store Location</h3>
-            <p className="text-xs text-muted-foreground">Select your shopping location for personalized deals</p>
+          <h3 className="font-medium text-sm">{t('home.storeLocation')}</h3>
+            <p className="text-xs text-muted-foreground">{t('home.storeLocationDesc')}</p>
           </div>
           <Button 
             variant="outline" 
@@ -232,7 +232,7 @@ const Home: React.FC<HomeProps> = ({ onNavigateToDeals }) => {
             onClick={() => setShowStoreManager(true)}
           >
             <Plus size={14} className="mr-1" />
-            Set Store
+            {t('home.setStore')}
           </Button>
         </div>
       </Card>

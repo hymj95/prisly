@@ -137,6 +137,27 @@ const translations: Translations = {
     sv: 'Senaste Skanningar',
     de: 'Letzte Scans'
   },
+  'home.storeLocation': {
+    en: 'Current Store Location',
+    no: 'Nåværende Butikkplassering',
+    da: 'Nuværende Butiksplacering',
+    sv: 'Nuvarande Butiksplats',
+    de: 'Aktueller Ladenstandort'
+  },
+  'home.storeLocationDesc': {
+    en: 'Select your shopping location for personalized deals',
+    no: 'Velg handlestedet ditt for personlige tilbud',
+    da: 'Vælg din indkøbsplacering for personlige tilbud',
+    sv: 'Välj din shoppingplats för personliga erbjudanden',
+    de: 'Wählen Sie Ihren Einkaufsort für personalisierte Angebote'
+  },
+  'home.setStore': {
+    en: 'Set Store',
+    no: 'Sett Butikk',
+    da: 'Sæt Butik',
+    sv: 'Ställ in Butik',
+    de: 'Laden Festlegen'
+  },
   // Profile page
   'profile.currency': {
     en: 'Currency',
@@ -165,6 +186,353 @@ const translations: Translations = {
     da: 'Indstil Område',
     sv: 'Ställ in Område',
     de: 'Bereich Festlegen'
+  },
+  'profile.quickActions': {
+    en: 'Quick Actions',
+    no: 'Hurtighandlinger',
+    da: 'Hurtige Handlinger',
+    sv: 'Snabbåtgärder',
+    de: 'Schnellaktionen'
+  },
+  'profile.scanHistory': {
+    en: 'Scan History',
+    no: 'Skanningshistorikk',
+    da: 'Scanningshistorik',
+    sv: 'Skanningshistorik',
+    de: 'Scan-Verlauf'
+  },
+  'profile.achievements': {
+    en: 'Achievements',
+    no: 'Prestasjoner',
+    da: 'Præstationer',
+    sv: 'Prestationer',
+    de: 'Erfolge'
+  },
+  'profile.priceAlertsMenu': {
+    en: 'Price Alerts',
+    no: 'Prisvarsler',
+    da: 'Prisalarmer',
+    sv: 'Prisvarningar',
+    de: 'Preisalarme'
+  },
+  'profile.settings': {
+    en: 'Settings',
+    no: 'Innstillinger',
+    da: 'Indstillinger',
+    sv: 'Inställningar',
+    de: 'Einstellungen'
+  },
+  'profile.recentActivity': {
+    en: 'Recent Activity',
+    no: 'Nylig Aktivitet',
+    da: 'Nylig Aktivitet',
+    sv: 'Senaste Aktivitet',
+    de: 'Neueste Aktivität'
+  },
+  'profile.latestAchievement': {
+    en: 'Latest Achievement',
+    no: 'Siste Prestasjon',
+    da: 'Seneste Præstation',
+    sv: 'Senaste Prestation',
+    de: 'Neuester Erfolg'
+  },
+  'profile.savingsMaster': {
+    en: 'Savings Master',
+    no: 'Sparemester',
+    da: 'Sparemester',
+    sv: 'Sparmästare',
+    de: 'Spar-Meister'
+  },
+  'profile.savingsMasterDesc': {
+    en: "You've saved over $1000! Keep finding those deals!",
+    no: 'Du har spart over $1000! Fortsett å finne gode tilbud!',
+    da: 'Du har sparet over $1000! Fortsæt med at finde gode tilbud!',
+    sv: 'Du har sparat över $1000! Fortsätt hitta bra erbjudanden!',
+    de: 'Sie haben über $1000 gespart! Finden Sie weiterhin tolle Angebote!'
+  },
+  // Deals page
+  'deals.title': {
+    en: 'All Deals',
+    no: 'Alle Tilbud',
+    da: 'Alle Tilbud',
+    sv: 'Alla Erbjudanden',
+    de: 'Alle Angebote'
+  },
+  'deals.description': {
+    en: 'Discover the best deals in your area',
+    no: 'Oppdag de beste tilbudene i ditt område',
+    da: 'Opdag de bedste tilbud i dit område',
+    sv: 'Upptäck de bästa erbjudandena i ditt område',
+    de: 'Entdecken Sie die besten Angebote in Ihrer Nähe'
+  },
+  'deals.deals': {
+    en: 'deals',
+    no: 'tilbud',
+    da: 'tilbud',
+    sv: 'erbjudanden',
+    de: 'angebote'
+  },
+  // Product Detail
+  'product.currentBestPrice': {
+    en: 'Current Best Price',
+    no: 'Nåværende Beste Pris',
+    da: 'Nuværende Bedste Pris',
+    sv: 'Nuvarande Bästa Pris',
+    de: 'Aktueller Bestpreis'
+  },
+  'product.lower': {
+    en: 'lower',
+    no: 'lavere',
+    da: 'lavere',
+    sv: 'lägre',
+    de: 'niedriger'
+  },
+  'product.dayAverage': {
+    en: '30-Day Average',
+    no: '30-Dagers Gjennomsnitt',
+    da: '30-Dages Gennemsnit',
+    sv: '30-Dagars Genomsnitt',
+    de: '30-Tage-Durchschnitt'
+  },
+  'product.youSave': {
+    en: 'You Save',
+    no: 'Du Sparer',
+    da: 'Du Sparer',
+    sv: 'Du Sparar',
+    de: 'Sie Sparen'
+  },
+  'product.userRating': {
+    en: 'User Rating',
+    no: 'Brukervurdering',
+    da: 'Brugervurdering',
+    sv: 'Användarrating',
+    de: 'Nutzerbewertung'
+  },
+  'product.priceTrend': {
+    en: '30-Day Price Trend',
+    no: '30-Dagers Pristrend',
+    da: '30-Dages Pristendenser',
+    sv: '30-Dagars Pristrend',
+    de: '30-Tage-Preistrend'
+  },
+  'product.trendingDown': {
+    en: 'Trending Down',
+    no: 'Synkende Trend',
+    da: 'Faldende Tendens',
+    sv: 'Fallande Trend',
+    de: 'Fallender Trend'
+  },
+  'product.storeComparison': {
+    en: 'Store Comparison',
+    no: 'Butikksammenligning',
+    da: 'Butikssammenligning',
+    sv: 'Butiksjämförelse',
+    de: 'Ladenvergleich'
+  },
+  'product.mapView': {
+    en: 'Map View',
+    no: 'Kartvisning',
+    da: 'Kortvisning',
+    sv: 'Kartvy',
+    de: 'Kartenansicht'
+  },
+  'product.bestPrice': {
+    en: 'Best Price',
+    no: 'Beste Pris',
+    da: 'Bedste Pris',
+    sv: 'Bästa Pris',
+    de: 'Bester Preis'
+  },
+  'product.lowestPrice': {
+    en: 'Lowest price',
+    no: 'Laveste pris',
+    da: 'Laveste pris',
+    sv: 'Lägsta pris',
+    de: 'Niedrigster Preis'
+  },
+  'product.getDirections': {
+    en: 'Get Directions to Best Price',
+    no: 'Få Veibeskrivelse til Beste Pris',
+    da: 'Få Vejbeskrivelse til Bedste Pris',
+    sv: 'Få Vägbeskrivning till Bästa Pris',
+    de: 'Route zum Besten Preis'
+  },
+  'product.priceAlert': {
+    en: 'Price Alert',
+    no: 'Prisvarsel',
+    da: 'Prisalarm',
+    sv: 'Prisvarning',
+    de: 'Preisalarm'
+  },
+  'product.addToWishlist': {
+    en: 'Add to Wishlist',
+    no: 'Legg til Ønskeliste',
+    da: 'Tilføj til Ønskeliste',
+    sv: 'Lägg till Önskelista',
+    de: 'Zur Wunschliste'
+  },
+  // Store Location
+  'store.storeLocation': {
+    en: 'Store Location',
+    no: 'Butikkplassering',
+    da: 'Butiksplacering',
+    sv: 'Butiksplats',
+    de: 'Ladenstandort'
+  },
+  'store.autoDetect': {
+    en: 'Auto-Detect',
+    no: 'Auto-Oppdage',
+    da: 'Auto-Registrer',
+    sv: 'Auto-Upptäck',
+    de: 'Auto-Erkennen'
+  },
+  'store.detecting': {
+    en: 'Detecting...',
+    no: 'Oppdager...',
+    da: 'Registrerer...',
+    sv: 'Upptäcker...',
+    de: 'Erkennung...'
+  },
+  'store.detectingStores': {
+    en: 'Detecting nearby stores...',
+    no: 'Oppdager butikker i nærheten...',
+    da: 'Registrerer butikker i nærheden...',
+    sv: 'Upptäcker närliggande butiker...',
+    de: 'Erkenne Läden in der Nähe...'
+  },
+  'store.nearbyStores': {
+    en: 'Nearby Stores',
+    no: 'Butikker i Nærheten',
+    da: 'Butikker i Nærheden',
+    sv: 'Närliggande Butiker',
+    de: 'Läden in der Nähe'
+  },
+  'store.availableStores': {
+    en: 'Available Stores',
+    no: 'Tilgjengelige Butikker',
+    da: 'Tilgængelige Butikker',
+    sv: 'Tillgängliga Butiker',
+    de: 'Verfügbare Läden'
+  },
+  'store.verified': {
+    en: 'Verified',
+    no: 'Verifisert',
+    da: 'Verificeret',
+    sv: 'Verifierad',
+    de: 'Verifiziert'
+  },
+  'store.manual': {
+    en: 'Manual',
+    no: 'Manuell',
+    da: 'Manuel',
+    sv: 'Manuell',
+    de: 'Manuell'
+  },
+  'store.kmAway': {
+    en: 'km away',
+    no: 'km unna',
+    da: 'km væk',
+    sv: 'km bort',
+    de: 'km entfernt'
+  },
+  'store.addManually': {
+    en: 'Add Store Manually',
+    no: 'Legg til Butikk Manuelt',
+    da: 'Tilføj Butik Manuelt',
+    sv: 'Lägg till Butik Manuellt',
+    de: 'Laden Manuell Hinzufügen'
+  },
+  'store.storeName': {
+    en: 'Store Name',
+    no: 'Butikknavn',
+    da: 'Butiksnavn',
+    sv: 'Butiksnamn',
+    de: 'Ladenname'
+  },
+  'store.address': {
+    en: 'Address',
+    no: 'Adresse',
+    da: 'Adresse',
+    sv: 'Adress',
+    de: 'Adresse'
+  },
+  'store.latitude': {
+    en: 'Latitude (Optional)',
+    no: 'Breddegrad (Valgfritt)',
+    da: 'Breddegrad (Valgfrit)',
+    sv: 'Latitud (Valfri)',
+    de: 'Breitengrad (Optional)'
+  },
+  'store.longitude': {
+    en: 'Longitude (Optional)',
+    no: 'Lengdegrad (Valgfritt)',
+    da: 'Længdegrad (Valgfrit)',
+    sv: 'Longitud (Valfri)',
+    de: 'Längengrad (Optional)'
+  },
+  'store.addStore': {
+    en: 'Add Store',
+    no: 'Legg til Butikk',
+    da: 'Tilføj Butik',
+    sv: 'Lägg till Butik',
+    de: 'Laden Hinzufügen'
+  },
+  'store.noStoresDetected': {
+    en: 'No Stores Detected',
+    no: 'Ingen Butikker Oppdaget',
+    da: 'Ingen Butikker Registreret',
+    sv: 'Inga Butiker Upptäckta',
+    de: 'Keine Läden Erkannt'
+  },
+  'store.enableLocation': {
+    en: 'Enable location services to detect nearby stores or add them manually.',
+    no: 'Aktiver posisjonstjenester for å oppdage butikker i nærheten eller legg dem til manuelt.',
+    da: 'Aktiver lokationstjenester for at registrere butikker i nærheden eller tilføj dem manuelt.',
+    sv: 'Aktivera platstjänster för att upptäcka närliggande butiker eller lägg till dem manuellt.',
+    de: 'Aktivieren Sie Ortungsdienste, um Läden in der Nähe zu finden oder fügen Sie sie manuell hinzu.'
+  },
+  'store.tryAutoDetection': {
+    en: 'Try Auto-Detection',
+    no: 'Prøv Auto-Oppdagelse',
+    da: 'Prøv Auto-Registrering',
+    sv: 'Prova Auto-Upptäckt',
+    de: 'Auto-Erkennung Versuchen'
+  },
+  // Common
+  'common.save': {
+    en: 'Save',
+    no: 'Lagre',
+    da: 'Gem',
+    sv: 'Spara',
+    de: 'Speichern'
+  },
+  'common.cancel': {
+    en: 'Cancel',
+    no: 'Avbryt',
+    da: 'Annuller',
+    sv: 'Avbryt',
+    de: 'Abbrechen'
+  },
+  'common.back': {
+    en: 'Back',
+    no: 'Tilbake',
+    da: 'Tilbage',
+    sv: 'Tillbaka',
+    de: 'Zurück'
+  },
+  'common.continue': {
+    en: 'Continue',
+    no: 'Fortsett',
+    da: 'Fortsæt',
+    sv: 'Fortsätt',
+    de: 'Weiter'
+  },
+  'common.online': {
+    en: 'Online',
+    no: 'På nett',
+    da: 'Online',
+    sv: 'Online',
+    de: 'Online'
   }
 };
 

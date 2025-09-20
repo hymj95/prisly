@@ -3,6 +3,7 @@ import { Card } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
 import { Badge } from '@/components/ui/badge';
 import { useCurrency } from '@/hooks/useCurrency';
+import { useLanguage } from '@/hooks/useLanguage';
 import { 
   ArrowLeft, 
   TrendingDown, 
@@ -39,6 +40,7 @@ const mockStoreComparison = [
 
 const ProductDetail: React.FC<ProductDetailProps> = ({ product, onBack }) => {
   const { formatPrice } = useCurrency();
+  const { t } = useLanguage();
   const PriceChart = () => (
     <div className="h-32 w-full relative">
       <svg className="w-full h-full" viewBox="0 0 300 120">
@@ -131,12 +133,12 @@ const ProductDetail: React.FC<ProductDetailProps> = ({ product, onBack }) => {
       <Card className="p-4 bg-success-solid border-0 text-white">
         <div className="flex items-center justify-between">
           <div>
-            <p className="text-sm opacity-90">Current Best Price</p>
+            <p className="text-sm opacity-90">{t('product.currentBestPrice')}</p>
             <div className="flex items-center gap-2">
               <span className="text-3xl font-bold">{formatPrice(product.price || product.salePrice || 0)}</span>
               <div className="flex items-center gap-1">
                 <TrendingDown size={20} />
-                <span className="text-sm">{product.trendPercentage || 0}% lower</span>
+                <span className="text-sm">{product.trendPercentage || 0}% {t('product.lower')}</span>
               </div>
             </div>
             <div className="flex items-center gap-1 mt-1 opacity-90">
@@ -151,15 +153,15 @@ const ProductDetail: React.FC<ProductDetailProps> = ({ product, onBack }) => {
       <div className="grid grid-cols-3 gap-3">
         <Card className="p-3 text-center">
           <p className="text-lg font-bold text-muted-foreground">{formatPrice(product.avgPrice || product.originalPrice || 0)}</p>
-          <p className="text-xs text-muted-foreground">30-Day Average</p>
+          <p className="text-xs text-muted-foreground">{t('product.dayAverage')}</p>
         </Card>
         <Card className="p-3 text-center">
           <p className="text-lg font-bold text-success">{formatPrice(Math.max(0, (product.originalPrice || product.avgPrice || 0) - (product.price || product.salePrice || 0)))}</p>
-          <p className="text-xs text-muted-foreground">You Save</p>
+          <p className="text-xs text-muted-foreground">{t('product.youSave')}</p>
         </Card>
         <Card className="p-3 text-center">
           <p className="text-lg font-bold text-primary">4.2★</p>
-          <p className="text-xs text-muted-foreground">User Rating</p>
+          <p className="text-xs text-muted-foreground">{t('product.userRating')}</p>
         </Card>
       </div>
 
@@ -167,10 +169,10 @@ const ProductDetail: React.FC<ProductDetailProps> = ({ product, onBack }) => {
       <Card className="p-4">
         <div className="space-y-4">
           <div className="flex items-center justify-between">
-            <h3 className="font-semibold">30-Day Price Trend</h3>
+            <h3 className="font-semibold">{t('product.priceTrend')}</h3>
             <Badge variant="outline" className="text-xs">
               <TrendingDown size={12} className="mr-1" />
-              Trending Down
+              {t('product.trendingDown')}
             </Badge>
           </div>
           <PriceChart />
@@ -180,10 +182,10 @@ const ProductDetail: React.FC<ProductDetailProps> = ({ product, onBack }) => {
       {/* Store Comparison */}
       <div className="space-y-3">
         <div className="flex items-center justify-between">
-          <h3 className="font-semibold">Store Comparison</h3>
+          <h3 className="font-semibold">{t('product.storeComparison')}</h3>
           <Button variant="outline" size="sm">
             <MapPin size={14} className="mr-2" />
-            Map View
+            {t('product.mapView')}
           </Button>
         </div>
 
@@ -196,7 +198,7 @@ const ProductDetail: React.FC<ProductDetailProps> = ({ product, onBack }) => {
                     <h4 className="font-medium">{store.store}</h4>
                     {index === 0 && (
                       <Badge variant="secondary" className="text-xs bg-success text-white">
-                        Best Price
+                        {t('product.bestPrice')}
                       </Badge>
                     )}
                     {store.verified ? (
@@ -220,7 +222,7 @@ const ProductDetail: React.FC<ProductDetailProps> = ({ product, onBack }) => {
                 <div className="text-right">
                   <p className="text-xl font-bold">{formatPrice(store.price)}</p>
                   {index === 0 ? (
-                    <p className="text-xs text-success">Lowest price</p>
+                    <p className="text-xs text-success">{t('product.lowestPrice')}</p>
                   ) : (
                     <p className="text-xs text-muted-foreground">
                       +{formatPrice(store.price - mockStoreComparison[0].price)}
@@ -237,16 +239,16 @@ const ProductDetail: React.FC<ProductDetailProps> = ({ product, onBack }) => {
       <div className="space-y-3">
         <Button className="w-full bg-primary-solid text-white">
           <MapPin className="mr-2" size={16} />
-          Get Directions to Best Price
+          {t('product.getDirections')}
         </Button>
         <div className="grid grid-cols-2 gap-3">
           <Button variant="outline">
             <BarChart3 className="mr-2" size={16} />
-            Price Alert
+            {t('product.priceAlert')}
           </Button>
           <Button variant="outline">
             <Star className="mr-2" size={16} />
-            Add to Wishlist
+            {t('product.addToWishlist')}
           </Button>
         </div>
       </div>

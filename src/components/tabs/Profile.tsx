@@ -170,7 +170,7 @@ const Profile: React.FC = () => {
 
       {/* Quick Actions */}
       <div className="space-y-3">
-        <h3 className="font-semibold">Quick Actions</h3>
+        <h3 className="font-semibold">{t('profile.quickActions')}</h3>
         
         <div className="space-y-2">
           <Card className="p-3">
@@ -216,7 +216,7 @@ const Profile: React.FC = () => {
             <div className="flex items-center justify-between">
               <div className="flex items-center gap-3">
                 <History className="text-muted-foreground" size={20} />
-                <span className="font-medium">Scan History</span>
+                <span className="font-medium">{t('profile.scanHistory')}</span>
               </div>
               <ChevronRight className="text-muted-foreground" size={16} />
             </div>
@@ -236,7 +236,7 @@ const Profile: React.FC = () => {
             <div className="flex items-center justify-between">
               <div className="flex items-center gap-3">
                 <Bell className="text-muted-foreground" size={20} />
-                <span className="font-medium">Price Alerts</span>
+                <span className="font-medium">{t('profile.priceAlertsMenu')}</span>
               </div>
               <ChevronRight className="text-muted-foreground" size={16} />
             </div>
@@ -246,7 +246,7 @@ const Profile: React.FC = () => {
             <div className="flex items-center justify-between">
               <div className="flex items-center gap-3">
                 <Settings className="text-muted-foreground" size={20} />
-                <span className="font-medium">Settings</span>
+                <span className="font-medium">{t('profile.settings')}</span>
               </div>
               <ChevronRight className="text-muted-foreground" size={16} />
             </div>
@@ -256,7 +256,7 @@ const Profile: React.FC = () => {
 
       {/* Recent Activity */}
       <div className="space-y-3">
-        <h3 className="font-semibold">Recent Activity</h3>
+        <h3 className="font-semibold">{t('profile.recentActivity')}</h3>
         
         <div className="space-y-2">
           {mockRecentActivity.map((activity) => (
@@ -295,11 +295,11 @@ const Profile: React.FC = () => {
         <div className="space-y-3 text-white">
           <div className="flex items-center gap-2">
             <Award size={20} />
-            <h3 className="font-semibold">Latest Achievement</h3>
+            <h3 className="font-semibold">{t('profile.latestAchievement')}</h3>
           </div>
           <div>
-            <h4 className="font-medium">Savings Master</h4>
-            <p className="text-sm opacity-90">You've saved over $1000! Keep finding those deals!</p>
+            <h4 className="font-medium">{t('profile.savingsMaster')}</h4>
+            <p className="text-sm opacity-90">{t('profile.savingsMasterDesc')}</p>
           </div>
         </div>
       </Card>

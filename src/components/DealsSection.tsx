@@ -4,6 +4,7 @@ import { Badge } from '@/components/ui/badge';
 import { Button } from '@/components/ui/button';
 import { TrendingDown, MapPin, Clock, Percent } from 'lucide-react';
 import { useCurrency } from '@/hooks/useCurrency';
+import { useLanguage } from '@/hooks/useLanguage';
 
 interface Deal {
   id: number;
@@ -29,6 +30,7 @@ interface DealsSectionProps {
 
 const DealsSection: React.FC<DealsSectionProps> = ({ title, icon, deals, onDealClick, onViewAll }) => {
   const { formatPrice } = useCurrency();
+  const { t } = useLanguage();
 
   return (
       <div className="space-y-4">
@@ -37,7 +39,7 @@ const DealsSection: React.FC<DealsSectionProps> = ({ title, icon, deals, onDealC
             {icon}
             <h2 className="text-lg font-semibold">{title}</h2>
           </div>
-          <Button variant="outline" size="sm" onClick={onViewAll}>View All</Button>
+          <Button variant="outline" size="sm" onClick={onViewAll}>{t('home.viewAll')}</Button>
         </div>
 
       <div className="grid gap-3">
@@ -58,7 +60,7 @@ const DealsSection: React.FC<DealsSectionProps> = ({ title, icon, deals, onDealC
                 <div className="flex items-center gap-4 text-xs text-muted-foreground">
                   <div className="flex items-center gap-1">
                     <MapPin size={12} />
-                    <span>{deal.store} • {deal.distance.toFixed(1)} km</span>
+                    <span>{deal.store} • {deal.distance.toFixed(1)} {t('store.kmAway')}</span>
                   </div>
                   <div className="flex items-center gap-1">
                     <Clock size={12} />
@@ -84,9 +86,9 @@ const DealsSection: React.FC<DealsSectionProps> = ({ title, icon, deals, onDealC
                   </p>
                 </div>
                 
-                <p className="text-xs text-success font-medium">
-                  Save {formatPrice(deal.originalPrice - deal.salePrice)}
-                </p>
+                 <p className="text-xs text-success font-medium">
+                   Save {formatPrice(deal.originalPrice - deal.salePrice)}
+                 </p>
               </div>
             </div>
           </Card>
