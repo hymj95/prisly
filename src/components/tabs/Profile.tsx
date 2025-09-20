@@ -1,9 +1,10 @@
-import React from 'react';
+import React, { useState } from 'react';
 import { Card } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
 import { Badge } from '@/components/ui/badge';
 import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui/avatar';
 import CurrencySelector from '../CurrencySelector';
+import ProfileFeatures from '../ProfileFeatures';
 import { useCurrency } from '@/hooks/useCurrency';
 import { 
   User, 
@@ -68,6 +69,16 @@ const mockAchievements = [
 
 const Profile: React.FC = () => {
   const { formatPrice } = useCurrency();
+  const [activeFeature, setActiveFeature] = useState<string | null>(null);
+
+  if (activeFeature) {
+    return (
+      <ProfileFeatures 
+        activeFeature={activeFeature} 
+        onBack={() => setActiveFeature(null)} 
+      />
+    );
+  }
   return (
     <div className="pb-20 px-4 pt-6 space-y-6">
       {/* Profile Header */}
@@ -142,7 +153,7 @@ const Profile: React.FC = () => {
             </div>
           </Card>
           
-          <Card className="p-3">
+          <Card className="p-3 hover:bg-muted/50 transition-colors cursor-pointer" onClick={() => setActiveFeature('history')}>
             <div className="flex items-center justify-between">
               <div className="flex items-center gap-3">
                 <History className="text-muted-foreground" size={20} />
@@ -152,7 +163,7 @@ const Profile: React.FC = () => {
             </div>
           </Card>
           
-          <Card className="p-3">
+          <Card className="p-3 hover:bg-muted/50 transition-colors cursor-pointer" onClick={() => setActiveFeature('achievements')}>
             <div className="flex items-center justify-between">
               <div className="flex items-center gap-3">
                 <Award className="text-muted-foreground" size={20} />
@@ -162,7 +173,7 @@ const Profile: React.FC = () => {
             </div>
           </Card>
           
-          <Card className="p-3">
+          <Card className="p-3 hover:bg-muted/50 transition-colors cursor-pointer" onClick={() => setActiveFeature('alerts')}>
             <div className="flex items-center justify-between">
               <div className="flex items-center gap-3">
                 <Bell className="text-muted-foreground" size={20} />
@@ -172,7 +183,7 @@ const Profile: React.FC = () => {
             </div>
           </Card>
           
-          <Card className="p-3">
+          <Card className="p-3 hover:bg-muted/50 transition-colors cursor-pointer" onClick={() => setActiveFeature('settings')}>
             <div className="flex items-center justify-between">
               <div className="flex items-center gap-3">
                 <Settings className="text-muted-foreground" size={20} />

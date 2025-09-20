@@ -2,82 +2,75 @@
 @tailwind components;
 @tailwind utilities;
 
-/* Prisly Design System - Calming Natural Colors */
+/* Prisly Design System - Scandinavian Inspired */
 
 @layer base {
   :root {
-    /* Core App Colors - Calming Natural Theme */
-    --background: 252 253 252;
-    --foreground: 52 73 94;
+    /* Scandinavian Design System - Clean & Minimal */
+    --background: 0 0% 98%;
+    --foreground: 220 13% 18%;
 
     /* Card & Surface Colors */
-    --card: 255 255 255;
-    --card-foreground: 52 73 94;
+    --card: 0 0% 100%;
+    --card-foreground: 220 13% 18%;
 
-    --popover: 255 255 255;
-    --popover-foreground: 52 73 94;
+    --popover: 0 0% 100%;
+    --popover-foreground: 220 13% 18%;
 
-    /* Primary Brand - Deep Forest Green (from logo) */
-    --primary: 162 60% 20%;
-    --primary-foreground: 255 255 255;
-    --primary-hover: 162 60% 15%;
+    /* Primary - Nordic Blue */
+    --primary: 214 32% 26%;
+    --primary-foreground: 0 0% 98%;
+    --primary-hover: 214 32% 21%;
 
-    /* Secondary - Sage Green (calming) */
-    --secondary: 156 39% 54%;
-    --secondary-foreground: 255 255 255;
+    /* Secondary - Warm Stone */
+    --secondary: 28 12% 67%;
+    --secondary-foreground: 220 13% 18%;
 
-    /* Accent - Muted Teal */
-    --accent: 174 44% 51%;
-    --accent-foreground: 255 255 255;
+    /* Accent - Soft Sage */
+    --accent: 145 23% 72%;
+    --accent-foreground: 220 13% 18%;
 
-    /* Muted & Subtle - Warm Grays */
-    --muted: 210 20% 98%;
-    --muted-foreground: 215 16% 47%;
+    /* Muted & Subtle */
+    --muted: 220 13% 95%;
+    --muted-foreground: 220 9% 46%;
 
     /* Status Colors */
-    --success: 156 39% 54%;
-    --success-foreground: 255 255 255;
+    --success: 145 23% 45%;
+    --success-foreground: 0 0% 98%;
     
-    --warning: 43 74% 66%;
-    --warning-foreground: 255 255 255;
+    --warning: 38 92% 50%;
+    --warning-foreground: 220 13% 18%;
     
-    --destructive: 0 65% 51%;
-    --destructive-foreground: 255 255 255;
+    --destructive: 0 84% 60%;
+    --destructive-foreground: 0 0% 98%;
 
     /* Border & Input */
-    --border: 210 20% 92%;
-    --input: 210 20% 92%;
-    --ring: 162 60% 20%;
+    --border: 220 13% 91%;
+    --input: 220 13% 91%;
+    --ring: 214 32% 26%;
 
     /* Navigation */
-    --nav-background: 255 255 255;
-    --nav-border: 210 20% 92%;
-    --nav-active: 162 60% 20%;
-    --nav-inactive: 215 16% 47%;
+    --nav-background: 0 0% 100%;
+    --nav-border: 220 13% 91%;
+    --nav-active: 214 32% 26%;
+    --nav-inactive: 220 9% 46%;
 
-    /* Gradients - Calming Natural Tones */
-    --gradient-primary: linear-gradient(135deg, hsl(162 60% 20%) 0%, hsl(162 60% 15%) 100%);
-    --gradient-scan: linear-gradient(135deg, hsl(162 60% 20%) 0%, hsl(156 39% 54%) 100%);
-    --gradient-success: linear-gradient(135deg, hsl(156 39% 54%) 0%, hsl(156 39% 59%) 100%);
-    --gradient-card: linear-gradient(135deg, hsl(255 255 255 / 0.95) 0%, hsl(210 20% 98%) 100%);
-    --gradient-leaf: linear-gradient(135deg, hsl(156 39% 54%) 0%, hsl(174 44% 51%) 100%);
+    /* Shadows - Minimal Nordic */
+    --shadow-sm: 0 1px 2px 0 hsl(220 13% 18% / 0.05);
+    --shadow-md: 0 4px 6px -1px hsl(220 13% 18% / 0.08), 0 2px 4px -2px hsl(220 13% 18% / 0.06);
+    --shadow-lg: 0 10px 15px -3px hsl(220 13% 18% / 0.08), 0 4px 6px -4px hsl(220 13% 18% / 0.06);
+    --shadow-scan: 0 0 20px hsl(214 32% 26% / 0.1);
 
-    /* Shadows - Soft, Natural */
-    --shadow-sm: 0 1px 2px 0 hsl(210 20% 20% / 0.05);
-    --shadow-md: 0 4px 6px -1px hsl(210 20% 20% / 0.08), 0 2px 4px -2px hsl(210 20% 20% / 0.06);
-    --shadow-lg: 0 10px 15px -3px hsl(210 20% 20% / 0.08), 0 4px 6px -4px hsl(210 20% 20% / 0.06);
-    --shadow-scan: 0 0 25px hsl(162 60% 20% / 0.12);
-
-    --radius: 0.75rem;
+    --radius: 0.5rem;
   }
 
-  /* Dark mode - keeping minimal for mobile focus */
+  /* Dark mode */
   .dark {
-    --background: 52 73 94;
-    --foreground: 252 253 252;
-    --card: 45 62 80;
-    --primary: 156 39% 59%;
-    --nav-background: 45 62 80;
+    --background: 220 13% 9%;
+    --foreground: 0 0% 98%;
+    --card: 220 13% 12%;
+    --primary: 214 32% 45%;
+    --nav-background: 220 13% 12%;
   }
 }
 
@@ -94,7 +87,7 @@
 }
 
 @layer components {
-  /* Custom solid colors - Calming palette */
+  /* Scandinavian solid colors */
   .bg-primary-solid {
     background-color: hsl(var(--primary));
   }
@@ -111,8 +104,13 @@
     background-color: hsl(var(--muted));
   }
 
-  .bg-sage-solid {
+  .bg-accent-solid {
     background-color: hsl(var(--accent));
+  }
+
+  /* Nordic spacing */
+  .nordic-spacing {
+    padding: 1.5rem;
   }
 
   /* Mobile-optimized animations */
