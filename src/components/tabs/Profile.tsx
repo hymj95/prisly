@@ -71,7 +71,7 @@ const Profile: React.FC = () => {
   return (
     <div className="pb-20 px-4 pt-6 space-y-6">
       {/* Profile Header */}
-      <Card className="p-6 gradient-card border-0">
+      <Card className="p-6 bg-card-subtle border-0">
         <div className="flex items-center gap-4">
           <Avatar className="w-16 h-16">
             <AvatarImage src="/placeholder-avatar.jpg" />
@@ -221,7 +221,7 @@ const Profile: React.FC = () => {
       </div>
 
       {/* Achievement Preview */}
-      <Card className="p-4 gradient-success border-0">
+      <Card className="p-4 bg-success-solid border-0">
         <div className="space-y-3 text-white">
           <div className="flex items-center gap-2">
             <Award size={20} />

@@ -94,25 +94,25 @@
 }
 
 @layer components {
-  /* Custom gradients */
-  .gradient-primary {
-    background: var(--gradient-primary);
+  /* Custom solid colors */
+  .bg-primary-solid {
+    background-color: hsl(var(--primary));
   }
   
-  .gradient-scan {
-    background: var(--gradient-scan);
+  .bg-secondary-solid {
+    background-color: hsl(var(--secondary));
   }
   
-  .gradient-success {
-    background: var(--gradient-success);
+  .bg-success-solid {
+    background-color: hsl(var(--success));
   }
   
-  .gradient-card {
-    background: var(--gradient-card);
+  .bg-card-subtle {
+    background-color: hsl(var(--muted));
   }
 
-  .gradient-leaf {
-    background: var(--gradient-leaf);
+  .bg-leaf-solid {
+    background-color: hsl(var(--accent));
   }
 
   /* Mobile-optimized animations */

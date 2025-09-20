@@ -195,7 +195,7 @@ const Trends: React.FC = () => {
       </Tabs>
 
       {/* Market Insights */}
-      <Card className="p-4 gradient-card border-0">
+      <Card className="p-4 bg-card-subtle border-0">
         <div className="space-y-3">
           <div className="flex items-center gap-2">
             <BarChart3 className="text-primary" size={20} />

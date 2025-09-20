@@ -128,7 +128,7 @@ const ProductDetail: React.FC<ProductDetailProps> = ({ product, onBack }) => {
       </div>
 
       {/* Current Price Summary */}
-      <Card className="p-4 gradient-success border-0 text-white">
+      <Card className="p-4 bg-success-solid border-0 text-white">
         <div className="flex items-center justify-between">
           <div>
             <p className="text-sm opacity-90">Current Best Price</p>
@@ -235,7 +235,7 @@ const ProductDetail: React.FC<ProductDetailProps> = ({ product, onBack }) => {
 
       {/* Action Buttons */}
       <div className="space-y-3">
-        <Button className="w-full gradient-scan">
+        <Button className="w-full bg-primary-solid text-white">
           <MapPin className="mr-2" size={16} />
           Get Directions to Best Price
         </Button>

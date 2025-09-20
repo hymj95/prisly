@@ -73,19 +73,19 @@ const Home: React.FC = () => {
 
       {/* Quick Stats */}
       <div className="grid grid-cols-3 gap-3">
-        <Card className="p-4 text-center gradient-card border-0">
+        <Card className="p-4 text-center bg-card-subtle border-0">
           <div className="space-y-1">
             <p className="text-2xl font-bold text-primary">127</p>
             <p className="text-xs text-muted-foreground">Products Scanned</p>
           </div>
         </Card>
-        <Card className="p-4 text-center gradient-card border-0">
+        <Card className="p-4 text-center bg-card-subtle border-0">
           <div className="space-y-1">
             <p className="text-2xl font-bold text-success">{formatPrice(342)}</p>
             <p className="text-xs text-muted-foreground">Money Saved</p>
           </div>
         </Card>
-        <Card className="p-4 text-center gradient-card border-0">
+        <Card className="p-4 text-center bg-card-subtle border-0">
           <div className="space-y-1">
             <p className="text-2xl font-bold text-accent">24</p>
             <p className="text-xs text-muted-foreground">Price Alerts</p>
@@ -94,7 +94,7 @@ const Home: React.FC = () => {
       </div>
 
       {/* Quick Scan Button */}
-      <Card className="p-3 gradient-leaf border-0">
+      <Card className="p-3 bg-leaf-solid border-0">
         <div className="flex items-center gap-3">
           <div className="flex-shrink-0">
             <Zap className="text-white" size={24} />

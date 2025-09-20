@@ -60,7 +60,7 @@ const Scan: React.FC = () => {
         
         <Button
           size="lg"
-          className="gradient-scan rounded-full w-20 h-20 shadow-scan"
+          className="bg-primary-solid rounded-full w-20 h-20 shadow-scan text-white hover:bg-primary-hover"
           onClick={() => setScanMode('result')}
         >
           <Camera size={32} className="text-white" />
@@ -126,7 +126,7 @@ const Scan: React.FC = () => {
       </div>
 
       <div className="space-y-3">
-        <Button className="w-full gradient-scan" onClick={() => setScanMode('result')}>
+        <Button className="w-full bg-primary-solid text-white" onClick={() => setScanMode('result')}>
           Add Product
         </Button>
         <Button variant="outline" className="w-full" onClick={() => setScanMode('camera')}>
@@ -193,7 +193,7 @@ const Scan: React.FC = () => {
               onChange={(e) => setManualPrice(e.target.value)}
               className="flex-1"
             />
-            <Button className="gradient-success">
+            <Button className="bg-success-solid text-white">
               Submit
             </Button>
           </div>

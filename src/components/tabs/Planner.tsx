@@ -6,73 +6,34 @@ import { Input } from '@/components/ui/input';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
 import { Plus, MapPin, Clock, CheckCircle2, ShoppingCart, DollarSign, Route } from 'lucide-react';
 import { useCurrency } from '@/hooks/useCurrency';
-
-const mockShoppingLists = [
-  {
-    id: 1,
-    name: 'Weekly Groceries',
-    items: 12,
-    estimatedTotal: 89.50,
-    status: 'active',
-    stores: ['Walmart', 'Target', 'Whole Foods']
-  },
-  {
-    id: 2,
-    name: 'Electronics Shopping',
-    items: 3,
-    estimatedTotal: 1250.00,
-    status: 'completed',
-    stores: ['Best Buy', 'Amazon']
-  }
-];
-
-const mockShoppingItems = [
-  {
-    id: 1,
-    product: 'Organic Bananas',
-    quantity: 2,
-    unit: 'lbs',
-    bestPrice: 2.49,
-    bestStore: 'Whole Foods',
-    avgPrice: 2.89,
-    checked: false
-  },
-  {
-    id: 2,
-    product: 'Coca-Cola 12 Pack',
-    quantity: 1,
-    unit: 'pack',
-    bestPrice: 4.99,
-    bestStore: 'Target',
-    avgPrice: 5.49,
-    checked: true
-  },
-  {
-    id: 3,
-    product: 'Bread - Whole Wheat',
-    quantity: 1,
-    unit: 'loaf',
-    bestPrice: 2.99,
-    bestStore: 'Walmart',
-    avgPrice: 3.29,
-    checked: false
-  }
-];
-
-const mockOptimizedRoute = {
-  totalDistance: '12.4 miles',
-  estimatedTime: '45 minutes',
-  totalSavings: 23.50,
-  stores: [
-    { name: 'Target', items: 3, savings: 8.50, address: '123 Main St' },
-    { name: 'Whole Foods', items: 2, savings: 15.00, address: '456 Oak Ave' }
-  ]
-};
+import { useShoppingLists } from '@/hooks/useShoppingLists';
+import ShoppingListEditor from '../ShoppingListEditor';
 
 const Planner: React.FC = () => {
   const [activeTab, setActiveTab] = useState('lists');
-  const [newItemName, setNewItemName] = useState('');
+  const [newListName, setNewListName] = useState('');
+  const [editingList, setEditingList] = useState<any>(null);
   const { formatPrice } = useCurrency();
+  const { lists, addList } = useShoppingLists();
+
+  const handleCreateList = () => {
+    if (newListName.trim()) {
+      addList(newListName.trim());
+      setNewListName('');
+    }
+  };
+
+  if (editingList) {
+    return (
+      <ShoppingListEditor
+        list={editingList}
+        onBack={() => setEditingList(null)}
+        onSave={(updatedList) => {
+          setEditingList(updatedList);
+        }}
+      />
+    );
+  }
 
   return (
     <div className="pb-20 px-4 pt-6 space-y-6">
@@ -92,24 +53,41 @@ const Planner: React.FC = () => {
 
         <TabsContent value="lists" className="space-y-4 mt-6">
           {/* Create New List */}
-          <Card className="p-4 gradient-card border-0">
-            <div className="flex items-center gap-3">
-              <Plus className="text-primary" size={24} />
-              <div className="flex-1">
-                <h3 className="font-semibold">Create New Shopping List</h3>
-                <p className="text-sm text-muted-foreground">Start planning your next shopping trip</p>
+          <Card className="p-4 bg-card-subtle border-0">
+            <div className="space-y-3">
+              <div className="flex items-center gap-3">
+                <Plus className="text-primary" size={24} />
+                <div className="flex-1">
+                  <h3 className="font-semibold">Create New Shopping List</h3>
+                  <p className="text-sm text-muted-foreground">Start planning your next shopping trip</p>
+                </div>
               </div>
-              <Button className="gradient-scan">
-                Create
-              </Button>
+              <div className="flex gap-2">
+                <Input
+                  placeholder="Enter list name..."
+                  value={newListName}
+                  onChange={(e) => setNewListName(e.target.value)}
+                  className="flex-1"
+                />
+                <Button 
+                  onClick={handleCreateList}
+                  className="bg-primary-solid text-white"
+                >
+                  Create
+                </Button>
+              </div>
             </div>
           </Card>
 
           {/* Existing Lists */}
           <div className="space-y-3">
             <h3 className="font-semibold">Your Shopping Lists</h3>
-            {mockShoppingLists.map((list) => (
-              <Card key={list.id} className="p-4">
+            {lists.map((list) => (
+              <Card 
+                key={list.id} 
+                className="p-4 cursor-pointer hover:shadow-md transition-all duration-200 hover:scale-[1.02]"
+                onClick={() => setEditingList(list)}
+              >
                 <div className="flex items-center justify-between">
                   <div className="space-y-2">
                     <div className="flex items-center gap-2">
@@ -119,7 +97,7 @@ const Planner: React.FC = () => {
                       </Badge>
                     </div>
                     <div className="flex items-center gap-4 text-sm text-muted-foreground">
-                      <span>{list.items} items</span>
+                      <span>{list.items.length} items</span>
                       <span>•</span>
                       <span>{list.stores.join(', ')}</span>
                     </div>
@@ -136,81 +114,24 @@ const Planner: React.FC = () => {
         </TabsContent>
 
         <TabsContent value="current" className="space-y-4 mt-6">
-          {/* Add Item */}
-          <Card className="p-4">
-            <div className="space-y-3">
-              <h3 className="font-semibold">Add New Item</h3>
-              <div className="flex gap-2">
-                <Input
-                  placeholder="Search or scan product..."
-                  value={newItemName}
-                  onChange={(e) => setNewItemName(e.target.value)}
-                  className="flex-1"
-                />
-                <Button className="gradient-scan">
-                  <Plus size={16} />
-                </Button>
-              </div>
-            </div>
+          <Card className="p-6 text-center">
+            <ShoppingCart className="mx-auto mb-4 text-muted-foreground" size={48} />
+            <h3 className="font-semibold mb-2">Select a Shopping List</h3>
+            <p className="text-muted-foreground mb-4">
+              Choose a list from the "My Lists" tab to view and edit items
+            </p>
+            <Button 
+              onClick={() => setActiveTab('lists')}
+              className="bg-primary-solid text-white"
+            >
+              View My Lists
+            </Button>
           </Card>
-
-          {/* Current List Summary */}
-          <Card className="p-4 gradient-success border-0">
-            <div className="flex items-center justify-between text-white">
-              <div className="space-y-1">
-                <h3 className="font-semibold">Weekly Groceries</h3>
-                <p className="text-sm opacity-90">12 items • Best savings: {formatPrice(23.50)}</p>
-              </div>
-              <div className="text-right">
-                <p className="text-2xl font-bold">{formatPrice(89.50)}</p>
-                <p className="text-sm opacity-90">vs {formatPrice(113.00)} avg</p>
-              </div>
-            </div>
-          </Card>
-
-          {/* Shopping Items */}
-          <div className="space-y-3">
-            {mockShoppingItems.map((item) => (
-              <Card key={item.id} className={`p-4 ${item.checked ? 'opacity-60' : ''}`}>
-                <div className="flex items-center gap-3">
-                  <Button
-                    variant="outline"
-                    size="icon"
-                    className={`rounded-full w-8 h-8 ${item.checked ? 'bg-success text-white' : ''}`}
-                  >
-                    {item.checked && <CheckCircle2 size={16} />}
-                  </Button>
-                  
-                  <div className="flex-1 space-y-1">
-                    <div className="flex items-center justify-between">
-                      <h4 className={`font-medium ${item.checked ? 'line-through' : ''}`}>
-                        {item.product}
-                      </h4>
-                      <div className="text-right">
-                        <p className="font-bold">{formatPrice(item.bestPrice)}</p>
-                        <p className="text-xs text-muted-foreground line-through">
-                          {formatPrice(item.avgPrice)}
-                        </p>
-                      </div>
-                    </div>
-                    
-                    <div className="flex items-center justify-between text-sm text-muted-foreground">
-                      <span>{item.quantity} {item.unit}</span>
-                      <div className="flex items-center gap-1">
-                        <MapPin size={12} />
-                        <span>{item.bestStore}</span>
-                      </div>
-                    </div>
-                  </div>
-                </div>
-              </Card>
-            ))}
-          </div>
         </TabsContent>
 
         <TabsContent value="route" className="space-y-4 mt-6">
           {/* Route Summary */}
-          <Card className="p-4 gradient-primary border-0 text-white">
+          <Card className="p-4 bg-primary-solid border-0 text-white">
             <div className="space-y-3">
               <div className="flex items-center gap-2">
                 <Route size={24} />
@@ -219,15 +140,15 @@ const Planner: React.FC = () => {
               
               <div className="grid grid-cols-3 gap-4">
                 <div className="text-center">
-                  <p className="text-2xl font-bold">{mockOptimizedRoute.totalDistance}</p>
+                  <p className="text-2xl font-bold">12.4 miles</p>
                   <p className="text-sm opacity-90">Total Distance</p>
                 </div>
                 <div className="text-center">
-                  <p className="text-2xl font-bold">{mockOptimizedRoute.estimatedTime}</p>
+                  <p className="text-2xl font-bold">45 minutes</p>
                   <p className="text-sm opacity-90">Est. Time</p>
                 </div>
                 <div className="text-center">
-                  <p className="text-2xl font-bold">{formatPrice(mockOptimizedRoute.totalSavings)}</p>
+                  <p className="text-2xl font-bold">{formatPrice(23.50)}</p>
                   <p className="text-sm opacity-90">Total Savings</p>
                 </div>
               </div>
@@ -237,38 +158,62 @@ const Planner: React.FC = () => {
           {/* Store Stops */}
           <div className="space-y-3">
             <h3 className="font-semibold">Your Route</h3>
-            {mockOptimizedRoute.stores.map((store, index) => (
-              <Card key={index} className="p-4">
-                <div className="flex items-center gap-3">
-                  <div className="w-8 h-8 bg-primary text-white rounded-full flex items-center justify-center font-bold">
-                    {index + 1}
+            <Card className="p-4">
+              <div className="flex items-center gap-3">
+                <div className="w-8 h-8 bg-primary text-white rounded-full flex items-center justify-center font-bold">
+                  1
+                </div>
+                
+                <div className="flex-1 space-y-1">
+                  <div className="flex items-center justify-between">
+                    <h4 className="font-medium">Target</h4>
+                    <div className="flex items-center gap-1 text-success">
+                      <DollarSign size={14} />
+                      <span className="font-semibold">{formatPrice(8.50)}</span>
+                    </div>
                   </div>
                   
-                  <div className="flex-1 space-y-1">
-                    <div className="flex items-center justify-between">
-                      <h4 className="font-medium">{store.name}</h4>
-                      <div className="flex items-center gap-1 text-success">
-                        <DollarSign size={14} />
-                        <span className="font-semibold">{formatPrice(store.savings)}</span>
-                      </div>
+                  <div className="flex items-center justify-between text-sm text-muted-foreground">
+                    <div className="flex items-center gap-1">
+                      <MapPin size={12} />
+                      <span>123 Main St</span>
                     </div>
-                    
-                    <div className="flex items-center justify-between text-sm text-muted-foreground">
-                      <div className="flex items-center gap-1">
-                        <MapPin size={12} />
-                        <span>{store.address}</span>
-                      </div>
-                      <span>{store.items} items</span>
-                    </div>
+                    <span>3 items</span>
                   </div>
                 </div>
-              </Card>
-            ))}
+              </div>
+            </Card>
+            
+            <Card className="p-4">
+              <div className="flex items-center gap-3">
+                <div className="w-8 h-8 bg-primary text-white rounded-full flex items-center justify-center font-bold">
+                  2
+                </div>
+                
+                <div className="flex-1 space-y-1">
+                  <div className="flex items-center justify-between">
+                    <h4 className="font-medium">Whole Foods</h4>
+                    <div className="flex items-center gap-1 text-success">
+                      <DollarSign size={14} />
+                      <span className="font-semibold">{formatPrice(15.00)}</span>
+                    </div>
+                  </div>
+                  
+                  <div className="flex items-center justify-between text-sm text-muted-foreground">
+                    <div className="flex items-center gap-1">
+                      <MapPin size={12} />
+                      <span>456 Oak Ave</span>
+                    </div>
+                    <span>2 items</span>
+                  </div>
+                </div>
+              </div>
+            </Card>
           </div>
 
           {/* Action Buttons */}
           <div className="space-y-3">
-            <Button className="w-full gradient-scan">
+            <Button className="w-full bg-primary-solid text-white">
               <MapPin className="mr-2" size={16} />
               Open in Maps
             </Button>
