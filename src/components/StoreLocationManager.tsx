@@ -4,7 +4,7 @@ import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { Badge } from '@/components/ui/badge';
 import { Alert, AlertDescription } from '@/components/ui/alert';
-import { MapPin, Plus, Check, X, Loader2, AlertCircle, Navigation } from 'lucide-react';
+import { MapPin, Plus, Check, X, Loader2, AlertCircle, Navigation, Map } from 'lucide-react';
 import { useLanguage } from '@/hooks/useLanguage';
 
 interface Store {
@@ -35,6 +35,8 @@ const StoreLocationManager: React.FC<StoreLocationManagerProps> = ({ onStoreSele
   });
   const [detectionError, setDetectionError] = useState<string | null>(null);
   const [userLocation, setUserLocation] = useState<{ lat: number; lng: number } | null>(currentLocation || null);
+  const [isGeocodingAddress, setIsGeocodingAddress] = useState(false);
+  const [mapboxToken, setMapboxToken] = useState('');
 
   // Mock nearby stores for demonstration
   const mockNearbyStores: Store[] = [
@@ -141,6 +143,77 @@ const StoreLocationManager: React.FC<StoreLocationManagerProps> = ({ onStoreSele
       setDetectedStores(storesWithDistance);
       setIsDetecting(false);
     }, 2000);
+  };
+
+  // Reverse geocode coordinates to get address
+  const reverseGeocode = async (lat: number, lng: number) => {
+    if (!mapboxToken) return;
+    
+    setIsGeocodingAddress(true);
+    try {
+      const response = await fetch(
+        `https://api.mapbox.com/geocoding/v5/mapbox.places/${lng},${lat}.json?access_token=${mapboxToken}`
+      );
+      const data = await response.json();
+      const address = data.features[0]?.place_name || `${lat.toFixed(4)}, ${lng.toFixed(4)}`;
+      
+      setManualStore(prev => ({ ...prev, address }));
+    } catch (error) {
+      console.error('Error getting address:', error);
+    } finally {
+      setIsGeocodingAddress(false);
+    }
+  };
+
+  // Handle coordinate changes and auto-fill address
+  const handleCoordinateChange = (field: 'latitude' | 'longitude', value: string) => {
+    setManualStore(prev => ({ ...prev, [field]: value }));
+    
+    // Auto-fill address if both coordinates are valid
+    const lat = field === 'latitude' ? parseFloat(value) : parseFloat(manualStore.latitude);
+    const lng = field === 'longitude' ? parseFloat(value) : parseFloat(manualStore.longitude);
+    
+    if (!isNaN(lat) && !isNaN(lng) && lat >= -90 && lat <= 90 && lng >= -180 && lng <= 180) {
+      reverseGeocode(lat, lng);
+    }
+  };
+
+  // Get current location for manual form
+  const useCurrentLocationForManual = () => {
+    if (!navigator.geolocation) {
+      setDetectionError('Geolocation is not supported by this browser');
+      return;
+    }
+
+    navigator.geolocation.getCurrentPosition(
+      (position) => {
+        const lat = position.coords.latitude;
+        const lng = position.coords.longitude;
+        setManualStore(prev => ({
+          ...prev,
+          latitude: lat.toString(),
+          longitude: lng.toString()
+        }));
+        if (mapboxToken) {
+          reverseGeocode(lat, lng);
+        }
+      },
+      (error) => {
+        let errorMessage = 'Failed to get location';
+        switch (error.code) {
+          case error.PERMISSION_DENIED:
+            errorMessage = 'Location access denied.';
+            break;
+          case error.POSITION_UNAVAILABLE:
+            errorMessage = 'Location information unavailable.';
+            break;
+          case error.TIMEOUT:
+            errorMessage = 'Location request timeout.';
+            break;
+        }
+        setDetectionError(errorMessage);
+      }
+    );
   };
 
   // Handle manual store submission
@@ -268,6 +341,29 @@ const StoreLocationManager: React.FC<StoreLocationManagerProps> = ({ onStoreSele
               <X size={14} />
             </Button>
           </div>
+
+          {/* Mapbox Token Input for Address Recognition */}
+          {!mapboxToken && (
+            <div className="p-3 bg-muted/50 rounded-lg space-y-2">
+              <p className="text-sm font-medium">Enable Address Auto-Fill</p>
+              <p className="text-xs text-muted-foreground">
+                Enter your Mapbox token to automatically recognize addresses from coordinates
+              </p>
+              <div className="flex gap-2">
+                <Input
+                  placeholder="Mapbox public token (optional)"
+                  value={mapboxToken}
+                  onChange={(e) => setMapboxToken(e.target.value)}
+                  className="flex-1"
+                />
+                <Button variant="outline" size="sm" asChild>
+                  <a href="https://mapbox.com" target="_blank" rel="noopener noreferrer">
+                    <Map size={14} />
+                  </a>
+                </Button>
+              </div>
+            </div>
+          )}
           
           <div className="space-y-3">
             <div>
@@ -280,7 +376,15 @@ const StoreLocationManager: React.FC<StoreLocationManagerProps> = ({ onStoreSele
             </div>
             
             <div>
-              <label className="text-sm font-medium mb-1 block">{t('store.address')} *</label>
+              <div className="flex items-center justify-between mb-1">
+                <label className="text-sm font-medium">{t('store.address')} *</label>
+                {isGeocodingAddress && (
+                  <div className="flex items-center gap-1 text-xs text-muted-foreground">
+                    <Loader2 size={12} className="animate-spin" />
+                    Getting address...
+                  </div>
+                )}
+              </div>
               <Input
                 placeholder="123 Main St, City, State"
                 value={manualStore.address}
@@ -288,27 +392,48 @@ const StoreLocationManager: React.FC<StoreLocationManagerProps> = ({ onStoreSele
               />
             </div>
             
-            <div className="grid grid-cols-2 gap-3">
-              <div>
-                <label className="text-sm font-medium mb-1 block">{t('store.latitude')}</label>
-                <Input
-                  type="number"
-                  step="any"
-                  placeholder="40.7128"
-                  value={manualStore.latitude}
-                  onChange={(e) => setManualStore(prev => ({ ...prev, latitude: e.target.value }))}
-                />
+            <div className="space-y-3">
+              <div className="flex items-center justify-between">
+                <label className="text-sm font-medium">Coordinates</label>
+                <Button 
+                  variant="outline" 
+                  size="sm" 
+                  onClick={useCurrentLocationForManual}
+                  disabled={isGeocodingAddress}
+                >
+                  <Navigation size={12} className="mr-1" />
+                  Use Current
+                </Button>
               </div>
-              <div>
-                <label className="text-sm font-medium mb-1 block">{t('store.longitude')}</label>
-                <Input
-                  type="number"
-                  step="any"
-                  placeholder="-74.0060"
-                  value={manualStore.longitude}
-                  onChange={(e) => setManualStore(prev => ({ ...prev, longitude: e.target.value }))}
-                />
+              
+              <div className="grid grid-cols-2 gap-3">
+                <div>
+                  <label className="text-xs text-muted-foreground mb-1 block">{t('store.latitude')}</label>
+                  <Input
+                    type="number"
+                    step="any"
+                    placeholder="40.7128"
+                    value={manualStore.latitude}
+                    onChange={(e) => handleCoordinateChange('latitude', e.target.value)}
+                  />
+                </div>
+                <div>
+                  <label className="text-xs text-muted-foreground mb-1 block">{t('store.longitude')}</label>
+                  <Input
+                    type="number"
+                    step="any"
+                    placeholder="-74.0060"
+                    value={manualStore.longitude}
+                    onChange={(e) => handleCoordinateChange('longitude', e.target.value)}
+                  />
+                </div>
               </div>
+              
+              {mapboxToken && (
+                <p className="text-xs text-muted-foreground">
+                  💡 Enter coordinates and the address will be filled automatically
+                </p>
+              )}
             </div>
             
             <Button 
