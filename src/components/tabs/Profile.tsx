@@ -4,6 +4,7 @@ import { Button } from '@/components/ui/button';
 import { Badge } from '@/components/ui/badge';
 import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui/avatar';
 import CurrencySelector from '../CurrencySelector';
+import LanguageSelector from '../LanguageSelector';
 import ProfileFeatures from '../ProfileFeatures';
 import { useCurrency } from '@/hooks/useCurrency';
 import { 
@@ -18,7 +19,8 @@ import {
   History,
   Award,
   ChevronRight,
-  Globe
+  Globe,
+  Languages
 } from 'lucide-react';
 
 const mockUserStats = {
@@ -149,6 +151,18 @@ const Profile: React.FC = () => {
               </div>
               <div className="w-32">
                 <CurrencySelector />
+              </div>
+            </div>
+          </Card>
+          
+          <Card className="p-3">
+            <div className="flex items-center justify-between">
+              <div className="flex items-center gap-3">
+                <Languages className="text-muted-foreground" size={20} />
+                <span className="font-medium">Language</span>
+              </div>
+              <div className="w-32">
+                <LanguageSelector />
               </div>
             </div>
           </Card>
