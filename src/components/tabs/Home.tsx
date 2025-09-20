@@ -9,6 +9,10 @@ import PrislyLogo from '../PrislyLogo';
 import ProductDetail from '../ProductDetail';
 import DealsSection from '../DealsSection';
 
+interface HomeProps {
+  onNavigateToDeals?: () => void;
+}
+
 const mockRecentScans = [
   {
     id: 1,
@@ -135,13 +139,19 @@ const mockLocalDeals = [
   }
 ];
 
-const Home: React.FC = () => {
+const Home: React.FC<HomeProps> = ({ onNavigateToDeals }) => {
   const [selectedProduct, setSelectedProduct] = useState<any>(null);
   const { formatPrice } = useCurrency();
   const { t } = useLanguage();
 
   const handleDealClick = (deal: any) => {
     setSelectedProduct(deal);
+  };
+
+  const handleViewAllDeals = () => {
+    if (onNavigateToDeals) {
+      onNavigateToDeals();
+    }
   };
 
   if (selectedProduct) {
@@ -209,6 +219,7 @@ const Home: React.FC = () => {
         icon={<Flame className="text-red-500" size={20} />}
         deals={mockHotDeals}
         onDealClick={handleDealClick}
+        onViewAll={handleViewAllDeals}
       />
 
       {/* Flash Deals Section */}
@@ -217,6 +228,7 @@ const Home: React.FC = () => {
         icon={<Zap className="text-yellow-500" size={20} />}
         deals={mockFlashDeals}
         onDealClick={handleDealClick}
+        onViewAll={handleViewAllDeals}
       />
 
       {/* Local Deals Section */}
@@ -225,6 +237,7 @@ const Home: React.FC = () => {
         icon={<Target className="text-blue-500" size={20} />}
         deals={mockLocalDeals}
         onDealClick={handleDealClick}
+        onViewAll={handleViewAllDeals}
       />
 
       {/* Recent Scans */}

@@ -9,6 +9,7 @@ import Scan from './components/tabs/Scan';
 import Trends from './components/tabs/Trends';
 import Planner from './components/tabs/Planner';
 import Profile from './components/tabs/Profile';
+import Deals from './components/tabs/Deals';
 import { LanguageContext, useLanguageProvider } from './hooks/useLanguage';
 
 const queryClient = new QueryClient();
@@ -20,7 +21,7 @@ const App = () => {
   const renderActiveTab = () => {
     switch (activeTab) {
       case 'home':
-        return <Home />;
+        return <Home onNavigateToDeals={() => setActiveTab('deals')} />;
       case 'scan':
         return <Scan />;
       case 'trends':
@@ -29,8 +30,10 @@ const App = () => {
         return <Planner />;
       case 'profile':
         return <Profile />;
+      case 'deals':
+        return <Deals />;
       default:
-        return <Home />;
+        return <Home onNavigateToDeals={() => setActiveTab('deals')} />;
     }
   };
 

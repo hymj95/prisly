@@ -133,10 +133,10 @@ const ProductDetail: React.FC<ProductDetailProps> = ({ product, onBack }) => {
           <div>
             <p className="text-sm opacity-90">Current Best Price</p>
             <div className="flex items-center gap-2">
-              <span className="text-3xl font-bold">{formatPrice(product.price)}</span>
+              <span className="text-3xl font-bold">{formatPrice(product.price || product.salePrice || 0)}</span>
               <div className="flex items-center gap-1">
                 <TrendingDown size={20} />
-                <span className="text-sm">{product.trendPercentage}% lower</span>
+                <span className="text-sm">{product.trendPercentage || 0}% lower</span>
               </div>
             </div>
             <div className="flex items-center gap-1 mt-1 opacity-90">
@@ -150,11 +150,11 @@ const ProductDetail: React.FC<ProductDetailProps> = ({ product, onBack }) => {
       {/* Quick Stats */}
       <div className="grid grid-cols-3 gap-3">
         <Card className="p-3 text-center">
-          <p className="text-lg font-bold text-muted-foreground">{formatPrice(product.avgPrice)}</p>
+          <p className="text-lg font-bold text-muted-foreground">{formatPrice(product.avgPrice || product.originalPrice || 0)}</p>
           <p className="text-xs text-muted-foreground">30-Day Average</p>
         </Card>
         <Card className="p-3 text-center">
-          <p className="text-lg font-bold text-success">{formatPrice(0.50)}</p>
+          <p className="text-lg font-bold text-success">{formatPrice(Math.max(0, (product.originalPrice || product.avgPrice || 0) - (product.price || product.salePrice || 0)))}</p>
           <p className="text-xs text-muted-foreground">You Save</p>
         </Card>
         <Card className="p-3 text-center">

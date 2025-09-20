@@ -24,20 +24,21 @@ interface DealsSectionProps {
   icon: React.ReactNode;
   deals: Deal[];
   onDealClick: (deal: Deal) => void;
+  onViewAll?: () => void;
 }
 
-const DealsSection: React.FC<DealsSectionProps> = ({ title, icon, deals, onDealClick }) => {
+const DealsSection: React.FC<DealsSectionProps> = ({ title, icon, deals, onDealClick, onViewAll }) => {
   const { formatPrice } = useCurrency();
 
   return (
-    <div className="space-y-4">
-      <div className="flex items-center justify-between">
-        <div className="flex items-center gap-2">
-          {icon}
-          <h2 className="text-lg font-semibold">{title}</h2>
+      <div className="space-y-4">
+        <div className="flex items-center justify-between">
+          <div className="flex items-center gap-2">
+            {icon}
+            <h2 className="text-lg font-semibold">{title}</h2>
+          </div>
+          <Button variant="outline" size="sm" onClick={onViewAll}>View All</Button>
         </div>
-        <Button variant="outline" size="sm">View All</Button>
-      </div>
 
       <div className="grid gap-3">
         {deals.map((deal) => (
