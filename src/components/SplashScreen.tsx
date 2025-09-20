@@ -51,7 +51,7 @@ const SplashScreen: React.FC<SplashScreenProps> = ({ onComplete }) => {
         }`}
       >
         <PrislyLogo 
-          size="quarter-screen" 
+          size="fullscreen" 
           className={`transition-all duration-1000 ease-in-out ${
             animationPhase === 'initial' 
               ? 'drop-shadow-2xl' 

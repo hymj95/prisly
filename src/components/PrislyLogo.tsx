@@ -2,7 +2,7 @@ import React from 'react';
 import prislyLogo from '@/assets/prisly-logo-new.png';
 
 interface PrislyLogoProps {
-  size?: 'sm' | 'md' | 'lg' | 'xl' | '2xl' | '3xl' | '4xl' | '5xl' | '6xl' | 'quarter-screen';
+  size?: 'sm' | 'md' | 'lg' | 'xl' | '2xl' | '3xl' | '4xl' | '5xl' | '6xl' | 'quarter-screen' | 'half-screen' | 'fullscreen';
   className?: string;
 }
 
@@ -17,7 +17,9 @@ const PrislyLogo: React.FC<PrislyLogoProps> = ({ size = 'md', className = '' }) 
     '4xl': 'h-64',
     '5xl': 'h-80',
     '6xl': 'h-96',
-    'quarter-screen': 'h-[25vh]'
+    'quarter-screen': 'h-[25vh]',
+    'half-screen': 'h-[50vh]',
+    'fullscreen': 'h-[75vh]'
   };
 
   return (
