@@ -2,11 +2,11 @@
 @tailwind components;
 @tailwind utilities;
 
-/* Prisly Design System - Scandinavian Inspired */
+/* Prisly Design System - Scandinavian with Dark Leafy Greens */
 
 @layer base {
   :root {
-    /* Scandinavian Design System - Clean & Minimal */
+    /* Scandinavian Design System with Dark Leafy Greens */
     --background: 0 0% 98%;
     --foreground: 220 13% 18%;
 
@@ -17,25 +17,25 @@
     --popover: 0 0% 100%;
     --popover-foreground: 220 13% 18%;
 
-    /* Primary - Nordic Blue */
-    --primary: 214 32% 26%;
+    /* Primary - Dark Leafy Green */
+    --primary: 152 39% 25%;
     --primary-foreground: 0 0% 98%;
-    --primary-hover: 214 32% 21%;
+    --primary-hover: 152 39% 20%;
 
-    /* Secondary - Warm Stone */
-    --secondary: 28 12% 67%;
-    --secondary-foreground: 220 13% 18%;
+    /* Secondary - Forest Green */
+    --secondary: 158 42% 35%;
+    --secondary-foreground: 0 0% 98%;
 
-    /* Accent - Soft Sage */
+    /* Accent - Sage Green */
     --accent: 145 23% 72%;
-    --accent-foreground: 220 13% 18%;
+    --accent-foreground: 152 39% 25%;
 
     /* Muted & Subtle */
     --muted: 220 13% 95%;
     --muted-foreground: 220 9% 46%;
 
     /* Status Colors */
-    --success: 145 23% 45%;
+    --success: 152 39% 25%;
     --success-foreground: 0 0% 98%;
     
     --warning: 38 92% 50%;
@@ -47,30 +47,30 @@
     /* Border & Input */
     --border: 220 13% 91%;
     --input: 220 13% 91%;
-    --ring: 214 32% 26%;
+    --ring: 152 39% 25%;
 
     /* Navigation */
     --nav-background: 0 0% 100%;
     --nav-border: 220 13% 91%;
-    --nav-active: 214 32% 26%;
+    --nav-active: 152 39% 25%;
     --nav-inactive: 220 9% 46%;
 
-    /* Shadows - Minimal Nordic */
-    --shadow-sm: 0 1px 2px 0 hsl(220 13% 18% / 0.05);
-    --shadow-md: 0 4px 6px -1px hsl(220 13% 18% / 0.08), 0 2px 4px -2px hsl(220 13% 18% / 0.06);
-    --shadow-lg: 0 10px 15px -3px hsl(220 13% 18% / 0.08), 0 4px 6px -4px hsl(220 13% 18% / 0.06);
-    --shadow-scan: 0 0 20px hsl(214 32% 26% / 0.1);
+    /* Shadows - Minimal Nordic with Green Hints */
+    --shadow-sm: 0 1px 2px 0 hsl(152 39% 25% / 0.05);
+    --shadow-md: 0 4px 6px -1px hsl(152 39% 25% / 0.08), 0 2px 4px -2px hsl(152 39% 25% / 0.06);
+    --shadow-lg: 0 10px 15px -3px hsl(152 39% 25% / 0.08), 0 4px 6px -4px hsl(152 39% 25% / 0.06);
+    --shadow-scan: 0 0 20px hsl(152 39% 25% / 0.1);
 
     --radius: 0.5rem;
   }
 
   /* Dark mode */
   .dark {
-    --background: 220 13% 9%;
+    --background: 152 39% 8%;
     --foreground: 0 0% 98%;
-    --card: 220 13% 12%;
-    --primary: 214 32% 45%;
-    --nav-background: 220 13% 12%;
+    --card: 152 39% 12%;
+    --primary: 145 23% 72%;
+    --nav-background: 152 39% 12%;
   }
 }
 
@@ -87,7 +87,7 @@
 }
 
 @layer components {
-  /* Scandinavian solid colors */
+  /* Scandinavian solid colors with leafy greens */
   .bg-primary-solid {
     background-color: hsl(var(--primary));
   }
@@ -106,6 +106,10 @@
 
   .bg-accent-solid {
     background-color: hsl(var(--accent));
+  }
+
+  .bg-forest-solid {
+    background-color: hsl(158 42% 30%);
   }
 
   /* Nordic spacing */

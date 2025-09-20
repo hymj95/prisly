@@ -87,23 +87,23 @@ const Home: React.FC = () => {
         </Card>
         <Card className="p-4 text-center bg-card-subtle border-0">
           <div className="space-y-1">
-            <p className="text-2xl font-bold text-secondary">24</p>
+            <p className="text-2xl font-bold text-primary">24</p>
             <p className="text-xs text-muted-foreground">Price Alerts</p>
           </div>
         </Card>
       </div>
 
       {/* Quick Scan Button */}
-      <Card className="p-4 bg-accent-solid border-0">
+      <Card className="p-4 bg-forest-solid border-0">
         <div className="flex items-center gap-4">
           <div className="flex-shrink-0">
-            <Zap className="text-foreground" size={24} />
+            <Zap className="text-white" size={24} />
           </div>
           <div className="flex-1 text-left">
-            <h3 className="font-semibold text-foreground text-sm">Quick Scan</h3>
-            <p className="text-xs text-muted-foreground">Get instant price comparison</p>
+            <h3 className="font-semibold text-white text-sm">Quick Scan</h3>
+            <p className="text-xs text-white/80">Get instant price comparison</p>
           </div>
-          <Button className="flex-shrink-0 bg-primary-solid text-primary-foreground hover:bg-primary-hover">
+          <Button className="flex-shrink-0 bg-white text-primary hover:bg-white/90">
             Scan
           </Button>
         </div>
