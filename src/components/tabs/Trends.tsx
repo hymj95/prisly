@@ -74,7 +74,7 @@ const Trends: React.FC = () => {
       {/* Header */}
       <div className="text-center space-y-2">
         <h1 className="text-2xl font-bold text-gradient">Price Trends</h1>
-        <p className="text-muted-foreground">Track market movements and find opportunities</p>
+        <p className="text-muted-foreground">Track market movements and find fresh opportunities</p>
       </div>
 
       {/* Time Range Selector */}

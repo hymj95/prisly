@@ -77,7 +77,7 @@ const Planner: React.FC = () => {
       {/* Header */}
       <div className="text-center space-y-2">
         <h1 className="text-2xl font-bold text-gradient">Shopping Planner</h1>
-        <p className="text-muted-foreground">Plan your trips and save money</p>
+        <p className="text-muted-foreground">Plan your grocery trips and save money</p>
       </div>
 
       {/* Tabs */}

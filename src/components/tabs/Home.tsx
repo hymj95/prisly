@@ -48,7 +48,7 @@ const Home: React.FC = () => {
     <div className="pb-20 px-4 pt-6 space-y-6">
       {/* Welcome Header */}
       <div className="text-center space-y-2">
-        <h1 className="text-2xl font-bold text-gradient">Welcome to PriceTracker</h1>
+        <h1 className="text-2xl font-bold text-gradient">Welcome to Prisly</h1>
         <p className="text-muted-foreground">Find fresh deals and save on your groceries</p>
       </div>
 
