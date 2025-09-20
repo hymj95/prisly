@@ -2,6 +2,7 @@ import React from 'react';
 import { Card } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
 import { Badge } from '@/components/ui/badge';
+import { useCurrency } from '@/hooks/useCurrency';
 import { 
   ArrowLeft, 
   TrendingDown, 
@@ -37,6 +38,7 @@ const mockStoreComparison = [
 ];
 
 const ProductDetail: React.FC<ProductDetailProps> = ({ product, onBack }) => {
+  const { formatPrice } = useCurrency();
   const PriceChart = () => (
     <div className="h-32 w-full relative">
       <svg className="w-full h-full" viewBox="0 0 300 120">
@@ -131,7 +133,7 @@ const ProductDetail: React.FC<ProductDetailProps> = ({ product, onBack }) => {
           <div>
             <p className="text-sm opacity-90">Current Best Price</p>
             <div className="flex items-center gap-2">
-              <span className="text-3xl font-bold">${product.price}</span>
+              <span className="text-3xl font-bold">{formatPrice(product.price)}</span>
               <div className="flex items-center gap-1">
                 <TrendingDown size={20} />
                 <span className="text-sm">{product.trendPercentage}% lower</span>
@@ -148,11 +150,11 @@ const ProductDetail: React.FC<ProductDetailProps> = ({ product, onBack }) => {
       {/* Quick Stats */}
       <div className="grid grid-cols-3 gap-3">
         <Card className="p-3 text-center">
-          <p className="text-lg font-bold text-muted-foreground">${product.avgPrice}</p>
+          <p className="text-lg font-bold text-muted-foreground">{formatPrice(product.avgPrice)}</p>
           <p className="text-xs text-muted-foreground">30-Day Average</p>
         </Card>
         <Card className="p-3 text-center">
-          <p className="text-lg font-bold text-success">$0.50</p>
+          <p className="text-lg font-bold text-success">{formatPrice(0.50)}</p>
           <p className="text-xs text-muted-foreground">You Save</p>
         </Card>
         <Card className="p-3 text-center">
@@ -216,12 +218,12 @@ const ProductDetail: React.FC<ProductDetailProps> = ({ product, onBack }) => {
                 </div>
                 
                 <div className="text-right">
-                  <p className="text-xl font-bold">${store.price}</p>
+                  <p className="text-xl font-bold">{formatPrice(store.price)}</p>
                   {index === 0 ? (
                     <p className="text-xs text-success">Lowest price</p>
                   ) : (
                     <p className="text-xs text-muted-foreground">
-                      +${(store.price - mockStoreComparison[0].price).toFixed(2)}
+                      +{formatPrice(store.price - mockStoreComparison[0].price)}
                     </p>
                   )}
                 </div>

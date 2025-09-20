@@ -3,6 +3,7 @@ import { Card } from '@/components/ui/card';
 import { Badge } from '@/components/ui/badge';
 import { Button } from '@/components/ui/button';
 import { TrendingDown, TrendingUp, MapPin, Clock, Zap } from 'lucide-react';
+import { useCurrency } from '@/hooks/useCurrency';
 import ProductDetail from '../ProductDetail';
 
 const mockRecentScans = [
@@ -46,6 +47,7 @@ const mockRecentScans = [
 
 const Home: React.FC = () => {
   const [selectedProduct, setSelectedProduct] = useState<any>(null);
+  const { formatPrice } = useCurrency();
 
   if (selectedProduct) {
     return (
@@ -73,7 +75,7 @@ const Home: React.FC = () => {
         </Card>
         <Card className="p-4 text-center gradient-card border-0">
           <div className="space-y-1">
-            <p className="text-2xl font-bold text-success">$342</p>
+            <p className="text-2xl font-bold text-success">{formatPrice(342)}</p>
             <p className="text-xs text-muted-foreground">Money Saved</p>
           </div>
         </Card>
@@ -136,7 +138,7 @@ const Home: React.FC = () => {
 
                 <div className="text-right space-y-1">
                   <div className="flex items-center gap-2">
-                    <span className="font-bold text-lg">${scan.price}</span>
+                    <span className="font-bold text-lg">{formatPrice(scan.price)}</span>
                     {scan.trend === 'down' ? (
                       <div className="flex items-center gap-1 text-success">
                         <TrendingDown size={16} />
@@ -149,7 +151,7 @@ const Home: React.FC = () => {
                       </div>
                     )}
                   </div>
-                  <p className="text-xs text-muted-foreground">Avg: ${scan.avgPrice}</p>
+                  <p className="text-xs text-muted-foreground">Avg: {formatPrice(scan.avgPrice)}</p>
                 </div>
               </div>
             </Card>

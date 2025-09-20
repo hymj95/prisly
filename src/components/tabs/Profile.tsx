@@ -3,6 +3,8 @@ import { Card } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
 import { Badge } from '@/components/ui/badge';
 import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui/avatar';
+import CurrencySelector from '../CurrencySelector';
+import { useCurrency } from '@/hooks/useCurrency';
 import { 
   User, 
   Settings, 
@@ -14,7 +16,8 @@ import {
   MapPin,
   History,
   Award,
-  ChevronRight
+  ChevronRight,
+  Globe
 } from 'lucide-react';
 
 const mockUserStats = {
@@ -64,6 +67,7 @@ const mockAchievements = [
 ];
 
 const Profile: React.FC = () => {
+  const { formatPrice } = useCurrency();
   return (
     <div className="pb-20 px-4 pt-6 space-y-6">
       {/* Profile Header */}
@@ -104,7 +108,7 @@ const Profile: React.FC = () => {
         
         <Card className="p-4 text-center">
           <DollarSign className="mx-auto mb-2 text-success" size={24} />
-          <p className="text-2xl font-bold">${mockUserStats.totalSavings}</p>
+          <p className="text-2xl font-bold">{formatPrice(mockUserStats.totalSavings)}</p>
           <p className="text-xs text-muted-foreground">Total Savings</p>
         </Card>
         
@@ -126,6 +130,18 @@ const Profile: React.FC = () => {
         <h3 className="font-semibold">Quick Actions</h3>
         
         <div className="space-y-2">
+          <Card className="p-3">
+            <div className="flex items-center justify-between">
+              <div className="flex items-center gap-3">
+                <Globe className="text-muted-foreground" size={20} />
+                <span className="font-medium">Currency</span>
+              </div>
+              <div className="w-32">
+                <CurrencySelector />
+              </div>
+            </div>
+          </Card>
+          
           <Card className="p-3">
             <div className="flex items-center justify-between">
               <div className="flex items-center gap-3">
@@ -194,8 +210,8 @@ const Profile: React.FC = () => {
                 </div>
                 
                 <div className="text-right text-xs text-muted-foreground">
-                  {activity.price && <p className="font-semibold">${activity.price}</p>}
-                  {activity.savings && <p className="text-success">-${activity.savings}</p>}
+                  {activity.price && <p className="font-semibold">{formatPrice(activity.price)}</p>}
+                  {activity.savings && <p className="text-success">-{formatPrice(activity.savings)}</p>}
                   <p>{activity.timeAgo}</p>
                 </div>
               </div>
