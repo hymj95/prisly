@@ -1,5 +1,5 @@
 import React from 'react';
-import prislyLogo from '@/assets/prisly-logo.png';
+import prislyLogo from '@/assets/prisly-logo-new.png';
 
 interface PrislyLogoProps {
   size?: 'sm' | 'md' | 'lg' | 'xl' | '2xl' | '3xl' | '4xl' | '5xl' | '6xl' | 'quarter-screen';
