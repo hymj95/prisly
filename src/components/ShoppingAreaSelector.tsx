@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useRef } from 'react';
 import { Card } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
@@ -6,9 +6,11 @@ import { Badge } from '@/components/ui/badge';
 import { Alert, AlertDescription } from '@/components/ui/alert';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
-import { MapPin, Search, Filter, Navigation, Loader2, AlertCircle, Check, Star } from 'lucide-react';
+import { MapPin, Search, Filter, Navigation, Loader2, AlertCircle, Check, Star, Map } from 'lucide-react';
 import { useLanguage } from '@/hooks/useLanguage';
 import { useStoreLocation } from '@/hooks/useStoreLocation';
+import mapboxgl from 'mapbox-gl';
+import 'mapbox-gl/dist/mapbox-gl.css';
 
 interface Store {
   id: string;
@@ -39,9 +41,15 @@ const ShoppingAreaSelector: React.FC<ShoppingAreaSelectorProps> = ({ onStoreSele
   const [selectedCategory, setSelectedCategory] = useState('all');
   const [sortBy, setSortBy] = useState('distance');
   const [stores, setStores] = useState<Store[]>([]);
+  const [showMap, setShowMap] = useState(false);
+  const [mapboxToken, setMapboxToken] = useState('');
   const [popularAreas] = useState([
     'Downtown', 'Shopping District', 'Mall Area', 'Suburban Center', 'Business District'
   ]);
+  
+  const mapContainer = useRef<HTMLDivElement>(null);
+  const map = useRef<mapboxgl.Map | null>(null);
+  const markers = useRef<mapboxgl.Marker[]>([]);
 
   // Enhanced mock stores with more details
   const mockStores: Store[] = [
@@ -209,12 +217,89 @@ const ShoppingAreaSelector: React.FC<ShoppingAreaSelectorProps> = ({ onStoreSele
       }
     });
 
+  // Initialize map
+  useEffect(() => {
+    if (!showMap || !mapContainer.current || map.current || !mapboxToken) return;
+
+    // Set Mapbox access token
+    mapboxgl.accessToken = mapboxToken;
+    
+    map.current = new mapboxgl.Map({
+      container: mapContainer.current,
+      style: 'mapbox://styles/mapbox/light-v11',
+      center: userLocation ? [userLocation.lng, userLocation.lat] : [-74.0060, 40.7128],
+      zoom: 12
+    });
+
+    map.current.addControl(new mapboxgl.NavigationControl(), 'top-right');
+
+    return () => {
+      if (map.current) {
+        map.current.remove();
+        map.current = null;
+      }
+    };
+  }, [showMap, userLocation, mapboxToken]);
+
+  // Update map markers when stores change
+  useEffect(() => {
+    if (!map.current || !showMap) return;
+
+    // Clear existing markers
+    markers.current.forEach(marker => marker.remove());
+    markers.current = [];
+
+    // Add new markers
+    filteredStores.forEach(store => {
+      const popup = new mapboxgl.Popup({ offset: 25 }).setHTML(`
+        <div class="p-2">
+          <h3 class="font-semibold text-sm">${store.name}</h3>
+          <p class="text-xs text-gray-600">${store.address}</p>
+          ${store.rating ? `<div class="flex items-center gap-1 mt-1">
+            <span class="text-yellow-500">★</span>
+            <span class="text-xs">${store.rating}</span>
+          </div>` : ''}
+          ${store.distance ? `<p class="text-xs text-gray-500">${store.distance.toFixed(1)} km away</p>` : ''}
+        </div>
+      `);
+
+      const marker = new mapboxgl.Marker({
+        color: store.verified ? '#10b981' : '#6b7280'
+      })
+        .setLngLat([store.longitude, store.latitude])
+        .setPopup(popup)
+        .addTo(map.current!);
+
+      marker.getElement().addEventListener('click', () => {
+        onStoreSelect?.(store);
+      });
+
+      markers.current.push(marker);
+    });
+
+    // Fit map to show all markers
+    if (filteredStores.length > 0) {
+      const bounds = new mapboxgl.LngLatBounds();
+      filteredStores.forEach(store => {
+        bounds.extend([store.longitude, store.latitude]);
+      });
+      
+      if (filteredStores.length === 1) {
+        map.current.setCenter([filteredStores[0].longitude, filteredStores[0].latitude]);
+        map.current.setZoom(15);
+      } else {
+        map.current.fitBounds(bounds, { padding: 50 });
+      }
+    }
+  }, [filteredStores, showMap, onStoreSelect]);
+
   return (
     <div className="space-y-4">
       <Tabs defaultValue="search" className="w-full">
-        <TabsList className="grid w-full grid-cols-2">
+        <TabsList className="grid w-full grid-cols-3">
           <TabsTrigger value="search">Search Area</TabsTrigger>
           <TabsTrigger value="browse">Browse Stores</TabsTrigger>
+          <TabsTrigger value="map">Map View</TabsTrigger>
         </TabsList>
 
         <TabsContent value="search" className="space-y-4">
@@ -319,6 +404,62 @@ const ShoppingAreaSelector: React.FC<ShoppingAreaSelectorProps> = ({ onStoreSele
                   <span className="font-medium">Shopping in: {selectedArea}</span>
                   <Badge variant="secondary">{filteredStores.length} stores found</Badge>
                 </div>
+              </div>
+            )}
+          </Card>
+        </TabsContent>
+
+        <TabsContent value="map" className="space-y-4">
+          <Card className="p-4">
+            <div className="flex items-center justify-between mb-4">
+              <h3 className="font-semibold">Store Locations</h3>
+              <Button 
+                variant="outline" 
+                size="sm"
+                onClick={() => setShowMap(!showMap)}
+                disabled={!mapboxToken}
+              >
+                <Map size={14} className="mr-2" />
+                {showMap ? 'Hide Map' : 'Show Map'}
+              </Button>
+            </div>
+            
+            {!mapboxToken && (
+              <div className="mb-4 p-4 bg-muted/50 rounded-lg">
+                <p className="text-sm font-medium mb-2">Enter your Mapbox Public Token</p>
+                <p className="text-xs text-muted-foreground mb-3">
+                  Get your free public token from <a href="https://mapbox.com" target="_blank" rel="noopener noreferrer" className="text-primary hover:underline">mapbox.com</a>
+                </p>
+                <Input
+                  placeholder="pk.eyJ1IjoieW91cnVzZXJuYW1lIiwiYSI6ImNr..."
+                  value={mapboxToken}
+                  onChange={(e) => setMapboxToken(e.target.value)}
+                  className="font-mono text-xs"
+                />
+              </div>
+            )}
+            
+            {showMap && mapboxToken && (
+              <div className="space-y-4">
+                <div 
+                  ref={mapContainer} 
+                  className="w-full h-96 rounded-lg border"
+                />
+                
+                {filteredStores.length > 0 && (
+                  <div className="text-sm text-muted-foreground">
+                    Showing {filteredStores.length} stores on map. Click markers to select stores.
+                  </div>
+                )}
+              </div>
+            )}
+            
+            {!showMap && mapboxToken && (
+              <div className="text-center py-8">
+                <Map className="mx-auto mb-3 text-muted-foreground" size={32} />
+                <p className="text-sm text-muted-foreground">
+                  Click "Show Map" to view store locations visually
+                </p>
               </div>
             )}
           </Card>
