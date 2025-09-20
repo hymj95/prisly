@@ -75,15 +75,17 @@ const Home: React.FC = () => {
       </div>
 
       {/* Quick Scan Button */}
-      <Card className="p-4 gradient-scan border-0 text-center">
-        <div className="space-y-3">
-          <Zap className="mx-auto text-white" size={32} />
-          <div>
-            <h3 className="font-semibold text-white">Quick Scan</h3>
-            <p className="text-sm text-white/80">Scan a product to get instant price comparison</p>
+      <Card className="p-3 gradient-scan border-0">
+        <div className="flex items-center gap-3">
+          <div className="flex-shrink-0">
+            <Zap className="text-white" size={24} />
           </div>
-          <Button variant="secondary" className="w-full">
-            Start Scanning
+          <div className="flex-1 text-left">
+            <h3 className="font-semibold text-white text-sm">Quick Scan</h3>
+            <p className="text-xs text-white/80">Get instant price comparison</p>
+          </div>
+          <Button variant="secondary" size="sm" className="flex-shrink-0">
+            Scan
           </Button>
         </div>
       </Card>
