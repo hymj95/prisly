@@ -4,6 +4,7 @@ import { Button } from '@/components/ui/button';
 import { Badge } from '@/components/ui/badge';
 import { Input } from '@/components/ui/input';
 import { Switch } from '@/components/ui/switch';
+import BarcodeDemo from './BarcodeDemo';
 import { 
   History, 
   Award, 
@@ -15,7 +16,8 @@ import {
   MapPin,
   Smartphone,
   Mail,
-  Shield
+  Shield,
+  Camera
 } from 'lucide-react';
 import { useCurrency } from '@/hooks/useCurrency';
 
@@ -269,12 +271,14 @@ const ProfileFeatures: React.FC<ProfileFeaturesProps> = ({ activeFeature, onBack
       return renderScanHistory();
     case 'achievements':
       return renderAchievements();
-    case 'alerts':
-      return renderPriceAlerts();
-    case 'settings':
+    case 'notifications':
       return renderSettings();
+    case 'account':
+      return renderSettings();
+    case 'barcode-demo':
+      return <BarcodeDemo />;
     default:
-      return null;
+      return <div>Feature not found</div>;
   }
 };
 

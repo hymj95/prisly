@@ -23,6 +23,8 @@ import {
 } from 'lucide-react';
 import { useLanguage } from '@/hooks/useLanguage';
 import { useCurrency } from '@/hooks/useCurrency';
+import { useBarcodeScanner } from '@/hooks/useBarcodeScanner';
+import { useProductLookup } from '@/hooks/useProductLookup';
 import StoreLocationManager from '../StoreLocationManager';
 import ShoppingAreaSelector from '../ShoppingAreaSelector';
 
@@ -44,7 +46,8 @@ interface Store {
 const Scan: React.FC = () => {
   const { t } = useLanguage();
   const { formatPrice } = useCurrency();
-  const [isScanning, setIsScanning] = useState(false);
+  const { startScan, isScanning } = useBarcodeScanner();
+  const { lookupProduct, isLoading: isLookingUp } = useProductLookup();
   const [scanResult, setScanResult] = useState<DetectedProduct | null>(null);
   const [selectedStore, setSelectedStore] = useState<Store | null>(null);
   const [showStoreManager, setShowStoreManager] = useState(false);
@@ -87,29 +90,42 @@ const Scan: React.FC = () => {
     }
   };
 
-  const handleStartScan = () => {
-    setIsScanning(true);
+  const handleStartScan = async () => {
     setError(null);
     setScanResult(null);
     setSelectedStore(null);
     
-    // Simulate camera scanning with random success/failure
-    setTimeout(() => {
-      const barcodes = Object.keys(mockProducts);
-      const randomBarcode = barcodes[Math.floor(Math.random() * barcodes.length)];
+    try {
+      const scannedCode = await startScan();
       
-      // 80% success rate
-      if (Math.random() > 0.2) {
-        const product = mockProducts[randomBarcode];
-        setScanResult(product);
-        setEditedProduct(product);
-        setCurrentPrice(product.price?.toString() || '');
-        setIsScanning(false);
-      } else {
-        setError(t('scan.invalidBarcode'));
-        setIsScanning(false);
+      if (scannedCode) {
+        // Look up product information
+        const productInfo = await lookupProduct(scannedCode.displayValue);
+        
+        if (productInfo) {
+          // Convert ProductInfo to DetectedProduct format
+          const product: DetectedProduct = {
+            name: productInfo.name,
+            brand: productInfo.brand,
+            category: productInfo.category,
+            barcode: productInfo.barcode,
+            price: productInfo.price
+          };
+          
+          setScanResult(product);
+          setEditedProduct(product);
+          setCurrentPrice(product.price?.toString() || '');
+          
+          // Auto-edit if product is unknown
+          if (productInfo.name === 'Unknown Product') {
+            setIsEditing(true);
+          }
+        }
       }
-    }, 3000);
+    } catch (error) {
+      setError('Failed to scan barcode. Please try again.');
+      console.error('Scan error:', error);
+    }
   };
 
   const handleStoreSelect = (store: Store) => {
@@ -235,12 +251,17 @@ const Scan: React.FC = () => {
           <div className="space-y-6">
             <div className="relative">
               <div className={`w-48 h-48 mx-auto border-2 border-dashed rounded-lg flex items-center justify-center ${
-                isScanning ? 'border-primary bg-primary/5 animate-pulse' : 'border-muted-foreground/30'
+                (isScanning || isLookingUp) ? 'border-primary bg-primary/5 animate-pulse' : 'border-muted-foreground/30'
               }`}>
                 {isScanning ? (
                   <div className="space-y-2">
+                    <Camera className="mx-auto text-primary animate-pulse" size={32} />
+                    <p className="text-sm text-primary font-medium">Opening Camera...</p>
+                  </div>
+                ) : isLookingUp ? (
+                  <div className="space-y-2">
                     <Loader2 className="mx-auto animate-spin text-primary" size={32} />
-                    <p className="text-sm text-primary font-medium">{t('scan.scanning')}</p>
+                    <p className="text-sm text-primary font-medium">Looking up product...</p>
                   </div>
                 ) : (
                   <Camera className="text-muted-foreground" size={64} />
@@ -248,15 +269,21 @@ const Scan: React.FC = () => {
               </div>
             </div>
 
-            {!isScanning ? (
+            {!isScanning && !isLookingUp ? (
               <Button onClick={handleStartScan} className="bg-primary-solid text-white">
-                <Zap size={16} className="mr-2" />
+                <Camera size={16} className="mr-2" />
                 {t('scan.startScanning')}
               </Button>
             ) : (
-              <Button variant="outline" onClick={() => setIsScanning(false)}>
-                {t('common.cancel')}
-              </Button>
+              <div className="space-y-2">
+                <p className="text-sm text-muted-foreground">
+                  {isScanning ? 'Camera is opening...' : 'Looking up product information...'}
+                </p>
+                <Button variant="outline" disabled>
+                  <Loader2 size={16} className="mr-2 animate-spin" />
+                  {isScanning ? 'Scanning...' : 'Loading...'}
+                </Button>
+              </div>
             )}
           </div>
         </Card>
