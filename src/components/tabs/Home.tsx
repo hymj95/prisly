@@ -2,12 +2,13 @@ import React, { useState } from 'react';
 import { Card } from '@/components/ui/card';
 import { Badge } from '@/components/ui/badge';
 import { Button } from '@/components/ui/button';
-import { TrendingDown, TrendingUp, MapPin, Clock, Zap, Flame, Star, Target } from 'lucide-react';
+import { TrendingDown, TrendingUp, MapPin, Clock, Zap, Flame, Star, Target, Plus } from 'lucide-react';
 import { useCurrency } from '@/hooks/useCurrency';
 import { useLanguage } from '@/hooks/useLanguage';
 import PrislyLogo from '../PrislyLogo';
 import ProductDetail from '../ProductDetail';
 import DealsSection from '../DealsSection';
+import StoreLocationManager from '../StoreLocationManager';
 
 interface HomeProps {
   onNavigateToDeals?: () => void;
@@ -141,6 +142,7 @@ const mockLocalDeals = [
 
 const Home: React.FC<HomeProps> = ({ onNavigateToDeals }) => {
   const [selectedProduct, setSelectedProduct] = useState<any>(null);
+  const [showStoreManager, setShowStoreManager] = useState(false);
   const { formatPrice } = useCurrency();
   const { t } = useLanguage();
 
@@ -153,6 +155,25 @@ const Home: React.FC<HomeProps> = ({ onNavigateToDeals }) => {
       onNavigateToDeals();
     }
   };
+
+  const handleStoreSelect = (store: any) => {
+    console.log('Selected store:', store);
+    setShowStoreManager(false);
+  };
+
+  if (showStoreManager) {
+    return (
+      <div className="pb-20 px-4 pt-6">
+        <div className="flex items-center gap-3 mb-6">
+          <Button variant="outline" size="icon" onClick={() => setShowStoreManager(false)}>
+            <MapPin size={20} />
+          </Button>
+          <h2 className="text-xl font-bold">Store Location</h2>
+        </div>
+        <StoreLocationManager onStoreSelect={handleStoreSelect} />
+      </div>
+    );
+  }
 
   if (selectedProduct) {
     return (
@@ -196,6 +217,25 @@ const Home: React.FC<HomeProps> = ({ onNavigateToDeals }) => {
           </div>
         </Card>
       </div>
+
+      {/* Store Location Banner */}
+      <Card className="p-4 bg-primary/5 border-primary/20">
+        <div className="flex items-center gap-4">
+          <MapPin className="text-primary" size={20} />
+          <div className="flex-1">
+            <h3 className="font-medium text-sm">Current Store Location</h3>
+            <p className="text-xs text-muted-foreground">Select your shopping location for personalized deals</p>
+          </div>
+          <Button 
+            variant="outline" 
+            size="sm"
+            onClick={() => setShowStoreManager(true)}
+          >
+            <Plus size={14} className="mr-1" />
+            Set Store
+          </Button>
+        </div>
+      </Card>
 
       {/* Quick Scan Button */}
       <Card className="p-4 bg-forest-solid border-0">
