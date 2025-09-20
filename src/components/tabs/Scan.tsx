@@ -17,11 +17,14 @@ import {
   AlertCircle,
   Barcode,
   Package,
-  DollarSign
+  DollarSign,
+  ArrowLeft,
+  Search
 } from 'lucide-react';
 import { useLanguage } from '@/hooks/useLanguage';
 import { useCurrency } from '@/hooks/useCurrency';
 import StoreLocationManager from '../StoreLocationManager';
+import ShoppingAreaSelector from '../ShoppingAreaSelector';
 
 interface DetectedProduct {
   name: string;
@@ -45,6 +48,8 @@ const Scan: React.FC = () => {
   const [scanResult, setScanResult] = useState<DetectedProduct | null>(null);
   const [selectedStore, setSelectedStore] = useState<Store | null>(null);
   const [showStoreManager, setShowStoreManager] = useState(false);
+  const [showAreaSelector, setShowAreaSelector] = useState(false);
+  const [selectedArea, setSelectedArea] = useState<{ location: string; radius: number; stores: Store[] } | null>(null);
   const [isEditing, setIsEditing] = useState(false);
   const [error, setError] = useState<string | null>(null);
   const [editedProduct, setEditedProduct] = useState<DetectedProduct | null>(null);
@@ -110,6 +115,16 @@ const Scan: React.FC = () => {
   const handleStoreSelect = (store: Store) => {
     setSelectedStore(store);
     setShowStoreManager(false);
+    setShowAreaSelector(false);
+  };
+
+  const handleAreaSelect = (area: { location: string; radius: number; stores: Store[] }) => {
+    setSelectedArea(area);
+    // Auto-select the first store in the area if available
+    if (area.stores.length > 0) {
+      setSelectedStore(area.stores[0]);
+    }
+    setShowAreaSelector(false);
   };
 
   const handleEdit = () => {
@@ -131,6 +146,7 @@ const Scan: React.FC = () => {
     console.log('Saving scan result:', {
       product: scanResult,
       store: selectedStore,
+      area: selectedArea,
       price: currentPrice,
       timestamp: new Date().toISOString()
     });
@@ -138,20 +154,44 @@ const Scan: React.FC = () => {
     // Reset for next scan
     setScanResult(null);
     setSelectedStore(null);
+    setSelectedArea(null);
     setEditedProduct(null);
     setCurrentPrice('');
     setIsEditing(false);
     setError(null);
+    setShowStoreManager(false);
+    setShowAreaSelector(false);
   };
 
   const handleScanAnother = () => {
     setScanResult(null);
     setSelectedStore(null);
+    setSelectedArea(null);
     setEditedProduct(null);
     setCurrentPrice('');
     setIsEditing(false);
     setError(null);
+    setShowStoreManager(false);
+    setShowAreaSelector(false);
   };
+
+  // Area Selector View
+  if (showAreaSelector) {
+    return (
+      <div className="pb-20 px-4 pt-6">
+        <div className="flex items-center gap-3 mb-6">
+          <Button variant="outline" size="icon" onClick={() => setShowAreaSelector(false)}>
+            <ArrowLeft size={20} />
+          </Button>
+          <h2 className="text-xl font-bold">Select Shopping Area</h2>
+        </div>
+        <ShoppingAreaSelector 
+          onStoreSelect={handleStoreSelect}
+          onAreaSelect={handleAreaSelect}
+        />
+      </div>
+    );
+  }
 
   // Store Manager View
   if (showStoreManager) {
@@ -159,7 +199,7 @@ const Scan: React.FC = () => {
       <div className="pb-20 px-4 pt-6">
         <div className="flex items-center gap-3 mb-6">
           <Button variant="outline" size="icon" onClick={() => setShowStoreManager(false)}>
-            <MapPin size={20} />
+            <ArrowLeft size={20} />
           </Button>
           <h2 className="text-xl font-bold">{t('scan.addStore')}</h2>
         </div>
@@ -338,7 +378,31 @@ const Scan: React.FC = () => {
           {/* Store Selection */}
           <Card className="p-4">
             <div className="space-y-4">
-              <h3 className="font-semibold">{t('scan.selectStore')}</h3>
+              <div className="flex items-center justify-between">
+                <h3 className="font-semibold">Shopping Location</h3>
+                <div className="flex gap-2">
+                  <Button variant="outline" size="sm" onClick={() => setShowAreaSelector(true)}>
+                    <Search size={14} className="mr-2" />
+                    {selectedArea ? 'Change Area' : 'Search Area'}
+                  </Button>
+                  <Button variant="outline" size="sm" onClick={() => setShowStoreManager(true)}>
+                    <Plus size={14} className="mr-2" />
+                    {t('scan.addManually')}
+                  </Button>
+                </div>
+              </div>
+              
+              {selectedArea && (
+                <div className="p-3 bg-primary/5 rounded-lg border border-primary/20">
+                  <div className="flex items-center gap-2 text-sm">
+                    <MapPin size={12} className="text-primary" />
+                    <span className="font-medium">Area: {selectedArea.location}</span>
+                    <Badge variant="secondary" className="text-xs">
+                      {selectedArea.stores.length} stores
+                    </Badge>
+                  </div>
+                </div>
+              )}
               
               {selectedStore ? (
                 <div className="flex items-center justify-between p-3 bg-success/10 border border-success/20 rounded-lg">
@@ -347,6 +411,9 @@ const Scan: React.FC = () => {
                     <div>
                       <p className="font-medium">{selectedStore.name}</p>
                       <p className="text-sm text-muted-foreground">{selectedStore.address}</p>
+                      {selectedStore.distance !== undefined && (
+                        <p className="text-xs text-muted-foreground">{selectedStore.distance.toFixed(1)} km away</p>
+                      )}
                     </div>
                   </div>
                   <Button variant="outline" size="sm" onClick={() => setSelectedStore(null)}>
@@ -357,7 +424,7 @@ const Scan: React.FC = () => {
                 <div className="space-y-3">
                   <Alert>
                     <AlertCircle className="h-4 w-4" />
-                    <AlertDescription>{t('scan.noStoreDetected')}</AlertDescription>
+                    <AlertDescription>Please select a shopping area or specific store to continue</AlertDescription>
                   </Alert>
 
                   <div className="grid gap-2">
@@ -383,18 +450,6 @@ const Scan: React.FC = () => {
                         </div>
                       </Card>
                     ))}
-                  </div>
-
-                  <div className="text-center">
-                    <p className="text-sm text-muted-foreground mb-2">{t('scan.storeNotListed')}</p>
-                    <Button 
-                      variant="outline" 
-                      size="sm"
-                      onClick={() => setShowStoreManager(true)}
-                    >
-                      <Plus size={14} className="mr-1" />
-                      {t('scan.addManually')}
-                    </Button>
                   </div>
                 </div>
               )}
