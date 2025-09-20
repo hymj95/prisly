@@ -7,6 +7,7 @@ import CurrencySelector from '../CurrencySelector';
 import LanguageSelector from '../LanguageSelector';
 import LocationSelector from '../LocationSelector';
 import ProfileFeatures from '../ProfileFeatures';
+import LoginPrompt from '../LoginPrompt';
 import { useCurrency } from '@/hooks/useCurrency';
 import { useLanguage } from '@/hooks/useLanguage';
 import { useAuth } from '@/hooks/useAuth';
@@ -79,12 +80,18 @@ const Profile: React.FC = () => {
   const { signOut, user } = useAuth();
   const [activeFeature, setActiveFeature] = useState<string | null>(null);
   const [showLocationSelector, setShowLocationSelector] = useState(false);
+  const [showLoginPrompt, setShowLoginPrompt] = useState(false);
   const [userLocation, setUserLocation] = useState<{ lat: number; lng: number; address: string; radius: number } | null>(null);
 
   const handleLocationSelect = (location: { lat: number; lng: number; address: string; radius: number }) => {
     setUserLocation(location);
     setShowLocationSelector(false);
   };
+
+  // Show login prompt if user is not authenticated
+  if (!user && showLoginPrompt) {
+    return <LoginPrompt onClose={() => setShowLoginPrompt(false)} />;
+  }
 
   if (showLocationSelector) {
     return (
@@ -112,6 +119,95 @@ const Profile: React.FC = () => {
         activeFeature={activeFeature} 
         onBack={() => setActiveFeature(null)} 
       />
+    );
+  }
+  
+  // Guest user profile (not authenticated)
+  if (!user) {
+    return (
+      <div className="pb-20 px-4 pt-6 space-y-6">
+        {/* Guest Profile Header */}
+        <Card className="p-6 bg-card-subtle border-0">
+          <div className="text-center space-y-4">
+            <Avatar className="w-16 h-16 mx-auto">
+              <AvatarFallback className="bg-muted text-muted-foreground text-xl">
+                <User size={32} />
+              </AvatarFallback>
+            </Avatar>
+            
+            <div className="space-y-2">
+              <h2 className="text-xl font-bold">Guest User</h2>
+              <p className="text-muted-foreground">Sign in to unlock all features</p>
+              <Button onClick={() => setShowLoginPrompt(true)} className="mt-4">
+                Sign In / Sign Up
+              </Button>
+            </div>
+          </div>
+        </Card>
+
+        {/* Limited Guest Actions */}
+        <div className="space-y-3">
+          <h3 className="font-semibold">Settings</h3>
+          
+          <div className="space-y-2">
+            <Card className="p-3">
+              <div className="flex items-center justify-between">
+                <div className="flex items-center gap-3">
+                  <Globe className="text-muted-foreground" size={20} />
+                  <span className="font-medium">{t('profile.currency')}</span>
+                </div>
+                <div className="w-32">
+                  <CurrencySelector />
+                </div>
+              </div>
+            </Card>
+            
+            <Card className="p-3">
+              <div className="flex items-center justify-between">
+                <div className="flex items-center gap-3">
+                  <Languages className="text-muted-foreground" size={20} />
+                  <span className="font-medium">{t('profile.language')}</span>
+                </div>
+                <div className="w-32">
+                  <LanguageSelector />
+                </div>
+              </div>
+            </Card>
+
+            <Card className="p-3 hover:bg-muted/50 transition-colors cursor-pointer" onClick={() => setShowLocationSelector(true)}>
+              <div className="flex items-center justify-between">
+                <div className="flex items-center gap-3">
+                  <MapPin className="text-muted-foreground" size={20} />
+                  <div>
+                    <span className="font-medium">{t('profile.location')}</span>
+                    {userLocation && (
+                      <p className="text-xs text-muted-foreground">{userLocation.address}</p>
+                    )}
+                  </div>
+                </div>
+                <ChevronRight className="text-muted-foreground" size={16} />
+              </div>
+            </Card>
+          </div>
+        </div>
+
+        {/* Sign In Prompt Card */}
+        <Card className="p-4 bg-primary/5 border-primary/20">
+          <div className="space-y-3">
+            <div className="flex items-center gap-2">
+              <User size={20} className="text-primary" />
+              <h3 className="font-semibold text-primary">Create Account</h3>
+            </div>
+            <div>
+              <h4 className="font-medium">Unlock Premium Features</h4>
+              <p className="text-sm text-muted-foreground">Save scan history, create price alerts, and get personalized recommendations</p>
+            </div>
+            <Button onClick={() => setShowLoginPrompt(true)} className="w-full">
+              Get Started
+            </Button>
+          </div>
+        </Card>
+      </div>
     );
   }
   return (
