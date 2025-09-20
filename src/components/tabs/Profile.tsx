@@ -5,8 +5,10 @@ import { Badge } from '@/components/ui/badge';
 import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui/avatar';
 import CurrencySelector from '../CurrencySelector';
 import LanguageSelector from '../LanguageSelector';
+import LocationSelector from '../LocationSelector';
 import ProfileFeatures from '../ProfileFeatures';
 import { useCurrency } from '@/hooks/useCurrency';
+import { useLanguage } from '@/hooks/useLanguage';
 import { 
   User, 
   Settings, 
@@ -71,7 +73,35 @@ const mockAchievements = [
 
 const Profile: React.FC = () => {
   const { formatPrice } = useCurrency();
+  const { t } = useLanguage();
   const [activeFeature, setActiveFeature] = useState<string | null>(null);
+  const [showLocationSelector, setShowLocationSelector] = useState(false);
+  const [userLocation, setUserLocation] = useState<{ lat: number; lng: number; address: string; radius: number } | null>(null);
+
+  const handleLocationSelect = (location: { lat: number; lng: number; address: string; radius: number }) => {
+    setUserLocation(location);
+    setShowLocationSelector(false);
+  };
+
+  if (showLocationSelector) {
+    return (
+      <div className="pb-20 px-4 pt-6">
+        <div className="flex items-center gap-3 mb-6">
+          <button 
+            onClick={() => setShowLocationSelector(false)}
+            className="p-2 hover:bg-muted rounded-full"
+          >
+            <ChevronRight size={20} className="rotate-180" />
+          </button>
+          <h2 className="text-xl font-bold">{t('profile.setLocation')}</h2>
+        </div>
+        <LocationSelector 
+          onLocationSelect={handleLocationSelect}
+          currentLocation={userLocation}
+        />
+      </div>
+    );
+  }
 
   if (activeFeature) {
     return (
@@ -147,7 +177,7 @@ const Profile: React.FC = () => {
             <div className="flex items-center justify-between">
               <div className="flex items-center gap-3">
                 <Globe className="text-muted-foreground" size={20} />
-                <span className="font-medium">Currency</span>
+                <span className="font-medium">{t('profile.currency')}</span>
               </div>
               <div className="w-32">
                 <CurrencySelector />
@@ -159,11 +189,26 @@ const Profile: React.FC = () => {
             <div className="flex items-center justify-between">
               <div className="flex items-center gap-3">
                 <Languages className="text-muted-foreground" size={20} />
-                <span className="font-medium">Language</span>
+                <span className="font-medium">{t('profile.language')}</span>
               </div>
               <div className="w-32">
                 <LanguageSelector />
               </div>
+            </div>
+          </Card>
+
+          <Card className="p-3 hover:bg-muted/50 transition-colors cursor-pointer" onClick={() => setShowLocationSelector(true)}>
+            <div className="flex items-center justify-between">
+              <div className="flex items-center gap-3">
+                <MapPin className="text-muted-foreground" size={20} />
+                <div>
+                  <span className="font-medium">{t('profile.location')}</span>
+                  {userLocation && (
+                    <p className="text-xs text-muted-foreground">{userLocation.address}</p>
+                  )}
+                </div>
+              </div>
+              <ChevronRight className="text-muted-foreground" size={16} />
             </div>
           </Card>
           

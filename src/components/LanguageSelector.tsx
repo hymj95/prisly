@@ -6,6 +6,7 @@ import {
   SelectTrigger,
   SelectValue,
 } from "@/components/ui/select";
+import { useLanguage } from '@/hooks/useLanguage';
 
 const languages = [
   { code: 'en', name: 'English', flag: '🇬🇧' },
@@ -16,15 +17,15 @@ const languages = [
 ];
 
 const LanguageSelector: React.FC = () => {
-  const [selectedLanguage, setSelectedLanguage] = React.useState('en');
+  const { language, setLanguage } = useLanguage();
 
   return (
-    <Select value={selectedLanguage} onValueChange={setSelectedLanguage}>
+    <Select value={language} onValueChange={setLanguage}>
       <SelectTrigger className="w-full">
         <SelectValue>
           <div className="flex items-center gap-2">
-            <span>{languages.find(l => l.code === selectedLanguage)?.flag}</span>
-            <span>{languages.find(l => l.code === selectedLanguage)?.name}</span>
+            <span>{languages.find(l => l.code === language)?.flag}</span>
+            <span>{languages.find(l => l.code === language)?.name}</span>
           </div>
         </SelectValue>
       </SelectTrigger>

@@ -2,12 +2,12 @@ import React, { useState } from 'react';
 import { Card } from '@/components/ui/card';
 import { Badge } from '@/components/ui/badge';
 import { Button } from '@/components/ui/button';
-import { TrendingDown, TrendingUp, MapPin, Clock, Zap, Flame, Star, Target, Settings } from 'lucide-react';
+import { TrendingDown, TrendingUp, MapPin, Clock, Zap, Flame, Star, Target } from 'lucide-react';
 import { useCurrency } from '@/hooks/useCurrency';
+import { useLanguage } from '@/hooks/useLanguage';
 import PrislyLogo from '../PrislyLogo';
 import ProductDetail from '../ProductDetail';
 import DealsSection from '../DealsSection';
-import LocationSelector from '../LocationSelector';
 
 const mockRecentScans = [
   {
@@ -137,14 +137,8 @@ const mockLocalDeals = [
 
 const Home: React.FC = () => {
   const [selectedProduct, setSelectedProduct] = useState<any>(null);
-  const [showLocationSelector, setShowLocationSelector] = useState(false);
-  const [userLocation, setUserLocation] = useState<{ lat: number; lng: number; address: string; radius: number } | null>(null);
   const { formatPrice } = useCurrency();
-
-  const handleLocationSelect = (location: { lat: number; lng: number; address: string; radius: number }) => {
-    setUserLocation(location);
-    setShowLocationSelector(false);
-  };
+  const { t } = useLanguage();
 
   const handleDealClick = (deal: any) => {
     setSelectedProduct(deal);
@@ -158,23 +152,6 @@ const Home: React.FC = () => {
       />
     );
   }
-
-  if (showLocationSelector) {
-    return (
-      <div className="pb-20 px-4 pt-6">
-        <div className="flex items-center gap-3 mb-6">
-          <Button variant="outline" size="icon" onClick={() => setShowLocationSelector(false)}>
-            <MapPin size={20} />
-          </Button>
-          <h2 className="text-xl font-bold">Set Your Location</h2>
-        </div>
-        <LocationSelector 
-          onLocationSelect={handleLocationSelect}
-          currentLocation={userLocation}
-        />
-      </div>
-    );
-  }
   return (
     <div className="pb-20 px-4 pt-6 space-y-6">
       {/* Welcome Header */}
@@ -183,8 +160,8 @@ const Home: React.FC = () => {
           <PrislyLogo size="lg" />
         </div>
         <div>
-          <h1 className="text-2xl font-bold text-primary">Welcome to Prisly</h1>
-          <p className="text-muted-foreground">Your smart grocery shopping companion</p>
+          <h1 className="text-2xl font-bold text-primary">{t('home.welcome')}</h1>
+          <p className="text-muted-foreground">{t('home.tagline')}</p>
         </div>
       </div>
 
@@ -193,88 +170,22 @@ const Home: React.FC = () => {
         <Card className="p-4 text-center bg-card-subtle border-0">
           <div className="space-y-1">
             <p className="text-2xl font-bold text-primary">127</p>
-            <p className="text-xs text-muted-foreground">Products Scanned</p>
+            <p className="text-xs text-muted-foreground">{t('home.productsScanned')}</p>
           </div>
         </Card>
         <Card className="p-4 text-center bg-card-subtle border-0">
           <div className="space-y-1">
             <p className="text-2xl font-bold text-success">{formatPrice(342)}</p>
-            <p className="text-xs text-muted-foreground">Money Saved</p>
+            <p className="text-xs text-muted-foreground">{t('home.moneySaved')}</p>
           </div>
         </Card>
         <Card className="p-4 text-center bg-card-subtle border-0">
           <div className="space-y-1">
             <p className="text-2xl font-bold text-primary">24</p>
-            <p className="text-xs text-muted-foreground">Price Alerts</p>
+            <p className="text-xs text-muted-foreground">{t('home.priceAlerts')}</p>
           </div>
         </Card>
       </div>
-
-      {/* Location Banner */}
-      {!userLocation && (
-        <Card className="p-4 bg-primary/10 border-primary/20">
-          <div className="flex items-center gap-4">
-            <MapPin className="text-primary" size={20} />
-            <div className="flex-1">
-              <h3 className="font-medium text-sm">Set Your Shopping Area</h3>
-              <p className="text-xs text-muted-foreground">Get personalized deals from stores near you</p>
-            </div>
-            <Button 
-              variant="outline" 
-              size="sm"
-              onClick={() => setShowLocationSelector(true)}
-            >
-              <Settings size={14} className="mr-1" />
-              Set Area
-            </Button>
-          </div>
-        </Card>
-      )}
-
-      {userLocation && (
-        <Card className="p-4 bg-success/10 border-success/20">
-          <div className="flex items-center justify-between">
-            <div className="flex items-center gap-3">
-              <MapPin className="text-success" size={20} />
-              <div>
-                <p className="font-medium text-sm">Shopping in {userLocation.radius}km radius</p>
-                <p className="text-xs text-muted-foreground">{userLocation.address}</p>
-              </div>
-            </div>
-            <Button 
-              variant="outline" 
-              size="sm"
-              onClick={() => setShowLocationSelector(true)}
-            >
-              Change
-            </Button>
-          </div>
-        </Card>
-      )}
-
-      {/* Hot Deals Section */}
-      <DealsSection 
-        title="🔥 Hot Deals"
-        icon={<Flame className="text-red-500" size={20} />}
-        deals={mockHotDeals}
-        onDealClick={handleDealClick}
-      />
-
-      {/* Flash Deals Section */}
-      <DealsSection 
-        title="⚡ Flash Deals"
-        icon={<Zap className="text-yellow-500" size={20} />}
-        deals={mockFlashDeals}
-        onDealClick={handleDealClick}
-      />
-
-      {/* Local Deals Section */}
-      <DealsSection 
-        title="📍 Local Deals"
-        icon={<Target className="text-blue-500" size={20} />}
-        deals={mockLocalDeals}
-        onDealClick={handleDealClick}
-      />
 
       {/* Quick Scan Button */}
       <Card className="p-4 bg-forest-solid border-0">
@@ -283,20 +194,44 @@ const Home: React.FC = () => {
             <Zap className="text-white" size={24} />
           </div>
           <div className="flex-1 text-left">
-            <h3 className="font-semibold text-white text-sm">Quick Scan</h3>
-            <p className="text-xs text-white/80">Get instant price comparison</p>
+            <h3 className="font-semibold text-white text-sm">{t('home.quickScan')}</h3>
+            <p className="text-xs text-white/80">{t('home.quickScanDesc')}</p>
           </div>
           <Button className="flex-shrink-0 bg-white text-primary hover:bg-white/90">
-            Scan
+            {t('home.scan')}
           </Button>
         </div>
       </Card>
 
+      {/* Hot Deals Section */}
+      <DealsSection 
+        title={t('home.hotDeals')}
+        icon={<Flame className="text-red-500" size={20} />}
+        deals={mockHotDeals}
+        onDealClick={handleDealClick}
+      />
+
+      {/* Flash Deals Section */}
+      <DealsSection 
+        title={t('home.flashDeals')}
+        icon={<Zap className="text-yellow-500" size={20} />}
+        deals={mockFlashDeals}
+        onDealClick={handleDealClick}
+      />
+
+      {/* Local Deals Section */}
+      <DealsSection 
+        title={t('home.localDeals')}
+        icon={<Target className="text-blue-500" size={20} />}
+        deals={mockLocalDeals}
+        onDealClick={handleDealClick}
+      />
+
       {/* Recent Scans */}
       <div className="space-y-4">
         <div className="flex items-center justify-between">
-          <h2 className="text-lg font-semibold">Recent Scans</h2>
-          <Button variant="outline" size="sm">View All</Button>
+          <h2 className="text-lg font-semibold">{t('home.recentScans')}</h2>
+          <Button variant="outline" size="sm">{t('home.viewAll')}</Button>
         </div>
 
         <div className="space-y-3">

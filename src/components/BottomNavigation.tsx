@@ -1,21 +1,23 @@
 import React from 'react';
 import { Home, ScanLine, TrendingUp, ShoppingCart, User } from 'lucide-react';
 import { cn } from '@/lib/utils';
+import { useLanguage } from '@/hooks/useLanguage';
 
 interface BottomNavigationProps {
   activeTab: string;
   onTabChange: (tab: string) => void;
 }
 
-const navItems = [
-  { id: 'home', label: 'Home', icon: Home },
-  { id: 'scan', label: 'Scan', icon: ScanLine },
-  { id: 'trends', label: 'Trends', icon: TrendingUp },
-  { id: 'planner', label: 'Planner', icon: ShoppingCart },
-  { id: 'profile', label: 'Profile', icon: User },
-];
-
 const BottomNavigation: React.FC<BottomNavigationProps> = ({ activeTab, onTabChange }) => {
+  const { t } = useLanguage();
+  
+  const navItems = [
+    { id: 'home', label: t('nav.home'), icon: Home },
+    { id: 'scan', label: t('nav.scan'), icon: ScanLine },
+    { id: 'trends', label: t('nav.trends'), icon: TrendingUp },
+    { id: 'planner', label: t('nav.planner'), icon: ShoppingCart },
+    { id: 'profile', label: t('nav.profile'), icon: User },
+  ];
   return (
     <nav className="fixed bottom-0 left-0 right-0 bg-nav-background border-t border-nav-border backdrop-blur-sm bg-opacity-95 z-50">
       <div className="flex items-center justify-around px-2 py-2 safe-area-bottom">

@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { createContext, useState } from 'react';
 import { Toaster } from "@/components/ui/toaster";
 import { Toaster as Sonner } from "@/components/ui/sonner";
 import { TooltipProvider } from "@/components/ui/tooltip";
@@ -9,11 +9,13 @@ import Scan from './components/tabs/Scan';
 import Trends from './components/tabs/Trends';
 import Planner from './components/tabs/Planner';
 import Profile from './components/tabs/Profile';
+import { LanguageContext, useLanguageProvider } from './hooks/useLanguage';
 
 const queryClient = new QueryClient();
 
 const App = () => {
   const [activeTab, setActiveTab] = useState('home');
+  const languageProvider = useLanguageProvider();
 
   const renderActiveTab = () => {
     switch (activeTab) {
@@ -34,16 +36,18 @@ const App = () => {
 
   return (
     <QueryClientProvider client={queryClient}>
-      <TooltipProvider>
-        <div className="min-h-screen bg-background">
-          <main className="animate-fade-in">
-            {renderActiveTab()}
-          </main>
-          <BottomNavigation activeTab={activeTab} onTabChange={setActiveTab} />
-        </div>
-        <Toaster />
-        <Sonner />
-      </TooltipProvider>
+      <LanguageContext.Provider value={languageProvider}>
+        <TooltipProvider>
+          <div className="min-h-screen bg-background">
+            <main className="animate-fade-in">
+              {renderActiveTab()}
+            </main>
+            <BottomNavigation activeTab={activeTab} onTabChange={setActiveTab} />
+          </div>
+          <Toaster />
+          <Sonner />
+        </TooltipProvider>
+      </LanguageContext.Provider>
     </QueryClientProvider>
   );
 };
