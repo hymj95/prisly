@@ -197,17 +197,17 @@ const Trends: React.FC = () => {
         <div className="space-y-3">
           <div className="flex items-center gap-2">
             <BarChart3 className="text-primary" size={20} />
-            <h3 className="font-semibold">Market Insights</h3>
+            <h3 className="font-semibold">Fresh Market Insights</h3>
           </div>
           <div className="space-y-2 text-sm">
             <p className="text-muted-foreground">
-              • Electronics prices dropped 2.3% this week due to new product releases
+              • Fresh produce prices dropped 3.2% this week at farmer's markets
             </p>
             <p className="text-muted-foreground">
-              • Grocery prices increased 1.8% following seasonal demand
+              • Organic items show 12% savings compared to conventional stores
             </p>
             <p className="text-muted-foreground">
-              • Best time to buy: Tuesday mornings show 15% lower prices on average
+              • Best shopping time: Early morning for freshest selection & deals
             </p>
           </div>
         </div>

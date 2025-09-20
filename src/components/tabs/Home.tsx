@@ -49,7 +49,7 @@ const Home: React.FC = () => {
       {/* Welcome Header */}
       <div className="text-center space-y-2">
         <h1 className="text-2xl font-bold text-gradient">Welcome to PriceTracker</h1>
-        <p className="text-muted-foreground">Find the best deals and track prices in real-time</p>
+        <p className="text-muted-foreground">Find fresh deals and save on your groceries</p>
       </div>
 
       {/* Quick Stats */}
