@@ -14,6 +14,51 @@ export type Database = {
   }
   public: {
     Tables: {
+      price_alerts: {
+        Row: {
+          alert_triggered: boolean
+          created_at: string
+          current_price: number | null
+          id: string
+          is_active: boolean
+          product_brand: string | null
+          product_name: string
+          store_location: string | null
+          store_name: string | null
+          target_price: number
+          updated_at: string
+          user_id: string
+        }
+        Insert: {
+          alert_triggered?: boolean
+          created_at?: string
+          current_price?: number | null
+          id?: string
+          is_active?: boolean
+          product_brand?: string | null
+          product_name: string
+          store_location?: string | null
+          store_name?: string | null
+          target_price: number
+          updated_at?: string
+          user_id: string
+        }
+        Update: {
+          alert_triggered?: boolean
+          created_at?: string
+          current_price?: number | null
+          id?: string
+          is_active?: boolean
+          product_brand?: string | null
+          product_name?: string
+          store_location?: string | null
+          store_name?: string | null
+          target_price?: number
+          updated_at?: string
+          user_id?: string
+        }
+        Relationships: []
+      }
       profiles: {
         Row: {
           avatar_url: string | null
@@ -36,6 +81,45 @@ export type Database = {
           created_at?: string
           full_name?: string | null
           id?: string
+          updated_at?: string
+          user_id?: string
+        }
+        Relationships: []
+      }
+      wishlists: {
+        Row: {
+          created_at: string
+          id: string
+          product_brand: string | null
+          product_image: string | null
+          product_name: string
+          product_price: number | null
+          store_location: string | null
+          store_name: string | null
+          updated_at: string
+          user_id: string
+        }
+        Insert: {
+          created_at?: string
+          id?: string
+          product_brand?: string | null
+          product_image?: string | null
+          product_name: string
+          product_price?: number | null
+          store_location?: string | null
+          store_name?: string | null
+          updated_at?: string
+          user_id: string
+        }
+        Update: {
+          created_at?: string
+          id?: string
+          product_brand?: string | null
+          product_image?: string | null
+          product_name?: string
+          product_price?: number | null
+          store_location?: string | null
+          store_name?: string | null
           updated_at?: string
           user_id?: string
         }

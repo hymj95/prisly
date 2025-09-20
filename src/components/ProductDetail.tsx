@@ -4,6 +4,9 @@ import { Button } from '@/components/ui/button';
 import { Badge } from '@/components/ui/badge';
 import { useCurrency } from '@/hooks/useCurrency';
 import { useLanguage } from '@/hooks/useLanguage';
+import { useWishlist } from '@/hooks/useWishlist';
+import { usePriceAlerts } from '@/hooks/usePriceAlerts';
+import PriceAlertDialog from '@/components/PriceAlertDialog';
 import { 
   ArrowLeft, 
   TrendingDown, 
@@ -15,7 +18,9 @@ import {
   Heart,
   Share2,
   AlertTriangle,
-  CheckCircle2
+  CheckCircle2,
+  Navigation,
+  ExternalLink
 } from 'lucide-react';
 
 interface ProductDetailProps {
@@ -41,6 +46,40 @@ const mockStoreComparison = [
 const ProductDetail: React.FC<ProductDetailProps> = ({ product, onBack }) => {
   const { formatPrice } = useCurrency();
   const { t } = useLanguage();
+  const { addToWishlist, isInWishlist } = useWishlist();
+  const { hasActiveAlert } = usePriceAlerts();
+
+  const currentPrice = product.price || product.salePrice || 0;
+  const isWishlisted = isInWishlist(product.product, product.store);
+  const hasAlert = hasActiveAlert(product.product, product.store);
+
+  const handleAddToWishlist = async () => {
+    await addToWishlist({
+      product_name: product.product,
+      product_brand: product.brand,
+      product_price: currentPrice,
+      store_name: product.store,
+      store_location: product.location,
+    });
+  };
+
+  const handleGetDirections = () => {
+    const query = encodeURIComponent(`${product.store} ${product.location}`);
+    const mapsUrl = `https://www.google.com/maps/search/${query}`;
+    window.open(mapsUrl, '_blank');
+  };
+
+  const handleOpenInMaps = (store: any) => {
+    const query = encodeURIComponent(`${store.store} ${store.location}`);
+    const mapsUrl = `https://www.google.com/maps/search/${query}`;
+    window.open(mapsUrl, '_blank');
+  };
+
+  const handleGetDirectionsToStore = (store: any) => {
+    const query = encodeURIComponent(`${store.store} ${store.location}`);
+    const directionsUrl = `https://www.google.com/maps/dir/?api=1&destination=${query}`;
+    window.open(directionsUrl, '_blank');
+  };
   const PriceChart = () => (
     <div className="h-32 w-full relative">
       <svg className="w-full h-full" viewBox="0 0 300 120">
@@ -120,8 +159,14 @@ const ProductDetail: React.FC<ProductDetailProps> = ({ product, onBack }) => {
           <p className="text-sm text-muted-foreground">{product.brand}</p>
         </div>
         <div className="flex gap-2">
-          <Button variant="outline" size="icon" className="rounded-full">
-            <Heart size={16} />
+          <Button 
+            variant="outline" 
+            size="icon" 
+            className="rounded-full"
+            onClick={handleAddToWishlist}
+            disabled={isWishlisted}
+          >
+            <Heart size={16} className={isWishlisted ? 'fill-current text-destructive' : ''} />
           </Button>
           <Button variant="outline" size="icon" className="rounded-full">
             <Share2 size={16} />
@@ -217,6 +262,28 @@ const ProductDetail: React.FC<ProductDetailProps> = ({ product, onBack }) => {
                       <span>{store.lastUpdated}</span>
                     </div>
                   </div>
+                  
+                  {/* Store Action Buttons */}
+                  <div className="flex gap-2 mt-2">
+                    <Button 
+                      variant="outline" 
+                      size="sm"
+                      onClick={() => handleOpenInMaps(store)}
+                      className="text-xs"
+                    >
+                      <ExternalLink size={12} className="mr-1" />
+                      Open in Maps
+                    </Button>
+                    <Button 
+                      variant="outline" 
+                      size="sm"
+                      onClick={() => handleGetDirectionsToStore(store)}
+                      className="text-xs"
+                    >
+                      <Navigation size={12} className="mr-1" />
+                      Directions
+                    </Button>
+                  </div>
                 </div>
                 
                 <div className="text-right">
@@ -237,18 +304,22 @@ const ProductDetail: React.FC<ProductDetailProps> = ({ product, onBack }) => {
 
       {/* Action Buttons */}
       <div className="space-y-3">
-        <Button className="w-full bg-primary-solid text-white">
-          <MapPin className="mr-2" size={16} />
+        <Button 
+          className="w-full bg-primary-solid text-white"
+          onClick={handleGetDirections}
+        >
+          <Navigation className="mr-2" size={16} />
           {t('product.getDirections')}
         </Button>
         <div className="grid grid-cols-2 gap-3">
-          <Button variant="outline">
-            <BarChart3 className="mr-2" size={16} />
-            {t('product.priceAlert')}
-          </Button>
-          <Button variant="outline">
-            <Star className="mr-2" size={16} />
-            {t('product.addToWishlist')}
+          <PriceAlertDialog product={product} />
+          <Button 
+            variant="outline"
+            onClick={handleAddToWishlist}
+            disabled={isWishlisted}
+          >
+            <Star className={`mr-2 ${isWishlisted ? 'fill-current text-warning' : ''}`} size={16} />
+            {isWishlisted ? 'In Wishlist' : t('product.addToWishlist')}
           </Button>
         </div>
       </div>
