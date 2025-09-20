@@ -5,6 +5,7 @@ import { Label } from '@/components/ui/label';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
 import PrislyLogo from '@/components/PrislyLogo';
+import SplashScreen from '@/components/SplashScreen';
 import { useAuth } from '@/hooks/useAuth';
 import { Loader2, Mail, Lock } from 'lucide-react';
 
@@ -12,6 +13,7 @@ export default function Auth() {
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
   const [loading, setLoading] = useState(false);
+  const [showSplash, setShowSplash] = useState(true);
   const { signUp, signIn } = useAuth();
 
   const handleSignUp = async (e: React.FormEvent) => {
@@ -33,11 +35,15 @@ export default function Auth() {
   };
 
 
+  if (showSplash) {
+    return <SplashScreen onComplete={() => setShowSplash(false)} />;
+  }
+
   return (
-    <div className="min-h-screen bg-background flex items-center justify-center p-4">
-      <div className="w-full max-w-md space-y-6">
+    <div className="min-h-screen bg-background flex items-center justify-center p-4 animate-fade-in">
+      <div className="w-full max-w-md space-y-6 animate-scale-in">
         <div className="flex flex-col items-center justify-center space-y-8 mb-8">
-          <PrislyLogo size="quarter-screen" />
+          <PrislyLogo size="xl" />
           <h1 className="text-3xl font-bold text-foreground">Welcome to Prisly</h1>
         </div>
 
