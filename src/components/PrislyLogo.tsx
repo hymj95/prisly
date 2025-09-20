@@ -2,7 +2,7 @@ import React from 'react';
 import prislyLogo from '@/assets/prisly-logo-green.png';
 
 interface PrislyLogoProps {
-  size?: 'sm' | 'md' | 'lg';
+  size?: 'sm' | 'md' | 'lg' | 'xl';
   className?: string;
 }
 
@@ -10,7 +10,8 @@ const PrislyLogo: React.FC<PrislyLogoProps> = ({ size = 'md', className = '' }) 
   const sizeClasses = {
     sm: 'h-8',
     md: 'h-12',
-    lg: 'h-16'
+    lg: 'h-16',
+    xl: 'h-24'
   };
 
   return (
