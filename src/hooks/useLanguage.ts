@@ -704,7 +704,168 @@ const translations: Translations = {
     sv: 'Till kl 21',
     de: 'Bis 21 Uhr'
   },
-  // Common
+  // Scan Tab translations
+  'scan.title': {
+    en: 'Scan Product',
+    no: 'Skann Produkt',
+    da: 'Scan Produkt',
+    sv: 'Skanna Produkt',
+    de: 'Produkt Scannen'
+  },
+  'scan.subtitle': {
+    en: 'Point your camera at a product barcode',
+    no: 'Rett kameraet mot en produktstrekkode',
+    da: 'Ret dit kamera mod en produktstregkode',
+    sv: 'Rikta kameran mot en produktstreckkod',
+    de: 'Richten Sie Ihre Kamera auf einen Produktbarcode'
+  },
+  'scan.startScanning': {
+    en: 'Start Scanning',
+    no: 'Start Skanning',
+    da: 'Start Scanning',
+    sv: 'Starta Skanning',
+    de: 'Scannen Starten'
+  },
+  'scan.scanning': {
+    en: 'Scanning...',
+    no: 'Skanner...',
+    da: 'Scanner...',
+    sv: 'Skannar...',
+    de: 'Scannt...'
+  },
+  'scan.productDetected': {
+    en: 'Product Detected!',
+    no: 'Produkt Oppdaget!',
+    da: 'Produkt Registreret!',
+    sv: 'Produkt Upptäckt!',
+    de: 'Produkt Erkannt!'
+  },
+  'scan.productInfo': {
+    en: 'Product Information',
+    no: 'Produktinformasjon',
+    da: 'Produktinformation',
+    sv: 'Produktinformation',
+    de: 'Produktinformationen'
+  },
+  'scan.productName': {
+    en: 'Product Name',
+    no: 'Produktnavn',
+    da: 'Produktnavn',
+    sv: 'Produktnamn',
+    de: 'Produktname'
+  },
+  'scan.brand': {
+    en: 'Brand',
+    no: 'Merke',
+    da: 'Mærke',
+    sv: 'Märke',
+    de: 'Marke'
+  },
+  'scan.category': {
+    en: 'Category',
+    no: 'Kategori',
+    da: 'Kategori',
+    sv: 'Kategori',
+    de: 'Kategorie'
+  },
+  'scan.barcode': {
+    en: 'Barcode',
+    no: 'Strekkode',
+    da: 'Stregkode',
+    sv: 'Streckkod',
+    de: 'Barcode'
+  },
+  'scan.price': {
+    en: 'Price',
+    no: 'Pris',
+    da: 'Pris',
+    sv: 'Pris',
+    de: 'Preis'
+  },
+  'scan.currentPrice': {
+    en: 'Current Price',
+    no: 'Nåværende Pris',
+    da: 'Nuværende Pris',
+    sv: 'Nuvarande Pris',
+    de: 'Aktueller Preis'
+  },
+  'scan.editInfo': {
+    en: 'Edit Information',
+    no: 'Rediger Informasjon',
+    da: 'Rediger Information',
+    sv: 'Redigera Information',
+    de: 'Informationen Bearbeiten'
+  },
+  'scan.confirmSave': {
+    en: 'Confirm & Save',
+    no: 'Bekreft & Lagre',
+    da: 'Bekræft & Gem',
+    sv: 'Bekräfta & Spara',
+    de: 'Bestätigen & Speichern'
+  },
+  'scan.scanAnother': {
+    en: 'Scan Another',
+    no: 'Skann En Til',
+    da: 'Scan En Til',
+    sv: 'Skanna En Till',
+    de: 'Weitere Scannen'
+  },
+  'scan.retry': {
+    en: 'Retry Scan',
+    no: 'Prøv Igjen',
+    da: 'Prøv Igen',
+    sv: 'Försök Igen',
+    de: 'Erneut Versuchen'
+  },
+  'scan.noStoreDetected': {
+    en: 'Store not detected',
+    no: 'Butikk ikke oppdaget',
+    da: 'Butik ikke registreret',
+    sv: 'Butik inte upptäckt',
+    de: 'Laden nicht erkannt'
+  },
+  'scan.addStore': {
+    en: 'Add Store Information',
+    no: 'Legg til Butikkinformasjon',
+    da: 'Tilføj Butiksinformation',
+    sv: 'Lägg till Butiksinformation',
+    de: 'Ladeninformationen Hinzufügen'
+  },
+  'scan.selectStore': {
+    en: 'Select Store',
+    no: 'Velg Butikk',
+    da: 'Vælg Butik',
+    sv: 'Välj Butik',
+    de: 'Laden Auswählen'
+  },
+  'scan.storeNotListed': {
+    en: 'Store not listed?',
+    no: 'Butikk ikke listet?',
+    da: 'Butik ikke på listen?',
+    sv: 'Butik inte listad?',
+    de: 'Laden nicht aufgelistet?'
+  },
+  'scan.addManually': {
+    en: 'Add manually',
+    no: 'Legg til manuelt',
+    da: 'Tilføj manuelt',
+    sv: 'Lägg till manuellt',
+    de: 'Manuell hinzufügen'
+  },
+  'scan.invalidBarcode': {
+    en: 'Invalid barcode. Please try again.',
+    no: 'Ugyldig strekkode. Vennligst prøv igjen.',
+    da: 'Ugyldig stregkode. Prøv venligst igen.',
+    sv: 'Ogiltig streckkod. Försök igen.',
+    de: 'Ungültiger Barcode. Bitte versuchen Sie es erneut.'
+  },
+  'scan.cameraPermission': {
+    en: 'Camera permission required to scan products',
+    no: 'Kameratillatelse kreves for å skanne produkter',
+    da: 'Kameratilladelse kræves for at scanne produkter',
+    sv: 'Kameratillstånd krävs för att skanna produkter',
+    de: 'Kameraberechtigung erforderlich zum Scannen von Produkten'
+  },
   'common.save': {
     en: 'Save',
     no: 'Lagre',
