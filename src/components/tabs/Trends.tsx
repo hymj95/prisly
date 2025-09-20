@@ -4,6 +4,7 @@ import { Button } from '@/components/ui/button';
 import { Badge } from '@/components/ui/badge';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
 import { TrendingUp, TrendingDown, BarChart3, Calendar, MapPin, Filter } from 'lucide-react';
+import { useCurrency } from '@/hooks/useCurrency';
 
 const mockTrendingProducts = [
   {
@@ -51,6 +52,7 @@ const mockCategories = [
 const Trends: React.FC = () => {
   const [activeTab, setActiveTab] = useState('products');
   const [timeRange, setTimeRange] = useState('7d');
+  const { formatPrice } = useCurrency();
 
   const MiniChart = ({ data, trend }: { data: number[], trend: 'up' | 'down' }) => (
     <div className="w-20 h-8 relative">
@@ -133,7 +135,7 @@ const Trends: React.FC = () => {
                     <div className="flex items-center gap-2">
                       <MiniChart data={product.chartData} trend={product.trend as 'up' | 'down'} />
                       <div className="text-right">
-                        <p className="font-bold">${product.currentPrice}</p>
+                        <p className="font-bold">{formatPrice(product.currentPrice)}</p>
                         <div className={`flex items-center gap-1 text-sm ${
                           product.trend === 'up' ? 'text-success' : 'text-destructive'
                         }`}>

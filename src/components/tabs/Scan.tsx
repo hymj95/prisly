@@ -4,11 +4,13 @@ import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { Badge } from '@/components/ui/badge';
 import { Camera, Flashlight, Image, Keyboard, CheckCircle2, AlertCircle } from 'lucide-react';
+import { useCurrency } from '@/hooks/useCurrency';
 
 const Scan: React.FC = () => {
   const [scanMode, setScanMode] = useState<'camera' | 'manual' | 'result'>('camera');
   const [flashEnabled, setFlashEnabled] = useState(false);
   const [manualPrice, setManualPrice] = useState('');
+  const { formatPrice } = useCurrency();
 
   const mockScanResult = {
     product: 'Coca-Cola Zero Sugar 12 Pack',
@@ -163,11 +165,11 @@ const Scan: React.FC = () => {
           <div className="grid grid-cols-2 gap-4">
             <div className="text-center p-3 bg-muted rounded-lg">
               <p className="text-sm text-muted-foreground">Average Price</p>
-              <p className="text-xl font-bold">${mockScanResult.averagePrice}</p>
+              <p className="text-xl font-bold">{formatPrice(mockScanResult.averagePrice)}</p>
             </div>
             <div className="text-center p-3 bg-success/10 rounded-lg">
               <p className="text-sm text-success">Lowest Price</p>
-              <p className="text-xl font-bold text-success">${mockScanResult.lowestPrice}</p>
+              <p className="text-xl font-bold text-success">{formatPrice(mockScanResult.lowestPrice)}</p>
             </div>
           </div>
           

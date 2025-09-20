@@ -5,6 +5,7 @@ import { Badge } from '@/components/ui/badge';
 import { Input } from '@/components/ui/input';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
 import { Plus, MapPin, Clock, CheckCircle2, ShoppingCart, DollarSign, Route } from 'lucide-react';
+import { useCurrency } from '@/hooks/useCurrency';
 
 const mockShoppingLists = [
   {
@@ -71,6 +72,7 @@ const mockOptimizedRoute = {
 const Planner: React.FC = () => {
   const [activeTab, setActiveTab] = useState('lists');
   const [newItemName, setNewItemName] = useState('');
+  const { formatPrice } = useCurrency();
 
   return (
     <div className="pb-20 px-4 pt-6 space-y-6">
@@ -124,7 +126,7 @@ const Planner: React.FC = () => {
                   </div>
                   
                   <div className="text-right space-y-1">
-                    <p className="font-bold text-lg">${list.estimatedTotal}</p>
+                    <p className="font-bold text-lg">{formatPrice(list.estimatedTotal)}</p>
                     <p className="text-xs text-muted-foreground">Estimated</p>
                   </div>
                 </div>
@@ -157,11 +159,11 @@ const Planner: React.FC = () => {
             <div className="flex items-center justify-between text-white">
               <div className="space-y-1">
                 <h3 className="font-semibold">Weekly Groceries</h3>
-                <p className="text-sm opacity-90">12 items • Best savings: $23.50</p>
+                <p className="text-sm opacity-90">12 items • Best savings: {formatPrice(23.50)}</p>
               </div>
               <div className="text-right">
-                <p className="text-2xl font-bold">$89.50</p>
-                <p className="text-sm opacity-90">vs $113.00 avg</p>
+                <p className="text-2xl font-bold">{formatPrice(89.50)}</p>
+                <p className="text-sm opacity-90">vs {formatPrice(113.00)} avg</p>
               </div>
             </div>
           </Card>
@@ -185,9 +187,9 @@ const Planner: React.FC = () => {
                         {item.product}
                       </h4>
                       <div className="text-right">
-                        <p className="font-bold">${item.bestPrice}</p>
+                        <p className="font-bold">{formatPrice(item.bestPrice)}</p>
                         <p className="text-xs text-muted-foreground line-through">
-                          ${item.avgPrice}
+                          {formatPrice(item.avgPrice)}
                         </p>
                       </div>
                     </div>
@@ -225,7 +227,7 @@ const Planner: React.FC = () => {
                   <p className="text-sm opacity-90">Est. Time</p>
                 </div>
                 <div className="text-center">
-                  <p className="text-2xl font-bold">${mockOptimizedRoute.totalSavings}</p>
+                  <p className="text-2xl font-bold">{formatPrice(mockOptimizedRoute.totalSavings)}</p>
                   <p className="text-sm opacity-90">Total Savings</p>
                 </div>
               </div>
@@ -247,7 +249,7 @@ const Planner: React.FC = () => {
                       <h4 className="font-medium">{store.name}</h4>
                       <div className="flex items-center gap-1 text-success">
                         <DollarSign size={14} />
-                        <span className="font-semibold">${store.savings}</span>
+                        <span className="font-semibold">{formatPrice(store.savings)}</span>
                       </div>
                     </div>
                     
