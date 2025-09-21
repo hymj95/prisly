@@ -28,40 +28,54 @@ const StoreLocationPicker: React.FC<StoreLocationPickerProps> = ({
   const [nearbyStores, setNearbyStores] = useState<Store[]>([]);
   const [showMap, setShowMap] = useState(false);
 
-  // Mock nearby stores based on location
+  // Norwegian stores based on location
   const findNearbyStores = (location: { lat: number; lng: number; address: string }) => {
-    const mockStores: Store[] = [
+    const norwegianStores: Store[] = [
       {
         id: '1',
-        name: 'Target',
-        address: '123 Main St, ' + location.address.split(',').slice(-2).join(','),
+        name: 'Rema 1000',
+        address: 'Storgata 15, Oslo',
         distance: 0.8,
         coordinates: { lat: location.lat + 0.001, lng: location.lng + 0.001 }
       },
       {
         id: '2',
-        name: 'Walmart',
-        address: '456 Oak Ave, ' + location.address.split(',').slice(-2).join(','),
+        name: 'ICA Maxi',
+        address: 'Hovedveien 42, Bergen',
         distance: 1.2,
         coordinates: { lat: location.lat - 0.002, lng: location.lng + 0.003 }
       },
       {
         id: '3',
-        name: 'Whole Foods',
-        address: '789 Pine St, ' + location.address.split(',').slice(-2).join(','),
+        name: 'Kiwi',
+        address: 'Torggata 8, Trondheim',
         distance: 1.5,
         coordinates: { lat: location.lat + 0.003, lng: location.lng - 0.001 }
       },
       {
         id: '4',
-        name: 'Kroger',
-        address: '321 Elm St, ' + location.address.split(',').slice(-2).join(','),
+        name: 'Coop Mega',
+        address: 'Sentrumsveien 23, Stavanger',
         distance: 2.1,
         coordinates: { lat: location.lat - 0.001, lng: location.lng - 0.002 }
+      },
+      {
+        id: '5',
+        name: 'Meny',
+        address: 'Brogata 11, Drammen',
+        distance: 2.8,
+        coordinates: { lat: location.lat + 0.002, lng: location.lng + 0.002 }
+      },
+      {
+        id: '6',
+        name: 'Bunnpris',
+        address: 'Kirkegata 5, Kristiansand',
+        distance: 3.2,
+        coordinates: { lat: location.lat - 0.003, lng: location.lng - 0.003 }
       }
     ];
 
-    return mockStores;
+    return norwegianStores;
   };
 
   const handleLocationSelect = (location: { lat: number; lng: number; address: string }) => {

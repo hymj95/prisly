@@ -38,8 +38,8 @@ const Map: React.FC<MapProps> = ({
     map.current = new mapboxgl.Map({
       container: mapContainer.current,
       style: 'mapbox://styles/mapbox/streets-v12',
-      center: initialLocation ? [initialLocation.lng, initialLocation.lat] : [-74.006, 40.7128], // Default to NYC
-      zoom: initialLocation ? 14 : 10,
+      center: initialLocation ? [initialLocation.lng, initialLocation.lat] : [10.7522, 59.9139], // Default to Oslo, Norway
+      zoom: initialLocation ? 14 : 6, // Zoom out to show more of Norway
     });
 
     // Add navigation controls
@@ -74,10 +74,21 @@ const Map: React.FC<MapProps> = ({
           .setLngLat([lng, lat])
           .addTo(map.current!);
 
-        // Reverse geocoding to get address
+        // Reverse geocoding to get address (restrict to Norway and validate bounds)
         try {
+          // Check if coordinates are in Norway bounds first
+          const isInNorway = (
+            lat >= 57.9 && lat <= 71.2 && 
+            lng >= 4.6 && lng <= 31.3
+          );
+          
+          if (!isInNorway) {
+            // Still allow selection but show warning
+            console.warn('Selected location is outside Norway');
+          }
+          
           const response = await fetch(
-            `https://api.mapbox.com/geocoding/v5/mapbox.places/${lng},${lat}.json?access_token=${MAPBOX_TOKEN}`
+            `https://api.mapbox.com/geocoding/v5/mapbox.places/${lng},${lat}.json?access_token=${MAPBOX_TOKEN}&country=no`
           );
           const data = await response.json();
           const address = data.features[0]?.place_name || `${lat.toFixed(4)}, ${lng.toFixed(4)}`;
@@ -103,7 +114,7 @@ const Map: React.FC<MapProps> = ({
     
     try {
       const response = await fetch(
-        `https://api.mapbox.com/geocoding/v5/mapbox.places/${encodeURIComponent(searchQuery)}.json?access_token=${MAPBOX_TOKEN}&limit=1`
+        `https://api.mapbox.com/geocoding/v5/mapbox.places/${encodeURIComponent(searchQuery)}.json?access_token=${MAPBOX_TOKEN}&limit=1&country=no`
       );
       const data = await response.json();
       
@@ -152,7 +163,7 @@ const Map: React.FC<MapProps> = ({
             <div className="relative flex-1">
               <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 text-muted-foreground" size={16} />
               <Input
-                placeholder="Search for a location..."
+                placeholder="Søk etter en lokasjon i Norge..."
                 value={searchQuery}
                 onChange={(e) => setSearchQuery(e.target.value)}
                 onKeyPress={handleSearchKeyPress}
@@ -185,7 +196,7 @@ const Map: React.FC<MapProps> = ({
           <Card className="p-3 bg-white/95 backdrop-blur-sm">
             <div className="flex items-center gap-2 text-sm text-muted-foreground">
               <MapPin size={16} />
-              <span>Click on the map to select a location</span>
+              <span>Klikk på kartet for å velge en lokasjon</span>
             </div>
           </Card>
         </div>

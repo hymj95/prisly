@@ -1364,7 +1364,7 @@ export const useLanguage = () => {
 };
 
 export const useLanguageProvider = () => {
-  const [language, setLanguageState] = useState<Language>('en');
+  const [language, setLanguageState] = useState<Language>('no'); // Default to Norwegian since app is geolocked to Norway
 
   useEffect(() => {
     const savedLanguage = localStorage.getItem('prisly-language') as Language;

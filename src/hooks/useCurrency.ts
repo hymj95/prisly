@@ -33,8 +33,8 @@ export const useCurrency = () => {
         if (found) return found;
       }
     }
-    // Default to USD
-    return currencies[0];
+    // Default to Norwegian Krone since app is geolocked to Norway
+    return currencies.find(c => c.code === 'NOK') || currencies[0];
   });
 
   const setCurrency = (newCurrency: Currency) => {
@@ -44,22 +44,33 @@ export const useCurrency = () => {
     }
   };
 
-  const formatPrice = (usdPrice: number, showSymbol: boolean = true): string => {
-    const convertedPrice = usdPrice * currency.rate;
-    const formattedPrice = convertedPrice.toFixed(2);
+  const formatPrice = (basePrice: number, showSymbol: boolean = true): string => {
+    // Since we're Norway-focused, treat input as NOK prices
+    const formattedPrice = basePrice.toFixed(2);
     
     if (!showSymbol) return formattedPrice;
+    
+    // Norwegian Krone formatting
+    if (currency.code === 'NOK') {
+      return `${formattedPrice} kr`;
+    }
+    
+    // Convert from NOK to other currencies if needed
+    const nokRate = currencies.find(c => c.code === 'NOK')?.rate || 8.8;
+    const convertedPrice = (basePrice / nokRate) * currency.rate;
     
     // For currencies like JPY that don't use decimals
     if (currency.code === 'JPY') {
       return `${currency.symbol}${Math.round(convertedPrice)}`;
     }
     
-    return `${currency.symbol}${formattedPrice}`;
+    return `${currency.symbol}${convertedPrice.toFixed(2)}`;
   };
 
-  const convertPrice = (usdPrice: number): number => {
-    return usdPrice * currency.rate;
+  const convertPrice = (nokPrice: number): number => {
+    // Convert from NOK to selected currency
+    const nokRate = currencies.find(c => c.code === 'NOK')?.rate || 8.8;
+    return (nokPrice / nokRate) * currency.rate;
   };
 
   return {

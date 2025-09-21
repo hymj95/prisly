@@ -68,11 +68,11 @@ const Scan: React.FC = () => {
   const [uploadedImage, setUploadedImage] = useState<string | null>(null);
   const fileInputRef = useRef<HTMLInputElement>(null);
 
-  // Mock detected stores
+  // Mock detected stores (Norwegian)
   const mockStores: Store[] = [
-    { id: '1', name: 'Target', address: 'Downtown Mall', distance: 0.8 },
-    { id: '2', name: 'Walmart', address: 'Shopping Center', distance: 1.2 },
-    { id: '3', name: 'Whole Foods', address: 'Main Street', distance: 1.5 }
+    { id: '1', name: 'Rema 1000', address: 'Oslo Sentrum', distance: 0.8 },
+    { id: '2', name: 'ICA Maxi', address: 'Bergen Bryggen', distance: 1.2 },
+    { id: '3', name: 'Kiwi', address: 'Trondheim Midtbyen', distance: 1.5 }
   ];
 
   // Product categories
@@ -89,30 +89,30 @@ const Scan: React.FC = () => {
     'Sports & Outdoors'
   ];
 
-  // Mock product database
+  // Norwegian product database
   const mockProducts: { [key: string]: DetectedProduct } = {
     '123456789': {
       name: 'Coca-Cola Classic 12 Pack',
       brand: 'Coca-Cola',
-      category: 'Beverages',
+      category: 'Drikke',
       barcode: '123456789',
-      price: 4.99,
+      price: 159.90,
       image: 'https://images.unsplash.com/photo-1561758033-d89a9ad46330?w=400&h=400&fit=crop'
     },
     '987654321': {
       name: 'iPhone 15 Pro 256GB',
       brand: 'Apple',
-      category: 'Electronics',
+      category: 'Elektronikk',
       barcode: '987654321',
-      price: 999.99,
+      price: 12999.00,
       image: 'https://images.unsplash.com/photo-1592910061532-65b5c3ca5739?w=400&h=400&fit=crop'
     },
     '456789123': {
-      name: 'Organic Bananas',
-      brand: 'Whole Foods',
-      category: 'Produce',
+      name: 'Økologiske Bananer',
+      brand: 'Kiwi',
+      category: 'Frukt',
       barcode: '456789123',
-      price: 2.49,
+      price: 34.90,
       image: 'https://images.unsplash.com/photo-1571771894821-ce9b6c11b08e?w=400&h=400&fit=crop'
     }
   };
