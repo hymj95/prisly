@@ -60,7 +60,8 @@ const Planner: React.FC = () => {
 
   const handleEditList = (list: any) => {
     if (deleteMode === list.id) {
-      // If in delete mode, don't edit
+      // If in delete mode, cancel delete mode and return to normal
+      setDeleteMode(null);
       return;
     }
     console.log('Setting editing list to:', list);
