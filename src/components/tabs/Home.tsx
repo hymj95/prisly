@@ -184,70 +184,71 @@ const Home: React.FC<HomeProps> = ({ onNavigateToDeals }) => {
     );
   }
   return (
-    <div className="pb-20 px-4 pt-6 space-y-6">
+    <div className="pb-20 px-6 pt-8 space-y-8">
       {/* Welcome Header */}
-      <div className="text-center space-y-4">
+      <div className="text-center space-y-6">
         <div className="flex justify-center">
-          <PrislyLogo size="lg" />
+          <PrislyLogo size="xl" />
         </div>
-        <div>
-          <h1 className="text-2xl font-bold text-primary">{t('home.welcome')}</h1>
-          <p className="text-muted-foreground">{t('home.tagline')}</p>
+        <div className="space-y-2">
+          <h1 className="text-3xl font-bold text-primary">{t('home.welcome')}</h1>
+          <p className="text-lg text-muted-foreground">{t('home.tagline')}</p>
         </div>
       </div>
 
       {/* Quick Stats */}
-      <div className="grid grid-cols-3 gap-3">
-        <Card className="p-4 text-center bg-card-subtle border-0">
-          <div className="space-y-1">
-            <p className="text-2xl font-bold text-primary">127</p>
-            <p className="text-xs text-muted-foreground">{t('home.productsScanned')}</p>
+      <div className="grid grid-cols-3 gap-4">
+        <Card className="p-6 text-center bg-background border-minimal rounded-card shadow-card">
+          <div className="space-y-2">
+            <p className="text-3xl font-bold text-primary">127</p>
+            <p className="text-sm text-muted-foreground">{t('home.productsScanned')}</p>
           </div>
         </Card>
-        <Card className="p-4 text-center bg-card-subtle border-0">
-          <div className="space-y-1">
-            <p className="text-2xl font-bold text-success">{formatPrice(342)}</p>
-            <p className="text-xs text-muted-foreground">{t('home.moneySaved')}</p>
+        <Card className="p-6 text-center bg-background border-minimal rounded-card shadow-card">
+          <div className="space-y-2">
+            <p className="text-3xl font-bold text-success">{formatPrice(342)}</p>
+            <p className="text-sm text-muted-foreground">{t('home.moneySaved')}</p>
           </div>
         </Card>
-        <Card className="p-4 text-center bg-card-subtle border-0">
-          <div className="space-y-1">
-            <p className="text-2xl font-bold text-primary">24</p>
-            <p className="text-xs text-muted-foreground">{t('home.priceAlerts')}</p>
+        <Card className="p-6 text-center bg-background border-minimal rounded-card shadow-card">
+          <div className="space-y-2">
+            <p className="text-3xl font-bold text-primary">24</p>
+            <p className="text-sm text-muted-foreground">{t('home.priceAlerts')}</p>
           </div>
         </Card>
       </div>
 
       {/* Store Location Banner */}
-      <Card className="p-4 bg-primary/5 border-primary/20">
+      <Card className="p-6 bg-primary/5 border-primary/20 rounded-card">
         <div className="flex items-center gap-4">
-          <MapPin className="text-primary" size={20} />
+          <MapPin className="text-primary" size={24} />
           <div className="flex-1">
-          <h3 className="font-medium text-sm">{t('home.storeLocation')}</h3>
-            <p className="text-xs text-muted-foreground">{t('home.storeLocationDesc')}</p>
+          <h3 className="font-semibold text-base">{t('home.storeLocation')}</h3>
+            <p className="text-sm text-muted-foreground">{t('home.storeLocationDesc')}</p>
           </div>
           <Button 
             variant="outline" 
             size="sm"
             onClick={() => setShowStoreManager(true)}
+            className="font-medium"
           >
-            <Plus size={14} className="mr-1" />
+            <Plus size={16} className="mr-2" />
             {t('home.setStore')}
           </Button>
         </div>
       </Card>
 
       {/* Quick Scan Button */}
-      <Card className="p-4 bg-forest-solid border-0">
+      <Card className="p-6 bg-gradient-primary border-0 rounded-card">
         <div className="flex items-center gap-4">
           <div className="flex-shrink-0">
-            <Zap className="text-white" size={24} />
+            <Zap className="text-white" size={28} />
           </div>
           <div className="flex-1 text-left">
-            <h3 className="font-semibold text-white text-sm">{t('home.quickScan')}</h3>
-            <p className="text-xs text-white/80">{t('home.quickScanDesc')}</p>
+            <h3 className="font-semibold text-white text-base">{t('home.quickScan')}</h3>
+            <p className="text-sm text-white/90">{t('home.quickScanDesc')}</p>
           </div>
-          <Button className="flex-shrink-0 bg-white text-primary hover:bg-white/90">
+          <Button className="flex-shrink-0 bg-white text-primary hover:bg-white/95 font-medium px-6">
             {t('home.scan')}
           </Button>
         </div>
@@ -256,7 +257,7 @@ const Home: React.FC<HomeProps> = ({ onNavigateToDeals }) => {
       {/* Hot Deals Section */}
       <DealsSection 
         title={t('home.hotDeals')}
-        icon={<Flame className="text-red-500" size={20} />}
+        icon={<Flame className="text-primary" size={20} />}
         deals={mockHotDeals}
         onDealClick={handleDealClick}
         onViewAll={handleViewAllDeals}
@@ -265,7 +266,7 @@ const Home: React.FC<HomeProps> = ({ onNavigateToDeals }) => {
       {/* Flash Deals Section */}
       <DealsSection 
         title={t('home.flashDeals')}
-        icon={<Zap className="text-yellow-500" size={20} />}
+        icon={<Zap className="text-secondary" size={20} />}
         deals={mockFlashDeals}
         onDealClick={handleDealClick}
         onViewAll={handleViewAllDeals}
@@ -274,61 +275,61 @@ const Home: React.FC<HomeProps> = ({ onNavigateToDeals }) => {
       {/* Local Deals Section */}
       <DealsSection 
         title={t('home.localDeals')}
-        icon={<Target className="text-blue-500" size={20} />}
+        icon={<Target className="text-accent-foreground" size={20} />}
         deals={mockLocalDeals}
         onDealClick={handleDealClick}
         onViewAll={handleViewAllDeals}
       />
 
       {/* Recent Scans */}
-      <div className="space-y-4">
+      <div className="space-y-6">
         <div className="flex items-center justify-between">
-          <h2 className="text-lg font-semibold">{t('home.recentScans')}</h2>
-          <Button variant="outline" size="sm">{t('home.viewAll')}</Button>
+          <h2 className="text-xl font-semibold">{t('home.recentScans')}</h2>
+          <Button variant="outline" size="sm" className="font-medium">{t('home.viewAll')}</Button>
         </div>
 
-        <div className="space-y-3">
+        <div className="space-y-4">
           {mockRecentScans.map((scan) => (
             <Card 
               key={scan.id} 
-              className="p-4 cursor-pointer hover:shadow-md transition-all duration-200 hover:scale-[1.02]"
+              className="p-6 cursor-pointer hover:shadow-minimalist transition-all duration-300 hover:scale-[1.01] rounded-card border-minimal"
               onClick={() => setSelectedProduct(scan)}
             >
               <div className="flex items-start justify-between">
-                <div className="flex-1 space-y-1">
-                  <div className="flex items-center gap-2">
-                    <h3 className="font-medium text-sm">{scan.product}</h3>
-                    <Badge variant="outline" className="text-xs">{scan.brand}</Badge>
+                <div className="flex-1 space-y-2">
+                  <div className="flex items-center gap-3">
+                    <h3 className="font-semibold text-base">{scan.product}</h3>
+                    <Badge variant="outline" className="text-xs font-medium">{scan.brand}</Badge>
                   </div>
                   
-                  <div className="flex items-center gap-4 text-xs text-muted-foreground">
-                    <div className="flex items-center gap-1">
-                      <MapPin size={12} />
+                  <div className="flex items-center gap-6 text-sm text-muted-foreground">
+                    <div className="flex items-center gap-2">
+                      <MapPin size={14} />
                       <span>{scan.store} • {scan.location}</span>
                     </div>
-                    <div className="flex items-center gap-1">
-                      <Clock size={12} />
+                    <div className="flex items-center gap-2">
+                      <Clock size={14} />
                       <span>{scan.timeAgo}</span>
                     </div>
                   </div>
                 </div>
 
-                <div className="text-right space-y-1">
-                  <div className="flex items-center gap-2">
-                    <span className="font-bold text-lg">{formatPrice(scan.price)}</span>
+                <div className="text-right space-y-2">
+                  <div className="flex items-center gap-3">
+                    <span className="font-bold text-xl">{formatPrice(scan.price)}</span>
                     {scan.trend === 'down' ? (
                       <div className="flex items-center gap-1 text-success">
-                        <TrendingDown size={16} />
-                        <span className="text-xs">{scan.trendPercentage}%</span>
+                        <TrendingDown size={18} />
+                        <span className="text-sm font-medium">{scan.trendPercentage}%</span>
                       </div>
                     ) : (
                       <div className="flex items-center gap-1 text-destructive">
-                        <TrendingUp size={16} />
-                        <span className="text-xs">{scan.trendPercentage}%</span>
+                        <TrendingUp size={18} />
+                        <span className="text-sm font-medium">{scan.trendPercentage}%</span>
                       </div>
                     )}
                   </div>
-                  <p className="text-xs text-muted-foreground">{t('home.avg')}: {formatPrice(scan.avgPrice)}</p>
+                  <p className="text-sm text-muted-foreground">{t('home.avg')}: {formatPrice(scan.avgPrice)}</p>
                 </div>
               </div>
             </Card>

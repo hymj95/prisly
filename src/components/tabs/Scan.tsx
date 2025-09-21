@@ -225,62 +225,66 @@ const Scan: React.FC = () => {
   }
 
   return (
-    <div className="pb-20 px-4 pt-6 space-y-6">
+    <div className="pb-20 px-6 pt-8 space-y-8">
       {/* Header */}
-      <div className="text-center space-y-2">
+      <div className="text-center space-y-4">
         <div className="flex justify-center">
-          <div className="w-16 h-16 bg-primary/10 rounded-full flex items-center justify-center">
-            <Barcode className="text-primary" size={32} />
+          <div className="w-20 h-20 bg-primary/10 rounded-full flex items-center justify-center">
+            <Barcode className="text-primary" size={40} />
           </div>
         </div>
-        <h1 className="text-2xl font-bold text-primary">{t('scan.title')}</h1>
-        <p className="text-muted-foreground">{t('scan.subtitle')}</p>
+        <h1 className="text-3xl font-bold text-primary">{t('scan.title')}</h1>
+        <p className="text-lg text-muted-foreground">{t('scan.subtitle')}</p>
       </div>
 
       {/* Error Alert */}
       {error && (
-        <Alert variant="destructive">
-          <AlertCircle className="h-4 w-4" />
-          <AlertDescription>{error}</AlertDescription>
+        <Alert variant="destructive" className="rounded-card">
+          <AlertCircle className="h-5 w-5" />
+          <AlertDescription className="text-base">{error}</AlertDescription>
         </Alert>
       )}
 
       {/* Scanning State */}
       {!scanResult && (
-        <Card className="p-8 text-center">
-          <div className="space-y-6">
+        <Card className="p-12 text-center rounded-card shadow-card border-minimal">
+          <div className="space-y-8">
             <div className="relative">
-              <div className={`w-48 h-48 mx-auto border-2 border-dashed rounded-lg flex items-center justify-center ${
+              <div className={`w-56 h-56 mx-auto border-2 border-dashed rounded-card flex items-center justify-center ${
                 (isScanning || isLookingUp) ? 'border-primary bg-primary/5 animate-pulse' : 'border-muted-foreground/30'
               }`}>
                 {isScanning ? (
-                  <div className="space-y-2">
-                    <Camera className="mx-auto text-primary animate-pulse" size={32} />
-                    <p className="text-sm text-primary font-medium">Opening Camera...</p>
+                  <div className="space-y-3">
+                    <Camera className="mx-auto text-primary animate-pulse" size={40} />
+                    <p className="text-base text-primary font-medium">Opening Camera...</p>
                   </div>
                 ) : isLookingUp ? (
-                  <div className="space-y-2">
-                    <Loader2 className="mx-auto animate-spin text-primary" size={32} />
-                    <p className="text-sm text-primary font-medium">Looking up product...</p>
+                  <div className="space-y-3">
+                    <Loader2 className="mx-auto animate-spin text-primary" size={40} />
+                    <p className="text-base text-primary font-medium">Looking up product...</p>
                   </div>
                 ) : (
-                  <Camera className="text-muted-foreground" size={64} />
+                  <Camera className="text-muted-foreground" size={80} />
                 )}
               </div>
             </div>
 
             {!isScanning && !isLookingUp ? (
-              <Button onClick={handleStartScan} className="bg-primary-solid text-white">
-                <Camera size={16} className="mr-2" />
+              <Button 
+                onClick={handleStartScan} 
+                className="bg-gradient-primary text-white font-semibold px-8 py-3 text-base rounded-card"
+                size="lg"
+              >
+                <Camera size={20} className="mr-3" />
                 {t('scan.startScanning')}
               </Button>
             ) : (
-              <div className="space-y-2">
-                <p className="text-sm text-muted-foreground">
+              <div className="space-y-3">
+                <p className="text-base text-muted-foreground">
                   {isScanning ? 'Camera is opening...' : 'Looking up product information...'}
                 </p>
-                <Button variant="outline" disabled>
-                  <Loader2 size={16} className="mr-2 animate-spin" />
+                <Button variant="outline" disabled className="rounded-card">
+                  <Loader2 size={18} className="mr-3 animate-spin" />
                   {isScanning ? 'Scanning...' : 'Loading...'}
                 </Button>
               </div>
