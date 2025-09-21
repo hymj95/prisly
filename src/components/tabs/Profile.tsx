@@ -121,7 +121,7 @@ const Profile: React.FC = () => {
 
   if (showLocationSelector) {
     return (
-      <div className="pb-20 px-4 pt-6">
+      <div className="pb-28 px-4 pt-6">
         <div className="flex items-center gap-3 mb-6">
           <button 
             onClick={() => setShowLocationSelector(false)}
@@ -151,7 +151,7 @@ const Profile: React.FC = () => {
   // Guest user profile (not authenticated)
   if (!user) {
     return (
-      <div className="pb-20 px-4 pt-6 space-y-6">
+      <div className="pb-28 px-4 pt-6 space-y-6">
         {/* Guest Profile Header */}
         <Card className="p-6 bg-card-subtle border-0">
           <div className="text-center space-y-4">
@@ -238,7 +238,7 @@ const Profile: React.FC = () => {
     );
   }
   return (
-    <div className="pb-20 px-4 pt-6 space-y-6">
+    <div className="pb-28 px-4 pt-6 space-y-6">
       {/* Profile Header */}
       <Card className="p-6 bg-card-subtle border-0">
         <div className="flex items-center gap-4">

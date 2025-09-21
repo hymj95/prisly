@@ -328,7 +328,7 @@ const Deals: React.FC<DealsProps> = ({ onCategorySelect }) => {
   }
 
   return (
-    <div className="pb-20 px-4 pt-6 space-y-6">
+    <div className="pb-28 px-4 pt-6 space-y-6">
       {/* Header */}
       <div className="text-center space-y-2">
         <h1 className="text-2xl font-bold text-primary">{t('deals.title')}</h1>

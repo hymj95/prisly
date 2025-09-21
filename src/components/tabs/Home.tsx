@@ -189,7 +189,7 @@ const Home: React.FC<HomeProps> = ({ onNavigateToDeals, onCategorySelect, onNavi
 
   if (showStoreManager) {
     return (
-      <div className="pb-20 px-4 pt-6">
+      <div className="pb-28 px-4 pt-6">
         <div className="flex items-center gap-3 mb-6">
           <Button variant="outline" size="icon" onClick={() => setShowStoreManager(false)}>
             <MapPin size={20} />
@@ -210,7 +210,7 @@ const Home: React.FC<HomeProps> = ({ onNavigateToDeals, onCategorySelect, onNavi
     );
   }
   return (
-    <div className="pb-20 px-6 pt-8 space-y-8">
+    <div className="pb-28 px-6 pt-8 space-y-8">
       {/* Header with Dashboard Bell */}
       <div className="flex items-center justify-between">
         <div className="text-center flex-1 space-y-6">
