@@ -244,123 +244,95 @@ const ShoppingListEditor: React.FC<ShoppingListEditorProps> = ({ list, onBack, o
       </Card>
 
       {/* Add New Item */}
-      {showAddItem ? (
-        <Card className="p-4 border-2 border-dashed border-primary/20 bg-primary/5">
+      <Card className="p-6 bg-background border border-border rounded-lg">
+        <div className="space-y-4">
+          <div className="flex items-center gap-2 text-primary">
+            <Plus className="text-primary" size={20} />
+            <h3 className="font-semibold text-lg">Add New Item</h3>
+          </div>
+          
           <div className="space-y-4">
-            <div className="flex items-center gap-2">
-              <Package className="text-primary" size={20} />
-              <h3 className="font-semibold">{t('editor.addNewItem')}</h3>
+            <div className="space-y-2">
+              <label className="text-sm font-medium text-foreground">Product Name</label>
+              <ProductAutocomplete
+                value={newItemName}
+                onChange={setNewItemName}
+                onProductSelect={handleProductSelect}
+                placeholder="Product name"
+                className="h-12 text-base"
+              />
             </div>
             
-            <div className="space-y-3">
-              <div className="space-y-1">
-                <label className="text-sm font-medium text-muted-foreground">Product Name</label>
-                <ProductAutocomplete
-                  value={newItemName}
-                  onChange={setNewItemName}
-                  onProductSelect={handleProductSelect}
-                  placeholder={t('editor.productName')}
-                  className="text-base"
-                />
-              </div>
-              
-              <div className="grid grid-cols-2 gap-3">
-                <div className="space-y-1">
-                  <label className="text-sm font-medium text-muted-foreground">Quantity</label>
-                  <Input
-                    type="number"
-                    placeholder="1"
-                    value={newItemQuantity}
-                    onChange={(e) => handleQuantityChange(e.target.value)}
-                    min="0.01"
-                    step="0.01"
-                    className="text-base"
-                  />
-                </div>
-                
-                <div className="space-y-1">
-                  <label className="text-sm font-medium text-muted-foreground">Unit</label>
-                  <Select value={newItemUnit} onValueChange={setNewItemUnit}>
-                    <SelectTrigger className="bg-background border z-50">
-                      <SelectValue placeholder="Select unit" />
-                    </SelectTrigger>
-                    <SelectContent className="bg-background border shadow-lg z-50 max-h-60 overflow-y-auto">
-                      {unitOptions.map((unit) => (
-                        <SelectItem key={unit.value} value={unit.value}>
-                          {unit.label}
-                        </SelectItem>
-                      ))}
-                    </SelectContent>
-                  </Select>
-                </div>
-              </div>
-              
-              <div className="space-y-1">
-                <label className="text-sm font-medium text-muted-foreground">Expected Price (per {newItemUnit})</label>
+            <div className="grid grid-cols-2 gap-4">
+              <div className="space-y-2">
+                <label className="text-sm font-medium text-foreground">Quantity</label>
                 <Input
                   type="number"
+                  placeholder="1"
+                  value={newItemQuantity}
+                  onChange={(e) => handleQuantityChange(e.target.value)}
+                  min="0.01"
                   step="0.01"
-                  placeholder="0.00"
-                  value={newItemPrice}
-                  onChange={(e) => handlePriceChange(e.target.value)}
-                  className="text-base"
+                  className="h-12 text-lg text-center font-medium"
                 />
               </div>
-
-              {/* Store Information */}
-              {selectedProduct && (
-                <Card className="p-3 bg-success/5 border-success/20">
-                  <div className="flex items-center gap-2 mb-2">
-                    <MapPin className="text-success" size={16} />
-                    <span className="text-sm font-medium text-success">Good Deal Found!</span>
-                  </div>
-                  <div className="text-sm text-muted-foreground">
-                    <p><strong>{selectedProduct.bestStore}</strong> - {selectedProduct.storeLocation}</p>
-                    <p>Best price: {formatPrice(selectedProduct.expectedPrice)} per {selectedProduct.unit}</p>
-                  </div>
-                </Card>
-              )}
-
-              {/* Total Calculation */}
-              {calculatedTotal > 0 && (
-                <Card className="p-3 bg-primary/5 border-primary/20">
-                  <div className="flex items-center justify-between">
-                    <div className="flex items-center gap-2">
-                      <Calculator className="text-primary" size={16} />
-                      <span className="text-sm font-medium">Total Cost</span>
-                    </div>
-                    <div className="text-right">
-                      <p className="font-bold text-primary">{formatPrice(calculatedTotal)}</p>
-                      <p className="text-xs text-muted-foreground">
-                        {newItemQuantity} × {formatPrice(parseFloat(newItemPrice) || 0)}
-                      </p>
-                    </div>
-                  </div>
-                </Card>
-              )}
+              
+              <div className="space-y-2">
+                <label className="text-sm font-medium text-foreground">Unit</label>
+                <Select value={newItemUnit} onValueChange={setNewItemUnit}>
+                  <SelectTrigger className="h-12 text-base">
+                    <SelectValue placeholder="Item(s)" />
+                  </SelectTrigger>
+                  <SelectContent>
+                    {unitOptions.map((unit) => (
+                      <SelectItem key={unit.value} value={unit.value}>
+                        {unit.label}
+                      </SelectItem>
+                    ))}
+                  </SelectContent>
+                </Select>
+              </div>
             </div>
             
-            <div className="flex gap-2 pt-2">
-              <Button onClick={handleAddItem} className="bg-primary-solid text-white flex-1">
-                <Plus className="mr-2" size={16} />
-                {t('editor.addItem')}
-              </Button>
-              <Button variant="outline" onClick={() => setShowAddItem(false)}>
-                {t('common.cancel')}
-              </Button>
+            <div className="space-y-2">
+              <label className="text-sm font-medium text-foreground">Expected Price (per {newItemUnit})</label>
+              <Input
+                type="number"
+                step="0.01"
+                placeholder="0.00"
+                value={newItemPrice}
+                onChange={(e) => handlePriceChange(e.target.value)}
+                className="h-12 text-base"
+              />
             </div>
           </div>
-        </Card>
-      ) : (
-        <Button 
-          variant="outline" 
-          className="w-full"
-          onClick={() => setShowAddItem(true)}
-        >
-          <Plus className="mr-2" size={16} />
-          {t('editor.addNewItem')}
-        </Button>
-      )}
+          
+          <div className="flex gap-3 pt-2">
+            <Button 
+              onClick={handleAddItem} 
+              className="bg-primary hover:bg-primary/90 text-primary-foreground flex-1 h-12 text-base font-medium"
+              disabled={!newItemName.trim() || !newItemPrice}
+            >
+              <Plus className="mr-2" size={18} />
+              Add Item
+            </Button>
+            <Button 
+              variant="outline" 
+              onClick={() => {
+                setNewItemName('');
+                setNewItemQuantity('1');
+                setNewItemUnit('item');
+                setNewItemPrice('');
+                setSelectedProduct(null);
+                setCalculatedTotal(0);
+              }}
+              className="h-12"
+            >
+              Cancel
+            </Button>
+          </div>
+        </div>
+      </Card>
 
       {/* Shopping Items */}
       <div className="space-y-3">
