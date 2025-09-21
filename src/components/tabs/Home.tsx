@@ -9,6 +9,7 @@ import PrislyLogo from '../PrislyLogo';
 import ProductDetail from '../ProductDetail';
 import DealsSection from '../DealsSection';
 import StoreLocationManager from '../StoreLocationManager';
+import DashboardBell from '../DashboardBell';
 
 interface HomeProps {
   onNavigateToDeals?: () => void;
@@ -187,58 +188,21 @@ const Home: React.FC<HomeProps> = ({ onNavigateToDeals, onCategorySelect, onNavi
   }
   return (
     <div className="pb-20 px-6 pt-8 space-y-8">
-      {/* Welcome Header */}
-      <div className="text-center space-y-6">
-        <div className="flex justify-center">
-          <PrislyLogo size="xl" />
+      {/* Header with Dashboard Bell */}
+      <div className="flex items-center justify-between">
+        <div className="text-center flex-1 space-y-6">
+          <div className="flex justify-center">
+            <PrislyLogo size="xl" />
+          </div>
+          <div className="space-y-2">
+            <h1 className="text-3xl font-bold text-primary">{t('home.welcome')}</h1>
+            <p className="text-lg text-muted-foreground">{t('home.tagline')}</p>
+          </div>
         </div>
-        <div className="space-y-2">
-          <h1 className="text-3xl font-bold text-primary">{t('home.welcome')}</h1>
-          <p className="text-lg text-muted-foreground">{t('home.tagline')}</p>
+        <div className="absolute top-6 right-6">
+          <DashboardBell onStoreManagerOpen={() => setShowStoreManager(true)} />
         </div>
       </div>
-
-      {/* Quick Stats */}
-      <div className="grid grid-cols-1 sm:grid-cols-3 gap-4">
-        <Card className="p-4 text-center bg-background border-minimal rounded-card shadow-card">
-          <div className="space-y-1">
-            <p className="text-2xl font-bold text-primary">127</p>
-            <p className="text-xs text-muted-foreground">{t('home.productsScanned')}</p>
-          </div>
-        </Card>
-        <Card className="p-4 text-center bg-background border-minimal rounded-card shadow-card">
-          <div className="space-y-1">
-            <p className="text-xl font-bold text-success">{formatPrice(342)}</p>
-            <p className="text-xs text-muted-foreground">{t('home.moneySaved')}</p>
-          </div>
-        </Card>
-        <Card className="p-4 text-center bg-background border-minimal rounded-card shadow-card">
-          <div className="space-y-1">
-            <p className="text-2xl font-bold text-primary">24</p>
-            <p className="text-xs text-muted-foreground">{t('home.priceAlerts')}</p>
-          </div>
-        </Card>
-      </div>
-
-      {/* Store Location Banner */}
-      <Card className="p-6 bg-primary/5 border-primary/20 rounded-card">
-        <div className="flex items-center gap-4">
-          <MapPin className="text-primary" size={24} />
-          <div className="flex-1">
-          <h3 className="font-semibold text-base">{t('home.storeLocation')}</h3>
-            <p className="text-sm text-muted-foreground">{t('home.storeLocationDesc')}</p>
-          </div>
-          <Button 
-            variant="outline" 
-            size="sm"
-            onClick={() => setShowStoreManager(true)}
-            className="font-medium"
-          >
-            <Plus size={16} className="mr-2" />
-            {t('home.setStore')}
-          </Button>
-        </div>
-      </Card>
 
       {/* Quick Scan Button */}
       <Card className="p-6 bg-primary-solid border-0 rounded-card">
