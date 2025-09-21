@@ -4,6 +4,7 @@ import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { Badge } from '@/components/ui/badge';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
+import { DropdownMenu, DropdownMenuContent, DropdownMenuItem, DropdownMenuTrigger } from '@/components/ui/dropdown-menu';
 import { 
   ArrowLeft, 
   Plus, 
@@ -16,7 +17,8 @@ import {
   Save,
   ShoppingBag,
   Package,
-  Calculator
+  Calculator,
+  MoreVertical
 } from 'lucide-react';
 import { ShoppingList, ShoppingItem, useShoppingLists } from '@/hooks/useShoppingLists';
 import { useCurrency } from '@/hooks/useCurrency';
@@ -28,9 +30,10 @@ interface ShoppingListEditorProps {
   list: ShoppingList;
   onBack: () => void;
   onSave: (list: ShoppingList) => void;
+  onDelete?: (listId: string) => void;
 }
 
-const ShoppingListEditor: React.FC<ShoppingListEditorProps> = ({ list, onBack, onSave }) => {
+const ShoppingListEditor: React.FC<ShoppingListEditorProps> = ({ list, onBack, onSave, onDelete }) => {
   const [editingName, setEditingName] = useState(false);
   const [listName, setListName] = useState(list.name);
   const [editingItem, setEditingItem] = useState<string | null>(null);
@@ -62,7 +65,7 @@ const ShoppingListEditor: React.FC<ShoppingListEditorProps> = ({ list, onBack, o
   ];
   
   const { formatPrice } = useCurrency();
-  const { updateList, addItemToList, updateItemInList, removeItemFromList } = useShoppingLists();
+  const { updateList, addItemToList, updateItemInList, removeItemFromList, deleteList } = useShoppingLists();
   const { t } = useLanguage();
   const { toast } = useToast();
 
@@ -70,6 +73,16 @@ const ShoppingListEditor: React.FC<ShoppingListEditorProps> = ({ list, onBack, o
     updateList(list.id, { name: listName });
     onSave({ ...list, name: listName });
     setEditingName(false);
+  };
+
+  const handleDeleteList = () => {
+    deleteList(list.id);
+    toast({
+      title: "List Deleted",
+      description: "Shopping list has been permanently deleted.",
+      duration: 2000,
+    });
+    onBack(); // Return to the main view
   };
 
   const handleAddItem = () => {
@@ -234,10 +247,29 @@ const ShoppingListEditor: React.FC<ShoppingListEditorProps> = ({ list, onBack, o
           </div>
         </div>
 
-        <Button className="bg-primary-solid text-white">
-          <Save size={16} className="mr-2" />
-          {t('editor.saved')}
-        </Button>
+        <div className="flex items-center gap-2">
+          <Button className="bg-primary-solid text-white">
+            <Save size={16} className="mr-2" />
+            {t('editor.saved')}
+          </Button>
+          
+          <DropdownMenu>
+            <DropdownMenuTrigger asChild>
+              <Button variant="outline" size="icon">
+                <MoreVertical size={16} />
+              </Button>
+            </DropdownMenuTrigger>
+            <DropdownMenuContent align="end" className="w-48">
+              <DropdownMenuItem 
+                onClick={handleDeleteList}
+                className="text-destructive focus:text-destructive"
+              >
+                <Trash2 size={16} className="mr-2" />
+                Delete Shopping List
+              </DropdownMenuItem>
+            </DropdownMenuContent>
+          </DropdownMenu>
+        </div>
       </div>
 
       {/* List Summary */}
