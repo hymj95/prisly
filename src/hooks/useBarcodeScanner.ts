@@ -35,7 +35,10 @@ export const useBarcodeScanner = () => {
   };
 
   const startScan = async (): Promise<ScannedBarcode | null> => {
-    if (!Capacitor.isNativePlatform()) {
+    // Check if we're on a mobile device (native or web)
+    const isMobile = /Android|webOS|iPhone|iPad|iPod|BlackBerry|IEMobile|Opera Mini/i.test(navigator.userAgent) || Capacitor.isNativePlatform();
+    
+    if (!isMobile) {
       toast.error('Barcode scanning is only available on mobile devices');
       return null;
     }
