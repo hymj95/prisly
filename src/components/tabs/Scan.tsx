@@ -57,6 +57,8 @@ const Scan: React.FC = () => {
   const [error, setError] = useState<string | null>(null);
   const [editedProduct, setEditedProduct] = useState<DetectedProduct | null>(null);
   const [currentPrice, setCurrentPrice] = useState<string>('');
+  const [manualBarcode, setManualBarcode] = useState<string>('');
+  const [showManualEntry, setShowManualEntry] = useState(false);
 
   // Mock detected stores
   const mockStores: Store[] = [
@@ -99,33 +101,57 @@ const Scan: React.FC = () => {
       const scannedCode = await startScan();
       
       if (scannedCode) {
-        // Look up product information
-        const productInfo = await lookupProduct(scannedCode.displayValue);
-        
-        if (productInfo) {
-          // Convert ProductInfo to DetectedProduct format
-          const product: DetectedProduct = {
-            name: productInfo.name,
-            brand: productInfo.brand,
-            category: productInfo.category,
-            barcode: productInfo.barcode,
-            price: productInfo.price
-          };
-          
-          setScanResult(product);
-          setEditedProduct(product);
-          setCurrentPrice(product.price?.toString() || '');
-          
-          // Auto-edit if product is unknown
-          if (productInfo.name === 'Unknown Product') {
-            setIsEditing(true);
-          }
-        }
+        await processBarcode(scannedCode.displayValue);
       }
     } catch (error) {
       setError('Failed to scan barcode. Please try again.');
       console.error('Scan error:', error);
     }
+  };
+
+  const processBarcode = async (barcodeValue: string) => {
+    try {
+      // Look up product information
+      const productInfo = await lookupProduct(barcodeValue);
+      
+      if (productInfo) {
+        // Convert ProductInfo to DetectedProduct format
+        const product: DetectedProduct = {
+          name: productInfo.name,
+          brand: productInfo.brand,
+          category: productInfo.category,
+          barcode: productInfo.barcode,
+          price: productInfo.price
+        };
+        
+        setScanResult(product);
+        setEditedProduct(product);
+        setCurrentPrice(product.price?.toString() || '');
+        
+        // Auto-edit if product is unknown
+        if (productInfo.name === 'Unknown Product') {
+          setIsEditing(true);
+        }
+      }
+    } catch (error) {
+      setError('Failed to lookup product information.');
+      console.error('Product lookup error:', error);
+    }
+  };
+
+  const handleManualSubmit = async () => {
+    if (!manualBarcode.trim()) {
+      setError('Please enter a barcode number.');
+      return;
+    }
+
+    setError(null);
+    setScanResult(null);
+    setSelectedStore(null);
+    
+    await processBarcode(manualBarcode.trim());
+    setManualBarcode('');
+    setShowManualEntry(false);
   };
 
   const handleStoreSelect = (store: Store) => {
@@ -189,6 +215,8 @@ const Scan: React.FC = () => {
     setError(null);
     setShowStoreManager(false);
     setShowAreaSelector(false);
+    setManualBarcode('');
+    setShowManualEntry(false);
   };
 
   // Area Selector View
@@ -270,14 +298,32 @@ const Scan: React.FC = () => {
             </div>
 
             {!isScanning && !isLookingUp ? (
-              <Button 
-                onClick={handleStartScan} 
-                className="bg-gradient-primary text-white font-semibold px-8 py-3 text-base rounded-card"
-                size="lg"
-              >
-                <Camera size={20} className="mr-3" />
-                {t('scan.startScanning')}
-              </Button>
+              <div className="space-y-4">
+                <Button 
+                  onClick={handleStartScan} 
+                  className="bg-gradient-primary text-white font-semibold px-8 py-3 text-base rounded-card"
+                  size="lg"
+                >
+                  <Camera size={20} className="mr-3" />
+                  {t('scan.startScanning')}
+                </Button>
+                
+                <div className="flex items-center gap-4">
+                  <div className="flex-1 h-px bg-border"></div>
+                  <span className="text-muted-foreground text-sm">or</span>
+                  <div className="flex-1 h-px bg-border"></div>
+                </div>
+                
+                <Button 
+                  variant="outline" 
+                  onClick={() => setShowManualEntry(true)}
+                  className="font-medium rounded-card"
+                  size="lg"
+                >
+                  <Barcode size={20} className="mr-3" />
+                  Enter Barcode Manually
+                </Button>
+              </div>
             ) : (
               <div className="space-y-3">
                 <p className="text-base text-muted-foreground">
@@ -289,6 +335,62 @@ const Scan: React.FC = () => {
                 </Button>
               </div>
             )}
+          </div>
+        </Card>
+      )}
+
+      {/* Manual Barcode Entry */}
+      {showManualEntry && (
+        <Card className="p-6 rounded-card shadow-card border-minimal">
+          <div className="space-y-6">
+            <div className="text-center space-y-2">
+              <h3 className="text-lg font-semibold">Enter Barcode Manually</h3>
+              <p className="text-muted-foreground">Type the barcode number from the product packaging</p>
+            </div>
+            
+            <div className="space-y-4">
+              <div className="flex items-center gap-3">
+                <Barcode className="text-muted-foreground" size={20} />
+                <Input
+                  type="text"
+                  placeholder="Enter barcode number (e.g. 123456789)"
+                  value={manualBarcode}
+                  onChange={(e) => setManualBarcode(e.target.value)}
+                  className="flex-1 rounded-card"
+                  onKeyPress={(e) => e.key === 'Enter' && handleManualSubmit()}
+                />
+              </div>
+              
+              <div className="flex gap-3">
+                <Button 
+                  onClick={handleManualSubmit}
+                  disabled={!manualBarcode.trim() || isLookingUp}
+                  className="flex-1 bg-gradient-primary text-white font-medium rounded-card"
+                >
+                  {isLookingUp ? (
+                    <>
+                      <Loader2 size={16} className="mr-2 animate-spin" />
+                      Looking up...
+                    </>
+                  ) : (
+                    <>
+                      <Search size={16} className="mr-2" />
+                      Look up Product
+                    </>
+                  )}
+                </Button>
+                <Button 
+                  variant="outline" 
+                  onClick={() => {
+                    setShowManualEntry(false);
+                    setManualBarcode('');
+                  }}
+                  className="rounded-card"
+                >
+                  Cancel
+                </Button>
+              </div>
+            </div>
           </div>
         </Card>
       )}
