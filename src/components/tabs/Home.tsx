@@ -197,23 +197,23 @@ const Home: React.FC<HomeProps> = ({ onNavigateToDeals }) => {
       </div>
 
       {/* Quick Stats */}
-      <div className="grid grid-cols-3 gap-4">
-        <Card className="p-6 text-center bg-background border-minimal rounded-card shadow-card">
-          <div className="space-y-2">
-            <p className="text-3xl font-bold text-primary">127</p>
-            <p className="text-sm text-muted-foreground">{t('home.productsScanned')}</p>
+      <div className="grid grid-cols-1 sm:grid-cols-3 gap-4">
+        <Card className="p-4 text-center bg-background border-minimal rounded-card shadow-card">
+          <div className="space-y-1">
+            <p className="text-2xl font-bold text-primary">127</p>
+            <p className="text-xs text-muted-foreground">{t('home.productsScanned')}</p>
           </div>
         </Card>
-        <Card className="p-6 text-center bg-background border-minimal rounded-card shadow-card">
-          <div className="space-y-2">
-            <p className="text-3xl font-bold text-success">{formatPrice(342)}</p>
-            <p className="text-sm text-muted-foreground">{t('home.moneySaved')}</p>
+        <Card className="p-4 text-center bg-background border-minimal rounded-card shadow-card">
+          <div className="space-y-1">
+            <p className="text-xl font-bold text-success">{formatPrice(342)}</p>
+            <p className="text-xs text-muted-foreground">{t('home.moneySaved')}</p>
           </div>
         </Card>
-        <Card className="p-6 text-center bg-background border-minimal rounded-card shadow-card">
-          <div className="space-y-2">
-            <p className="text-3xl font-bold text-primary">24</p>
-            <p className="text-sm text-muted-foreground">{t('home.priceAlerts')}</p>
+        <Card className="p-4 text-center bg-background border-minimal rounded-card shadow-card">
+          <div className="space-y-1">
+            <p className="text-2xl font-bold text-primary">24</p>
+            <p className="text-xs text-muted-foreground">{t('home.priceAlerts')}</p>
           </div>
         </Card>
       </div>
@@ -239,7 +239,7 @@ const Home: React.FC<HomeProps> = ({ onNavigateToDeals }) => {
       </Card>
 
       {/* Quick Scan Button */}
-      <Card className="p-6 bg-gradient-primary border-0 rounded-card">
+      <Card className="p-6 bg-primary-solid border-0 rounded-card">
         <div className="flex items-center gap-4">
           <div className="flex-shrink-0">
             <Zap className="text-white" size={28} />
