@@ -31,6 +31,7 @@ import { useProductLookup } from '@/hooks/useProductLookup';
 import { Capacitor } from '@capacitor/core';
 import StoreLocationManager from '../StoreLocationManager';
 import ShoppingAreaSelector from '../ShoppingAreaSelector';
+import Map from '../Map';
 
 interface DetectedProduct {
   name: string;
