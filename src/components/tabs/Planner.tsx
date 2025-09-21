@@ -4,19 +4,23 @@ import { Button } from '@/components/ui/button';
 import { Badge } from '@/components/ui/badge';
 import { Input } from '@/components/ui/input';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
-import { Plus, MapPin, Clock, CheckCircle2, ShoppingCart, DollarSign, Route } from 'lucide-react';
+import { Plus, MapPin, Clock, CheckCircle2, ShoppingCart, DollarSign, Route, Trash2 } from 'lucide-react';
 import { useCurrency } from '@/hooks/useCurrency';
 import { useShoppingLists } from '@/hooks/useShoppingLists';
 import { useLanguage } from '@/hooks/useLanguage';
+import { useToast } from '@/hooks/use-toast';
 import ShoppingListEditor from '../ShoppingListEditor';
 
 const Planner: React.FC = () => {
   const [activeTab, setActiveTab] = useState('lists');
   const [newListName, setNewListName] = useState('');
   const [editingList, setEditingList] = useState<any>(null);
+  const [deleteMode, setDeleteMode] = useState<string | null>(null);
+  const [pressTimer, setPressTimer] = useState<NodeJS.Timeout | null>(null);
   const { formatPrice } = useCurrency();
-  const { lists, addList } = useShoppingLists();
+  const { lists, addList, deleteList } = useShoppingLists();
   const { t } = useLanguage();
+  const { toast } = useToast();
 
   const handleCreateList = () => {
     if (newListName.trim()) {
@@ -25,15 +29,55 @@ const Planner: React.FC = () => {
     }
   };
 
+  const handleMouseDown = (listId: string) => {
+    const timer = setTimeout(() => {
+      setDeleteMode(listId);
+      toast({
+        title: "Delete Mode",
+        description: "Click the delete button to confirm deletion",
+        duration: 3000,
+      });
+    }, 1000); // 1 second hold
+    setPressTimer(timer);
+  };
+
+  const handleMouseUp = () => {
+    if (pressTimer) {
+      clearTimeout(pressTimer);
+      setPressTimer(null);
+    }
+  };
+
+  const handleDeleteList = (listId: string) => {
+    deleteList(listId);
+    setDeleteMode(null);
+    toast({
+      title: "List Deleted",
+      description: "Shopping list has been removed",
+      duration: 2000,
+    });
+  };
+
+  const handleEditList = (list: any) => {
+    if (deleteMode === list.id) {
+      // If in delete mode, don't edit
+      return;
+    }
+    console.log('Setting editing list to:', list);
+    setEditingList(list);
+  };
+
   if (editingList) {
     // Find the current version of the list from the hook to ensure we have the latest data
     const currentList = lists.find(list => list.id === editingList.id) || editingList;
+    console.log('Rendering editor with list:', currentList.id, 'items count:', currentList.items.length);
     
     return (
       <ShoppingListEditor
         list={currentList}
         onBack={() => setEditingList(null)}
         onSave={(updatedList) => {
+          console.log('ShoppingListEditor onSave called with:', updatedList);
           // No need to update local state since the hook manages the data
           // Just keep the editing mode active
         }}
@@ -91,9 +135,31 @@ const Planner: React.FC = () => {
             {lists.map((list) => (
               <Card 
                 key={list.id} 
-                className="p-4 cursor-pointer hover:shadow-md transition-all duration-200 hover:scale-[1.02]"
-                onClick={() => setEditingList(list)}
+                className={`p-4 cursor-pointer transition-all duration-200 hover:scale-[1.02] relative ${
+                  deleteMode === list.id ? 'border-destructive bg-destructive/5' : 'hover:shadow-md'
+                }`}
+                onMouseDown={() => handleMouseDown(list.id)}
+                onMouseUp={handleMouseUp}
+                onMouseLeave={handleMouseUp}
+                onTouchStart={() => handleMouseDown(list.id)}
+                onTouchEnd={handleMouseUp}
+                onClick={() => handleEditList(list)}
               >
+                {deleteMode === list.id && (
+                  <div className="absolute top-2 right-2">
+                    <Button
+                      variant="destructive"
+                      size="sm"
+                      onClick={(e) => {
+                        e.stopPropagation();
+                        handleDeleteList(list.id);
+                      }}
+                    >
+                      <Trash2 size={16} />
+                    </Button>
+                  </div>
+                )}
+                
                 <div className="flex items-center justify-between">
                   <div className="space-y-2">
                     <div className="flex items-center gap-2">

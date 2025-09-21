@@ -128,27 +128,39 @@ export const useShoppingLists = () => {
   };
 
   const addItemToList = (listId: string, item: Omit<ShoppingItem, 'id'>) => {
+    console.log('useShoppingLists addItemToList called with:', listId, item);
+    
     const newItem: ShoppingItem = {
       ...item,
       id: Date.now().toString()
     };
 
-    setLists(prev => prev.map(list => {
-      if (list.id === listId) {
-        const updatedItems = [...list.items, newItem];
-        const estimatedTotal = updatedItems.reduce((sum, item) => sum + (item.bestPrice * item.quantity), 0);
-        const stores = Array.from(new Set(updatedItems.map(item => item.bestStore)));
-        
-        return {
-          ...list,
-          items: updatedItems,
-          estimatedTotal,
-          stores,
-          updatedAt: new Date().toISOString()
-        };
-      }
-      return list;
-    }));
+    setLists(prev => {
+      console.log('Current lists before update:', prev.map(l => ({ id: l.id, name: l.name, itemCount: l.items.length })));
+      
+      const updated = prev.map(list => {
+        if (list.id === listId) {
+          const updatedItems = [...list.items, newItem];
+          const estimatedTotal = updatedItems.reduce((sum, item) => sum + (item.bestPrice * item.quantity), 0);
+          const stores = Array.from(new Set(updatedItems.map(item => item.bestStore)));
+          
+          const updatedList = {
+            ...list,
+            items: updatedItems,
+            estimatedTotal,
+            stores,
+            updatedAt: new Date().toISOString()
+          };
+          
+          console.log('Updated list:', updatedList.id, 'new item count:', updatedList.items.length);
+          return updatedList;
+        }
+        return list;
+      });
+      
+      console.log('Lists after update:', updated.map(l => ({ id: l.id, name: l.name, itemCount: l.items.length })));
+      return updated;
+    });
   };
 
   const updateItemInList = (listId: string, itemId: string, updates: Partial<ShoppingItem>) => {
