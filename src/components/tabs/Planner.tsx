@@ -26,12 +26,16 @@ const Planner: React.FC = () => {
   };
 
   if (editingList) {
+    // Find the current version of the list from the hook to ensure we have the latest data
+    const currentList = lists.find(list => list.id === editingList.id) || editingList;
+    
     return (
       <ShoppingListEditor
-        list={editingList}
+        list={currentList}
         onBack={() => setEditingList(null)}
         onSave={(updatedList) => {
-          setEditingList(updatedList);
+          // No need to update local state since the hook manages the data
+          // Just keep the editing mode active
         }}
       />
     );

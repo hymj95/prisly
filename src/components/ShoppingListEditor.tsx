@@ -93,8 +93,12 @@ const ShoppingListEditor: React.FC<ShoppingListEditorProps> = ({ list, onBack, o
         checked: false
       };
       
+      console.log('Adding item to list:', list.id, newItem);
+      
       // Add item to the shopping list
       addItemToList(list.id, newItem);
+      
+      console.log('Item added, current list has', list.items.length, 'items');
       
       // Show success toast
       toast({
