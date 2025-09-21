@@ -60,8 +60,7 @@ const Planner: React.FC = () => {
 
   const handleEditList = (list: any) => {
     if (deleteMode === list.id) {
-      // If in delete mode, cancel delete mode and return to normal
-      setDeleteMode(null);
+      // If in delete mode, don't edit
       return;
     }
     console.log('Setting editing list to:', list);
@@ -87,7 +86,7 @@ const Planner: React.FC = () => {
   }
 
   return (
-    <div className="pb-32 px-4 pt-6 space-y-6">
+    <div className="pb-20 px-4 pt-6 space-y-6">
       {/* Header */}
       <div className="text-center space-y-2">
         <h1 className="text-2xl font-bold text-gradient">{t('planner.title')}</h1>
