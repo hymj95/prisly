@@ -28,6 +28,7 @@ import { useLanguage } from '@/hooks/useLanguage';
 import { useCurrency } from '@/hooks/useCurrency';
 import { useBarcodeScanner } from '@/hooks/useBarcodeScanner';
 import { useProductLookup } from '@/hooks/useProductLookup';
+import { Capacitor } from '@capacitor/core';
 import StoreLocationManager from '../StoreLocationManager';
 import ShoppingAreaSelector from '../ShoppingAreaSelector';
 
@@ -125,6 +126,13 @@ const Scan: React.FC = () => {
       
       if (scannedCode) {
         await processBarcode(scannedCode.displayValue);
+      } else {
+        // If scanning returns null (web browser fallback), show manual entry
+        const isWebBrowser = !Capacitor.isNativePlatform();
+        if (isWebBrowser) {
+          console.log('📱 Web browser detected - showing manual entry');
+          setShowManualEntry(true);
+        }
       }
     } catch (error) {
       setError('Failed to scan barcode. Please try again.');

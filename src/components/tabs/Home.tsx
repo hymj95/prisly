@@ -13,6 +13,7 @@ import StoreLocationManager from '../StoreLocationManager';
 interface HomeProps {
   onNavigateToDeals?: () => void;
   onCategorySelect?: (category: string) => void;
+  onNavigateToScan?: () => void;
 }
 
 const mockRecentScans = [
@@ -141,7 +142,7 @@ const mockLocalDeals = [
   }
 ];
 
-const Home: React.FC<HomeProps> = ({ onNavigateToDeals, onCategorySelect }) => {
+const Home: React.FC<HomeProps> = ({ onNavigateToDeals, onCategorySelect, onNavigateToScan }) => {
   const [selectedProduct, setSelectedProduct] = useState<any>(null);
   const [showStoreManager, setShowStoreManager] = useState(false);
   const { formatPrice } = useCurrency();
@@ -249,7 +250,10 @@ const Home: React.FC<HomeProps> = ({ onNavigateToDeals, onCategorySelect }) => {
             <h3 className="font-semibold text-white text-base">{t('home.quickScan')}</h3>
             <p className="text-sm text-white/90">{t('home.quickScanDesc')}</p>
           </div>
-          <Button className="flex-shrink-0 bg-white text-primary hover:bg-white/95 font-medium px-6">
+          <Button 
+            onClick={() => onNavigateToScan && onNavigateToScan()}
+            className="flex-shrink-0 bg-white text-primary hover:bg-white/95 font-medium px-6"
+          >
             {t('home.scan')}
           </Button>
         </div>

@@ -10,9 +10,56 @@ export interface ScannedBarcode {
   valueType: string;
 }
 
+// Web-based barcode scanning using getUserMedia
+const useWebCamera = () => {
+  const startWebScan = async (): Promise<ScannedBarcode | null> => {
+    try {
+      console.log('🌐 Starting web camera scan...');
+      
+      // Check if getUserMedia is supported
+      if (!navigator.mediaDevices || !navigator.mediaDevices.getUserMedia) {
+        throw new Error('Camera not supported in this browser');
+      }
+
+      // Request camera permission
+      const stream = await navigator.mediaDevices.getUserMedia({ 
+        video: { 
+          facingMode: 'environment' // Use back camera if available
+        } 
+      });
+      
+      console.log('✅ Camera stream obtained');
+      toast.success('Camera ready! Please use manual barcode entry for now.');
+      
+      // For now, we'll stop the stream and show manual entry
+      // In a full implementation, you'd use a library like QuaggaJS or ZXing
+      stream.getTracks().forEach(track => track.stop());
+      
+      // Return null to trigger manual entry
+      return null;
+      
+    } catch (error: any) {
+      console.error('❌ Web camera error:', error);
+      
+      if (error.name === 'NotAllowedError') {
+        toast.error('Camera permission denied. Please enable camera access.');
+      } else if (error.name === 'NotFoundError') {
+        toast.error('No camera found on this device.');
+      } else {
+        toast.error('Camera not available. Please use manual barcode entry.');
+      }
+      
+      return null;
+    }
+  };
+
+  return { startWebScan };
+};
+
 export const useBarcodeScanner = () => {
   const [isScanning, setIsScanning] = useState(false);
   const [lastScannedCode, setLastScannedCode] = useState<ScannedBarcode | null>(null);
+  const { startWebScan } = useWebCamera();
 
   const checkPermissions = async () => {
     try {
@@ -50,11 +97,13 @@ export const useBarcodeScanner = () => {
       return null;
     }
 
-    // For web browsers on mobile, provide fallback
+    // For web browsers on mobile, use web camera API
     if (!isNative) {
-      console.log('🌐 Running in mobile web browser - Capacitor plugins not available');
-      toast.info('Camera scanning requires the native app. Please use manual barcode entry.');
-      return null;
+      console.log('🌐 Running in mobile web browser - using web camera API');
+      setIsScanning(true);
+      const result = await startWebScan();
+      setIsScanning(false);
+      return result;
     }
 
     try {

@@ -28,7 +28,11 @@ const App = () => {
 
     switch (activeTab) {
       case 'home':
-        return <Home onNavigateToDeals={() => setActiveTab('deals')} onCategorySelect={setSelectedCategory} />;
+        return <Home 
+          onNavigateToDeals={() => setActiveTab('deals')} 
+          onCategorySelect={setSelectedCategory}
+          onNavigateToScan={() => setActiveTab('scan')}
+        />;
       case 'scan':
         return <Scan />;
       case 'trends':
@@ -40,7 +44,11 @@ const App = () => {
       case 'deals':
         return <Deals onCategorySelect={setSelectedCategory} />;
       default:
-        return <Home onNavigateToDeals={() => setActiveTab('deals')} onCategorySelect={setSelectedCategory} />;
+        return <Home 
+          onNavigateToDeals={() => setActiveTab('deals')} 
+          onCategorySelect={setSelectedCategory}
+          onNavigateToScan={() => setActiveTab('scan')}
+        />;
     }
   };
 
