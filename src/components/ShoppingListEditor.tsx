@@ -197,7 +197,7 @@ const ShoppingListEditor: React.FC<ShoppingListEditorProps> = ({ list, onBack, o
   };
 
   return (
-    <div className="pb-28 px-4 pt-6 space-y-6 animate-slide-up">
+    <div className="pb-32 px-4 pt-6 space-y-6 animate-slide-up">
       {/* Header */}
       <div className="flex items-center gap-3">
         <Button

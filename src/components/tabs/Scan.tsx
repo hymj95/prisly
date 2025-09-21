@@ -267,7 +267,7 @@ const Scan: React.FC = () => {
   // Area Selector View
   if (showAreaSelector) {
     return (
-      <div className="pb-28 px-4 pt-6">
+      <div className="pb-32 px-4 pt-6">
         <div className="flex items-center gap-3 mb-6">
           <Button variant="outline" size="icon" onClick={() => setShowAreaSelector(false)}>
             <ArrowLeft size={20} />
@@ -285,7 +285,7 @@ const Scan: React.FC = () => {
   // Store Manager View
   if (showStoreManager) {
     return (
-      <div className="pb-28 px-4 pt-6">
+      <div className="pb-32 px-4 pt-6">
         <div className="flex items-center gap-3 mb-6">
           <Button variant="outline" size="icon" onClick={() => setShowStoreManager(false)}>
             <ArrowLeft size={20} />
@@ -298,7 +298,7 @@ const Scan: React.FC = () => {
   }
 
   return (
-    <div className="pb-28 px-6 pt-8 space-y-8">
+    <div className="pb-32 px-6 pt-8 space-y-8">
       {/* Header */}
       <div className="text-center space-y-4">
         <div className="flex justify-center">
