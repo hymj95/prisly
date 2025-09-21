@@ -35,6 +35,7 @@ const ShoppingListEditor: React.FC<ShoppingListEditorProps> = ({ list, onBack, o
   const [editingItem, setEditingItem] = useState<string | null>(null);
   const [editingUnit, setEditingUnit] = useState<string | null>(null);
   const [newItemName, setNewItemName] = useState('');
+  const [newItemSize, setNewItemSize] = useState('');
   const [newItemQuantity, setNewItemQuantity] = useState('1');
   const [newItemUnit, setNewItemUnit] = useState('item');
   const [newItemPrice, setNewItemPrice] = useState('');
@@ -75,8 +76,13 @@ const ShoppingListEditor: React.FC<ShoppingListEditorProps> = ({ list, onBack, o
       const price = parseFloat(newItemPrice);
       const total = quantity * price;
       
+      // Combine product name with size if provided
+      const fullProductName = newItemSize.trim() 
+        ? `${newItemName.trim()} ${newItemSize.trim()}`
+        : newItemName.trim();
+      
       const newItem = {
-        product: newItemName.trim(),
+        product: fullProductName,
         quantity: quantity,
         unit: newItemUnit,
         bestPrice: price,
@@ -88,12 +94,12 @@ const ShoppingListEditor: React.FC<ShoppingListEditorProps> = ({ list, onBack, o
       
       addItemToList(list.id, newItem);
       setNewItemName('');
+      setNewItemSize('');
       setNewItemQuantity('1');
       setNewItemUnit('item');
       setNewItemPrice('');
       setSelectedProduct(null);
       setCalculatedTotal(0);
-      setShowAddItem(false);
     }
   };
 
@@ -258,7 +264,18 @@ const ShoppingListEditor: React.FC<ShoppingListEditorProps> = ({ list, onBack, o
                 value={newItemName}
                 onChange={setNewItemName}
                 onProductSelect={handleProductSelect}
-                placeholder="Product name"
+                placeholder="Product name (e.g., Coca-Cola)"
+                className="h-12 text-base"
+              />
+            </div>
+
+            <div className="space-y-2">
+              <label className="text-sm font-medium text-foreground">Size/Volume</label>
+              <Input
+                type="text"
+                placeholder="e.g., 12oz, 20oz, 2L, 500ml"
+                value={newItemSize}
+                onChange={(e) => setNewItemSize(e.target.value)}
                 className="h-12 text-base"
               />
             </div>
@@ -320,6 +337,7 @@ const ShoppingListEditor: React.FC<ShoppingListEditorProps> = ({ list, onBack, o
               variant="outline" 
               onClick={() => {
                 setNewItemName('');
+                setNewItemSize('');
                 setNewItemQuantity('1');
                 setNewItemUnit('item');
                 setNewItemPrice('');
