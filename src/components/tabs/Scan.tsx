@@ -4,6 +4,7 @@ import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { Badge } from '@/components/ui/badge';
 import { Alert, AlertDescription } from '@/components/ui/alert';
+import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
 import { 
   Camera, 
   Zap, 
@@ -19,7 +20,9 @@ import {
   Package,
   DollarSign,
   ArrowLeft,
-  Search
+  Search,
+  Upload,
+  Image
 } from 'lucide-react';
 import { useLanguage } from '@/hooks/useLanguage';
 import { useCurrency } from '@/hooks/useCurrency';
@@ -34,6 +37,7 @@ interface DetectedProduct {
   category: string;
   barcode: string;
   price?: number;
+  image?: string;
 }
 
 interface Store {
@@ -59,12 +63,28 @@ const Scan: React.FC = () => {
   const [currentPrice, setCurrentPrice] = useState<string>('');
   const [manualBarcode, setManualBarcode] = useState<string>('');
   const [showManualEntry, setShowManualEntry] = useState(false);
+  const [uploadedImage, setUploadedImage] = useState<string | null>(null);
+  const fileInputRef = useRef<HTMLInputElement>(null);
 
   // Mock detected stores
   const mockStores: Store[] = [
     { id: '1', name: 'Target', address: 'Downtown Mall', distance: 0.8 },
     { id: '2', name: 'Walmart', address: 'Shopping Center', distance: 1.2 },
     { id: '3', name: 'Whole Foods', address: 'Main Street', distance: 1.5 }
+  ];
+
+  // Product categories
+  const productCategories = [
+    'Beverages',
+    'Food',
+    'Electronics',
+    'Produce',
+    'Household',
+    'Health & Beauty',
+    'Clothing',
+    'Toys & Games',
+    'Books',
+    'Sports & Outdoors'
   ];
 
   // Mock product database
@@ -74,21 +94,24 @@ const Scan: React.FC = () => {
       brand: 'Coca-Cola',
       category: 'Beverages',
       barcode: '123456789',
-      price: 4.99
+      price: 4.99,
+      image: 'https://images.unsplash.com/photo-1561758033-d89a9ad46330?w=400&h=400&fit=crop'
     },
     '987654321': {
       name: 'iPhone 15 Pro 256GB',
       brand: 'Apple',
       category: 'Electronics',
       barcode: '987654321',
-      price: 999.99
+      price: 999.99,
+      image: 'https://images.unsplash.com/photo-1592910061532-65b5c3ca5739?w=400&h=400&fit=crop'
     },
     '456789123': {
       name: 'Organic Bananas',
       brand: 'Whole Foods',
       category: 'Produce',
       barcode: '456789123',
-      price: 2.49
+      price: 2.49,
+      image: 'https://images.unsplash.com/photo-1571771894821-ce9b6c11b08e?w=400&h=400&fit=crop'
     }
   };
 
@@ -121,7 +144,8 @@ const Scan: React.FC = () => {
           brand: productInfo.brand,
           category: productInfo.category,
           barcode: productInfo.barcode,
-          price: productInfo.price
+          price: productInfo.price,
+          image: productInfo.image
         };
         
         setScanResult(product);
@@ -205,6 +229,17 @@ const Scan: React.FC = () => {
     setShowAreaSelector(false);
   };
 
+  const handleImageUpload = (event: React.ChangeEvent<HTMLInputElement>) => {
+    const file = event.target.files?.[0];
+    if (file) {
+      const reader = new FileReader();
+      reader.onload = (e) => {
+        setUploadedImage(e.target?.result as string);
+      };
+      reader.readAsDataURL(file);
+    }
+  };
+
   const handleScanAnother = () => {
     setScanResult(null);
     setSelectedStore(null);
@@ -217,6 +252,7 @@ const Scan: React.FC = () => {
     setShowAreaSelector(false);
     setManualBarcode('');
     setShowManualEntry(false);
+    setUploadedImage(null);
   };
 
   // Area Selector View
@@ -412,74 +448,136 @@ const Scan: React.FC = () => {
           </Card>
 
           {/* Product Information */}
-          <Card className="p-4">
-            <div className="space-y-4">
+          <Card className="p-6 rounded-card shadow-card border-minimal">
+            <div className="space-y-6">
               <div className="flex items-center justify-between">
-                <h3 className="font-semibold">{t('scan.productInfo')}</h3>
+                <h3 className="font-semibold text-lg">{t('scan.productInfo')}</h3>
                 <Button 
                   variant="outline" 
                   size="sm" 
                   onClick={isEditing ? handleSaveEdit : handleEdit}
+                  className="rounded-card"
                 >
                   {isEditing ? (
                     <>
-                      <Save size={14} className="mr-1" />
+                      <Save size={14} className="mr-2" />
                       {t('common.save')}
                     </>
                   ) : (
                     <>
-                      <Edit size={14} className="mr-1" />
+                      <Edit size={14} className="mr-2" />
                       {t('scan.editInfo')}
                     </>
                   )}
                 </Button>
               </div>
 
-              <div className="grid gap-3">
+              {/* Product Image */}
+              <div className="space-y-3">
+                <label className="text-sm font-medium text-muted-foreground">Product Image</label>
+                <div className="flex flex-col space-y-4">
+                  {(scanResult.image || uploadedImage) && (
+                    <div className="relative w-24 h-24 mx-auto">
+                      <img 
+                        src={uploadedImage || scanResult.image} 
+                        alt="Product" 
+                        className="w-full h-full object-cover rounded-card border-2 border-border"
+                      />
+                    </div>
+                  )}
+                  
+                  {isEditing && (
+                    <div className="flex justify-center">
+                      <Button 
+                        variant="outline" 
+                        size="sm"
+                        onClick={() => fileInputRef.current?.click()}
+                        className="rounded-card"
+                      >
+                        <Upload size={14} className="mr-2" />
+                        {uploadedImage || scanResult.image ? 'Change Image' : 'Upload Image'}
+                      </Button>
+                      <input
+                        type="file"
+                        ref={fileInputRef}
+                        onChange={handleImageUpload}
+                        accept="image/*"
+                        className="hidden"
+                      />
+                    </div>
+                  )}
+                  
+                  {!scanResult.image && !uploadedImage && !isEditing && (
+                    <div className="w-24 h-24 mx-auto bg-muted rounded-card border-2 border-dashed border-muted-foreground/30 flex items-center justify-center">
+                      <Image className="text-muted-foreground" size={24} />
+                    </div>
+                  )}
+                </div>
+              </div>
+
+              <div className="grid gap-4">
                 <div>
                   <label className="text-sm font-medium text-muted-foreground">{t('scan.productName')}</label>
                   {isEditing ? (
                     <Input
                       value={editedProduct?.name || ''}
                       onChange={(e) => setEditedProduct(prev => prev ? {...prev, name: e.target.value} : null)}
-                      className="mt-1"
+                      className="mt-2 rounded-card"
+                      placeholder="Enter product name"
                     />
                   ) : (
-                    <p className="font-medium">{scanResult.name}</p>
+                    <p className="font-medium mt-1">{scanResult.name}</p>
                   )}
                 </div>
 
-                <div className="grid grid-cols-2 gap-3">
+                <div className="grid grid-cols-2 gap-4">
                   <div>
                     <label className="text-sm font-medium text-muted-foreground">{t('scan.brand')}</label>
                     {isEditing ? (
                       <Input
                         value={editedProduct?.brand || ''}
                         onChange={(e) => setEditedProduct(prev => prev ? {...prev, brand: e.target.value} : null)}
-                        className="mt-1"
+                        className="mt-2 rounded-card"
+                        placeholder="Enter brand"
                       />
                     ) : (
-                      <p className="font-medium">{scanResult.brand}</p>
+                      <p className="font-medium mt-1">{scanResult.brand}</p>
                     )}
                   </div>
 
                   <div>
                     <label className="text-sm font-medium text-muted-foreground">{t('scan.category')}</label>
                     {isEditing ? (
-                      <Input
-                        value={editedProduct?.category || ''}
-                        onChange={(e) => setEditedProduct(prev => prev ? {...prev, category: e.target.value} : null)}
-                        className="mt-1"
-                      />
+                      <Select 
+                        value={editedProduct?.category || ''} 
+                        onValueChange={(value) => setEditedProduct(prev => prev ? {...prev, category: value} : null)}
+                      >
+                        <SelectTrigger className="mt-2 rounded-card">
+                          <SelectValue placeholder="Select category" />
+                        </SelectTrigger>
+                        <SelectContent className="bg-background border rounded-card shadow-card z-50">
+                          {productCategories.map((category) => (
+                            <SelectItem 
+                              key={category} 
+                              value={category}
+                              className="cursor-pointer hover:bg-muted focus:bg-muted"
+                            >
+                              {category}
+                            </SelectItem>
+                          ))}
+                        </SelectContent>
+                      </Select>
                     ) : (
-                      <p className="font-medium">{scanResult.category}</p>
+                      <p className="font-medium mt-1">{scanResult.category}</p>
                     )}
                   </div>
                 </div>
 
                 <div>
                   <label className="text-sm font-medium text-muted-foreground">{t('scan.barcode')}</label>
-                  <p className="font-mono text-sm bg-muted px-2 py-1 rounded">{scanResult.barcode}</p>
+                  <div className="mt-1">
+                    <div className="font-mono text-sm bg-muted/50 px-3 py-2 rounded-card border">{scanResult.barcode}</div>
+                  </div>
                 </div>
               </div>
             </div>
