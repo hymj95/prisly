@@ -194,9 +194,10 @@ interface DealSectionProps {
   isOpen: boolean;
   onToggle: () => void;
   onDealClick: (deal: Deal) => void;
+  onCategoryClick?: (category: string) => void;
 }
 
-const DealSection: React.FC<DealSectionProps> = ({ title, icon, deals, isOpen, onToggle, onDealClick }) => {
+const DealSection: React.FC<DealSectionProps> = ({ title, icon, deals, isOpen, onToggle, onDealClick, onCategoryClick }) => {
   const { formatPrice } = useCurrency();
   const { t } = useLanguage();
 
@@ -226,11 +227,20 @@ const DealSection: React.FC<DealSectionProps> = ({ title, icon, deals, isOpen, o
               >
                 <div className="flex items-start justify-between">
                   <div className="flex-1 space-y-2">
-                    <div className="flex items-center gap-2 flex-wrap">
-                      <h3 className="font-medium text-sm">{deal.product}</h3>
-                      <Badge variant="outline" className="text-xs">{deal.brand}</Badge>
-                      <Badge variant="secondary" className="text-xs">{deal.category}</Badge>
-                    </div>
+                     <div className="flex items-center gap-2 flex-wrap">
+                       <h3 className="font-medium text-sm">{deal.product}</h3>
+                       <Badge variant="outline" className="text-xs">{deal.brand}</Badge>
+                       <Badge 
+                         variant="secondary" 
+                         className="text-xs cursor-pointer hover:bg-primary hover:text-primary-foreground transition-colors"
+                         onClick={(e) => {
+                           e.stopPropagation();
+                           onCategoryClick?.(deal.category);
+                         }}
+                       >
+                         {deal.category}
+                       </Badge>
+                     </div>
                     
                     <div className="flex items-center gap-4 text-xs text-muted-foreground">
                       <div className="flex items-center gap-1">
@@ -275,7 +285,11 @@ const DealSection: React.FC<DealSectionProps> = ({ title, icon, deals, isOpen, o
   );
 };
 
-const Deals: React.FC = () => {
+interface DealsProps {
+  onCategorySelect?: (category: string) => void;
+}
+
+const Deals: React.FC<DealsProps> = ({ onCategorySelect }) => {
   const { t } = useLanguage();
   const [selectedProduct, setSelectedProduct] = useState<any>(null);
   const [openSections, setOpenSections] = useState({
@@ -330,6 +344,7 @@ const Deals: React.FC = () => {
           isOpen={openSections.hot}
           onToggle={() => handleSectionToggle('hot')}
           onDealClick={handleDealClick}
+          onCategoryClick={onCategorySelect}
         />
 
         <DealSection
@@ -339,6 +354,7 @@ const Deals: React.FC = () => {
           isOpen={openSections.flash}
           onToggle={() => handleSectionToggle('flash')}
           onDealClick={handleDealClick}
+          onCategoryClick={onCategorySelect}
         />
 
         <DealSection
@@ -348,6 +364,7 @@ const Deals: React.FC = () => {
           isOpen={openSections.local}
           onToggle={() => handleSectionToggle('local')}
           onDealClick={handleDealClick}
+          onCategoryClick={onCategorySelect}
         />
       </div>
     </div>

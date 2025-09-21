@@ -176,25 +176,6 @@ const Profile: React.FC = () => {
           <h3 className="font-semibold">Settings</h3>
           
           <div className="space-y-2">
-            <Card className="p-3">
-              <div className="flex items-center justify-between">
-                <div className="flex items-center gap-3">
-                  <TestTube className="text-primary" size={20} />
-                  <div>
-                    <p className="font-medium">Barcode Scanner Demo</p>
-                    <p className="text-sm text-muted-foreground">Test native camera scanning</p>
-                  </div>
-                </div>
-                <Button 
-                  variant="outline" 
-                  size="sm"
-                  onClick={() => setActiveFeature('barcode-demo')}
-                >
-                  <Camera size={14} className="mr-2" />
-                  Test
-                </Button>
-              </div>
-            </Card>
             
             <Card className="p-3">
               <div className="flex items-center justify-between">

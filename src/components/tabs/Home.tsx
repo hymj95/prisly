@@ -12,6 +12,7 @@ import StoreLocationManager from '../StoreLocationManager';
 
 interface HomeProps {
   onNavigateToDeals?: () => void;
+  onCategorySelect?: (category: string) => void;
 }
 
 const mockRecentScans = [
@@ -140,7 +141,7 @@ const mockLocalDeals = [
   }
 ];
 
-const Home: React.FC<HomeProps> = ({ onNavigateToDeals }) => {
+const Home: React.FC<HomeProps> = ({ onNavigateToDeals, onCategorySelect }) => {
   const [selectedProduct, setSelectedProduct] = useState<any>(null);
   const [showStoreManager, setShowStoreManager] = useState(false);
   const { formatPrice } = useCurrency();
@@ -261,6 +262,7 @@ const Home: React.FC<HomeProps> = ({ onNavigateToDeals }) => {
         deals={mockHotDeals}
         onDealClick={handleDealClick}
         onViewAll={handleViewAllDeals}
+        onCategoryClick={onCategorySelect}
       />
 
       {/* Flash Deals Section */}
@@ -270,6 +272,7 @@ const Home: React.FC<HomeProps> = ({ onNavigateToDeals }) => {
         deals={mockFlashDeals}
         onDealClick={handleDealClick}
         onViewAll={handleViewAllDeals}
+        onCategoryClick={onCategorySelect}
       />
 
       {/* Local Deals Section */}
@@ -279,6 +282,7 @@ const Home: React.FC<HomeProps> = ({ onNavigateToDeals }) => {
         deals={mockLocalDeals}
         onDealClick={handleDealClick}
         onViewAll={handleViewAllDeals}
+        onCategoryClick={onCategorySelect}
       />
 
       {/* Recent Scans */}

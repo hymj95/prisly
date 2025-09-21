@@ -26,9 +26,10 @@ interface DealsSectionProps {
   deals: Deal[];
   onDealClick: (deal: Deal) => void;
   onViewAll?: () => void;
+  onCategoryClick?: (category: string) => void;
 }
 
-const DealsSection: React.FC<DealsSectionProps> = ({ title, icon, deals, onDealClick, onViewAll }) => {
+const DealsSection: React.FC<DealsSectionProps> = ({ title, icon, deals, onDealClick, onViewAll, onCategoryClick }) => {
   const { formatPrice } = useCurrency();
   const { t } = useLanguage();
 
@@ -51,11 +52,20 @@ const DealsSection: React.FC<DealsSectionProps> = ({ title, icon, deals, onDealC
           >
             <div className="flex items-start justify-between">
               <div className="flex-1 space-y-2">
-                <div className="flex items-center gap-2 flex-wrap">
-                  <h3 className="font-medium text-sm">{deal.product}</h3>
-                  <Badge variant="outline" className="text-xs">{deal.brand}</Badge>
-                  <Badge variant="secondary" className="text-xs">{deal.category}</Badge>
-                </div>
+                 <div className="flex items-center gap-2 flex-wrap">
+                   <h3 className="font-medium text-sm">{deal.product}</h3>
+                   <Badge variant="outline" className="text-xs">{deal.brand}</Badge>
+                   <Badge 
+                     variant="secondary" 
+                     className="text-xs cursor-pointer hover:bg-primary hover:text-primary-foreground transition-colors"
+                     onClick={(e) => {
+                       e.stopPropagation();
+                       onCategoryClick?.(deal.category);
+                     }}
+                   >
+                     {deal.category}
+                   </Badge>
+                 </div>
                 
                 <div className="flex items-center gap-4 text-xs text-muted-foreground">
                   <div className="flex items-center gap-1">

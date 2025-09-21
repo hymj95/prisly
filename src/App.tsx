@@ -10,18 +10,25 @@ import Trends from './components/tabs/Trends';
 import Planner from './components/tabs/Planner';
 import Profile from './components/tabs/Profile';
 import Deals from './components/tabs/Deals';
+import CategoryDeals from './components/CategoryDeals';
 import { LanguageContext, useLanguageProvider } from './hooks/useLanguage';
 
 const queryClient = new QueryClient();
 
 const App = () => {
   const [activeTab, setActiveTab] = useState('home');
+  const [selectedCategory, setSelectedCategory] = useState<string | null>(null);
   const languageProvider = useLanguageProvider();
 
   const renderActiveTab = () => {
+    // Show category deals if a category is selected
+    if (selectedCategory) {
+      return <CategoryDeals category={selectedCategory} onBack={() => setSelectedCategory(null)} />;
+    }
+
     switch (activeTab) {
       case 'home':
-        return <Home onNavigateToDeals={() => setActiveTab('deals')} />;
+        return <Home onNavigateToDeals={() => setActiveTab('deals')} onCategorySelect={setSelectedCategory} />;
       case 'scan':
         return <Scan />;
       case 'trends':
@@ -31,9 +38,9 @@ const App = () => {
       case 'profile':
         return <Profile />;
       case 'deals':
-        return <Deals />;
+        return <Deals onCategorySelect={setSelectedCategory} />;
       default:
-        return <Home onNavigateToDeals={() => setActiveTab('deals')} />;
+        return <Home onNavigateToDeals={() => setActiveTab('deals')} onCategorySelect={setSelectedCategory} />;
     }
   };
 

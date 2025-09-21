@@ -4,7 +4,7 @@ import { Button } from '@/components/ui/button';
 import { Badge } from '@/components/ui/badge';
 import { Input } from '@/components/ui/input';
 import { Switch } from '@/components/ui/switch';
-import BarcodeDemo from './BarcodeDemo';
+
 import { 
   History, 
   Award, 
@@ -275,8 +275,6 @@ const ProfileFeatures: React.FC<ProfileFeaturesProps> = ({ activeFeature, onBack
       return renderSettings();
     case 'account':
       return renderSettings();
-    case 'barcode-demo':
-      return <BarcodeDemo />;
     default:
       return <div>Feature not found</div>;
   }
