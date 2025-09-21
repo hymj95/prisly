@@ -15,11 +15,13 @@ import {
   CheckCircle2,
   Save,
   ShoppingBag,
-  Package
+  Package,
+  Calculator
 } from 'lucide-react';
 import { ShoppingList, ShoppingItem, useShoppingLists } from '@/hooks/useShoppingLists';
 import { useCurrency } from '@/hooks/useCurrency';
 import { useLanguage } from '@/hooks/useLanguage';
+import ProductAutocomplete from './ProductAutocomplete';
 
 interface ShoppingListEditorProps {
   list: ShoppingList;
@@ -37,6 +39,8 @@ const ShoppingListEditor: React.FC<ShoppingListEditorProps> = ({ list, onBack, o
   const [newItemUnit, setNewItemUnit] = useState('item');
   const [newItemPrice, setNewItemPrice] = useState('');
   const [showAddItem, setShowAddItem] = useState(false);
+  const [selectedProduct, setSelectedProduct] = useState<any>(null);
+  const [calculatedTotal, setCalculatedTotal] = useState<number>(0);
   
   const unitOptions = [
     { value: 'item', label: 'Item(s)' },
@@ -67,13 +71,18 @@ const ShoppingListEditor: React.FC<ShoppingListEditorProps> = ({ list, onBack, o
 
   const handleAddItem = () => {
     if (newItemName.trim() && newItemPrice) {
+      const quantity = parseFloat(newItemQuantity) || 1;
+      const price = parseFloat(newItemPrice);
+      const total = quantity * price;
+      
       const newItem = {
         product: newItemName.trim(),
-        quantity: parseInt(newItemQuantity) || 1,
+        quantity: quantity,
         unit: newItemUnit,
-        bestPrice: parseFloat(newItemPrice),
-        bestStore: 'Store',
-        avgPrice: parseFloat(newItemPrice) * 1.1,
+        bestPrice: price,
+        bestStore: selectedProduct?.bestStore || 'Store',
+        bestStoreLocation: selectedProduct?.storeLocation || 'Location',
+        avgPrice: price * 1.1,
         checked: false
       };
       
@@ -82,8 +91,36 @@ const ShoppingListEditor: React.FC<ShoppingListEditorProps> = ({ list, onBack, o
       setNewItemQuantity('1');
       setNewItemUnit('item');
       setNewItemPrice('');
+      setSelectedProduct(null);
+      setCalculatedTotal(0);
       setShowAddItem(false);
     }
+  };
+
+  const handleProductSelect = (product: any) => {
+    setSelectedProduct(product);
+    setNewItemPrice(product.expectedPrice.toString());
+    setNewItemUnit(product.unit);
+    calculateTotal(parseFloat(newItemQuantity) || 1, product.expectedPrice);
+  };
+
+  const calculateTotal = (quantity: number, price: number) => {
+    const total = quantity * price;
+    setCalculatedTotal(total);
+  };
+
+  const handleQuantityChange = (value: string) => {
+    setNewItemQuantity(value);
+    const quantity = parseFloat(value) || 1;
+    const price = parseFloat(newItemPrice) || 0;
+    calculateTotal(quantity, price);
+  };
+
+  const handlePriceChange = (value: string) => {
+    setNewItemPrice(value);
+    const quantity = parseFloat(newItemQuantity) || 1;
+    const price = parseFloat(value) || 0;
+    calculateTotal(quantity, price);
   };
 
   const handleToggleCheck = (itemId: string, checked: boolean) => {
@@ -216,12 +253,16 @@ const ShoppingListEditor: React.FC<ShoppingListEditorProps> = ({ list, onBack, o
             </div>
             
             <div className="space-y-3">
-              <Input
-                placeholder={t('editor.productName')}
-                value={newItemName}
-                onChange={(e) => setNewItemName(e.target.value)}
-                className="text-base"
-              />
+              <div className="space-y-1">
+                <label className="text-sm font-medium text-muted-foreground">Product Name</label>
+                <ProductAutocomplete
+                  value={newItemName}
+                  onChange={setNewItemName}
+                  onProductSelect={handleProductSelect}
+                  placeholder={t('editor.productName')}
+                  className="text-base"
+                />
+              </div>
               
               <div className="grid grid-cols-2 gap-3">
                 <div className="space-y-1">
@@ -230,7 +271,7 @@ const ShoppingListEditor: React.FC<ShoppingListEditorProps> = ({ list, onBack, o
                     type="number"
                     placeholder="1"
                     value={newItemQuantity}
-                    onChange={(e) => setNewItemQuantity(e.target.value)}
+                    onChange={(e) => handleQuantityChange(e.target.value)}
                     min="0.01"
                     step="0.01"
                     className="text-base"
@@ -255,16 +296,48 @@ const ShoppingListEditor: React.FC<ShoppingListEditorProps> = ({ list, onBack, o
               </div>
               
               <div className="space-y-1">
-                <label className="text-sm font-medium text-muted-foreground">Expected Price</label>
+                <label className="text-sm font-medium text-muted-foreground">Expected Price (per {newItemUnit})</label>
                 <Input
                   type="number"
                   step="0.01"
                   placeholder="0.00"
                   value={newItemPrice}
-                  onChange={(e) => setNewItemPrice(e.target.value)}
+                  onChange={(e) => handlePriceChange(e.target.value)}
                   className="text-base"
                 />
               </div>
+
+              {/* Store Information */}
+              {selectedProduct && (
+                <Card className="p-3 bg-success/5 border-success/20">
+                  <div className="flex items-center gap-2 mb-2">
+                    <MapPin className="text-success" size={16} />
+                    <span className="text-sm font-medium text-success">Good Deal Found!</span>
+                  </div>
+                  <div className="text-sm text-muted-foreground">
+                    <p><strong>{selectedProduct.bestStore}</strong> - {selectedProduct.storeLocation}</p>
+                    <p>Best price: {formatPrice(selectedProduct.expectedPrice)} per {selectedProduct.unit}</p>
+                  </div>
+                </Card>
+              )}
+
+              {/* Total Calculation */}
+              {calculatedTotal > 0 && (
+                <Card className="p-3 bg-primary/5 border-primary/20">
+                  <div className="flex items-center justify-between">
+                    <div className="flex items-center gap-2">
+                      <Calculator className="text-primary" size={16} />
+                      <span className="text-sm font-medium">Total Cost</span>
+                    </div>
+                    <div className="text-right">
+                      <p className="font-bold text-primary">{formatPrice(calculatedTotal)}</p>
+                      <p className="text-xs text-muted-foreground">
+                        {newItemQuantity} × {formatPrice(parseFloat(newItemPrice) || 0)}
+                      </p>
+                    </div>
+                  </div>
+                </Card>
+              )}
             </div>
             
             <div className="flex gap-2 pt-2">
@@ -343,7 +416,10 @@ const ShoppingListEditor: React.FC<ShoppingListEditorProps> = ({ list, onBack, o
                           </Badge>
                           <div className="flex items-center gap-1 text-xs text-muted-foreground">
                             <MapPin size={10} />
-                            <span>{item.bestStore}</span>
+                            <span>{item.bestStore || 'Store'}</span>
+                            {item.bestStoreLocation && (
+                              <span className="text-xs">- {item.bestStoreLocation}</span>
+                            )}
                           </div>
                         </div>
                       </div>

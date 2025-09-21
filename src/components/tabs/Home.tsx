@@ -5,6 +5,7 @@ import { Button } from '@/components/ui/button';
 import { TrendingDown, TrendingUp, MapPin, Clock, Zap, Flame, Star, Target, Plus } from 'lucide-react';
 import { useCurrency } from '@/hooks/useCurrency';
 import { useLanguage } from '@/hooks/useLanguage';
+import { useBarcodeScanner } from '@/hooks/useBarcodeScanner';
 import PrislyLogo from '../PrislyLogo';
 import ProductDetail from '../ProductDetail';
 import DealsSection from '../DealsSection';
@@ -148,9 +149,31 @@ const Home: React.FC<HomeProps> = ({ onNavigateToDeals, onCategorySelect, onNavi
   const [showStoreManager, setShowStoreManager] = useState(false);
   const { formatPrice } = useCurrency();
   const { t } = useLanguage();
+  const { startScan, isScanning } = useBarcodeScanner();
 
   const handleDealClick = (deal: any) => {
     setSelectedProduct(deal);
+  };
+
+  const handleQuickScan = async () => {
+    try {
+      console.log('🚀 Quick scan initiated from home');
+      const result = await startScan();
+      
+      if (result) {
+        console.log('✅ Quick scan successful, navigating to scan tab');
+        // Navigate to scan tab to show results
+        onNavigateToScan && onNavigateToScan();
+      } else {
+        console.log('⚠️ No scan result, navigating to scan tab for manual entry');
+        // Even without result, navigate to scan tab for manual entry
+        onNavigateToScan && onNavigateToScan();
+      }
+    } catch (error) {
+      console.error('❌ Quick scan error:', error);
+      // Fallback to normal scan tab navigation
+      onNavigateToScan && onNavigateToScan();
+    }
   };
 
   const handleViewAllDeals = () => {
@@ -215,10 +238,11 @@ const Home: React.FC<HomeProps> = ({ onNavigateToDeals, onCategorySelect, onNavi
             <p className="text-sm text-white/90">{t('home.quickScanDesc')}</p>
           </div>
           <Button 
-            onClick={() => onNavigateToScan && onNavigateToScan()}
+            onClick={handleQuickScan}
+            disabled={isScanning}
             className="flex-shrink-0 bg-white text-primary hover:bg-white/95 font-medium px-6"
           >
-            {t('home.scan')}
+            {isScanning ? 'Scanning...' : t('home.scan')}
           </Button>
         </div>
       </Card>

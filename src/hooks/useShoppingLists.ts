@@ -7,6 +7,7 @@ export interface ShoppingItem {
   unit: string;
   bestPrice: number;
   bestStore: string;
+  bestStoreLocation?: string;
   avgPrice: number;
   checked: boolean;
 }
