@@ -21,6 +21,7 @@ import {
 import { ShoppingList, ShoppingItem, useShoppingLists } from '@/hooks/useShoppingLists';
 import { useCurrency } from '@/hooks/useCurrency';
 import { useLanguage } from '@/hooks/useLanguage';
+import { useToast } from '@/hooks/use-toast';
 import ProductAutocomplete from './ProductAutocomplete';
 
 interface ShoppingListEditorProps {
@@ -63,6 +64,7 @@ const ShoppingListEditor: React.FC<ShoppingListEditorProps> = ({ list, onBack, o
   const { formatPrice } = useCurrency();
   const { updateList, addItemToList, updateItemInList, removeItemFromList } = useShoppingLists();
   const { t } = useLanguage();
+  const { toast } = useToast();
 
   const handleSaveListName = () => {
     updateList(list.id, { name: listName });
@@ -74,7 +76,6 @@ const ShoppingListEditor: React.FC<ShoppingListEditorProps> = ({ list, onBack, o
     if (newItemName.trim() && newItemPrice) {
       const quantity = parseFloat(newItemQuantity) || 1;
       const price = parseFloat(newItemPrice);
-      const total = quantity * price;
       
       // Combine product name with size if provided
       const fullProductName = newItemSize.trim() 
@@ -92,7 +93,17 @@ const ShoppingListEditor: React.FC<ShoppingListEditorProps> = ({ list, onBack, o
         checked: false
       };
       
+      // Add item to the shopping list
       addItemToList(list.id, newItem);
+      
+      // Show success toast
+      toast({
+        title: "Item Added!",
+        description: `${fullProductName} has been added to your shopping list.`,
+        duration: 2000,
+      });
+      
+      // Clear the form
       setNewItemName('');
       setNewItemSize('');
       setNewItemQuantity('1');
@@ -100,6 +111,15 @@ const ShoppingListEditor: React.FC<ShoppingListEditorProps> = ({ list, onBack, o
       setNewItemPrice('');
       setSelectedProduct(null);
       setCalculatedTotal(0);
+      
+      // Auto-save notification
+      setTimeout(() => {
+        toast({
+          title: "Saved",
+          description: "Your shopping list has been automatically saved.",
+          duration: 1500,
+        });
+      }, 500);
     }
   };
 
