@@ -6,7 +6,7 @@ import { Badge } from '@/components/ui/badge';
 import { Alert, AlertDescription } from '@/components/ui/alert';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
-import { MapPin, Search, Navigation, Loader2, AlertCircle, Star, Map } from 'lucide-react';
+import { MapPin, Search, Navigation, Loader2, AlertCircle, Star, Map, Plus } from 'lucide-react';
 import { useLanguage } from '@/hooks/useLanguage';
 import { useStoreLocation } from '@/hooks/useStoreLocation';
 import { supabase } from '@/integrations/supabase/client';
@@ -46,6 +46,8 @@ const ShoppingAreaSelector: React.FC<ShoppingAreaSelectorProps> = ({ onStoreSele
   const [loadingMapToken, setLoadingMapToken] = useState(true);
   const [activeTab, setActiveTab] = useState('browse');
   const [selectedStore, setSelectedStore] = useState<Store | null>(null);
+  const [showAddDialog, setShowAddDialog] = useState(false);
+  const [addDialogInitialData, setAddDialogInitialData] = useState<any>(null);
   const [popularAreas] = useState([
     'Oslo', 'Sentrum', 'Grünerløkka', 'Majorstuen', 'Frogner', 'Grønland'
   ]);
@@ -136,6 +138,37 @@ const ShoppingAreaSelector: React.FC<ShoppingAreaSelectorProps> = ({ onStoreSele
       });
     }
   };
+
+  const handleAddStoreFromSearch = () => {
+    // Parse search query to extract potential store info
+    const query = searchQuery.trim();
+    let initialData: any = {};
+
+    // Try to detect if it's a store name with location (e.g., "Kiwi Storo")
+    const parts = query.split(/\s+/);
+    if (parts.length >= 2) {
+      // Assume first part is store chain, rest is location/area
+      initialData.name = query;
+      // Try to detect if last word might be a city/area
+      const lastWord = parts[parts.length - 1];
+      if (norwegianCities.some(city => city.toLowerCase() === lastWord.toLowerCase())) {
+        initialData.city = lastWord;
+        initialData.address = parts.slice(0, -1).join(' ');
+      } else {
+        initialData.address = parts.slice(1).join(' ');
+      }
+    } else {
+      initialData.name = query;
+    }
+
+    setAddDialogInitialData(initialData);
+    setShowAddDialog(true);
+  };
+
+  const norwegianCities = [
+    'Oslo', 'Bergen', 'Trondheim', 'Stavanger', 'Kristiansand', 
+    'Drammen', 'Tromsø', 'Fredrikstad', 'Sandnes', 'Asker'
+  ];
 
   // Filter and sort stores
   const filteredStores = dbStores
@@ -270,7 +303,12 @@ const ShoppingAreaSelector: React.FC<ShoppingAreaSelectorProps> = ({ onStoreSele
     <div className="space-y-4">
       <div className="flex items-center justify-between mb-4">
         <h2 className="text-lg font-semibold">Finn butikker</h2>
-        <AddStoreDialog onStoreAdded={() => window.location.reload()} />
+        <AddStoreDialog 
+          onStoreAdded={() => window.location.reload()} 
+          open={showAddDialog}
+          onOpenChange={setShowAddDialog}
+          initialData={addDialogInitialData}
+        />
       </div>
 
       <Tabs value={activeTab} onValueChange={setActiveTab} className="w-full">
@@ -502,9 +540,21 @@ const ShoppingAreaSelector: React.FC<ShoppingAreaSelectorProps> = ({ onStoreSele
         <Card className="p-8 text-center">
           <MapPin className="mx-auto mb-3 text-muted-foreground" size={48} />
           <h3 className="font-semibold mb-2">Ingen butikker funnet</h3>
-          <p className="text-sm text-muted-foreground">
-            Prøv å endre søkekriteriene eller bruk en annen kategori
-          </p>
+          {searchQuery ? (
+            <>
+              <p className="text-sm text-muted-foreground mb-4">
+                Kunne ikke finne "{searchQuery}" i databasen
+              </p>
+              <Button onClick={handleAddStoreFromSearch}>
+                <Plus size={16} className="mr-2" />
+                Legg til "{searchQuery}"
+              </Button>
+            </>
+          ) : (
+            <p className="text-sm text-muted-foreground">
+              Prøv å endre søkekriteriene eller bruk en annen kategori
+            </p>
+          )}
         </Card>
       )}
     </div>

@@ -12,25 +12,59 @@ import { toast } from 'sonner';
 
 interface AddStoreDialogProps {
   onStoreAdded?: () => void;
+  initialData?: {
+    name?: string;
+    address?: string;
+    city?: string;
+  };
+  open?: boolean;
+  onOpenChange?: (open: boolean) => void;
 }
 
-const AddStoreDialog: React.FC<AddStoreDialogProps> = ({ onStoreAdded }) => {
-  const [open, setOpen] = useState(false);
+const AddStoreDialog: React.FC<AddStoreDialogProps> = ({ 
+  onStoreAdded, 
+  initialData,
+  open: controlledOpen,
+  onOpenChange: controlledOnOpenChange 
+}) => {
+  const [internalOpen, setInternalOpen] = useState(false);
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [isGeocoding, setIsGeocoding] = useState(false);
   const [useCurrentLocation, setUseCurrentLocation] = useState(false);
   const { addStore, getCurrentLocation } = useStoreLocation();
   const { user } = useAuth();
+
+  const open = controlledOpen !== undefined ? controlledOpen : internalOpen;
+  const setOpen = controlledOnOpenChange || setInternalOpen;
   
   const [formData, setFormData] = useState({
-    name: '',
-    address: '',
-    city: 'Oslo',
+    name: initialData?.name || '',
+    address: initialData?.address || '',
+    city: initialData?.city || 'Oslo',
     postal_code: '',
     latitude: '',
     longitude: '',
     category: 'Grocery'
   });
+
+  // Update form data when initialData changes and auto-geocode if we have address
+  React.useEffect(() => {
+    if (initialData && open) {
+      setFormData(prev => ({
+        ...prev,
+        name: initialData.name || prev.name,
+        address: initialData.address || prev.address,
+        city: initialData.city || prev.city
+      }));
+
+      // Auto-trigger geocoding if we have an address
+      if (initialData.address && initialData.city) {
+        setTimeout(() => {
+          handleGeocodeAddress();
+        }, 500);
+      }
+    }
+  }, [initialData, open]);
 
   const categories = [
     'Grocery',
@@ -167,12 +201,14 @@ const AddStoreDialog: React.FC<AddStoreDialogProps> = ({ onStoreAdded }) => {
 
   return (
     <Dialog open={open} onOpenChange={setOpen}>
-      <DialogTrigger asChild>
-        <Button variant="default" size="sm">
-          <Plus size={16} className="mr-2" />
-          Legg til butikk
-        </Button>
-      </DialogTrigger>
+      {!controlledOpen && (
+        <DialogTrigger asChild>
+          <Button variant="default" size="sm">
+            <Plus size={16} className="mr-2" />
+            Legg til butikk
+          </Button>
+        </DialogTrigger>
+      )}
       <DialogContent className="max-w-md max-h-[90vh] overflow-y-auto">
         <DialogHeader>
           <DialogTitle>Legg til ny butikk</DialogTitle>
