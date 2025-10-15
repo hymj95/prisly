@@ -59,8 +59,8 @@ export const usePriceScans = () => {
         .from('price_scans')
         .select('*')
         .eq('user_id', user.id)
-        .eq('barcode', input.barcode)
-        .eq('store_name', input.store_name)
+        .eq('barcode', validatedData.barcode)
+        .eq('store_name', validatedData.store_name)
         .order('created_at', { ascending: false })
         .limit(1);
 
