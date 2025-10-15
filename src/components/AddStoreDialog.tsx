@@ -6,6 +6,8 @@ import { Label } from '@/components/ui/label';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
 import { Plus, Loader2, MapPin } from 'lucide-react';
 import { useStoreLocation } from '@/hooks/useStoreLocation';
+import { supabase } from '@/integrations/supabase/client';
+import { useAuth } from '@/hooks/useAuth';
 import { toast } from 'sonner';
 
 interface AddStoreDialogProps {
@@ -15,8 +17,10 @@ interface AddStoreDialogProps {
 const AddStoreDialog: React.FC<AddStoreDialogProps> = ({ onStoreAdded }) => {
   const [open, setOpen] = useState(false);
   const [isSubmitting, setIsSubmitting] = useState(false);
+  const [isGeocoding, setIsGeocoding] = useState(false);
   const [useCurrentLocation, setUseCurrentLocation] = useState(false);
   const { addStore, getCurrentLocation } = useStoreLocation();
+  const { user } = useAuth();
   
   const [formData, setFormData] = useState({
     name: '',
@@ -66,8 +70,54 @@ const AddStoreDialog: React.FC<AddStoreDialogProps> = ({ onStoreAdded }) => {
     }
   };
 
+  const handleGeocodeAddress = async () => {
+    if (!formData.address || !formData.city) {
+      toast.error('Vennligst fyll ut adresse og by først');
+      return;
+    }
+
+    setIsGeocoding(true);
+    try {
+      // Get Mapbox token from edge function
+      const { data: tokenData, error: tokenError } = await supabase.functions.invoke('get-mapbox-token');
+      
+      if (tokenError || !tokenData?.token) {
+        throw new Error('Kunne ikke hente kart-token');
+      }
+
+      // Geocode the address
+      const fullAddress = `${formData.address}, ${formData.postal_code ? formData.postal_code + ' ' : ''}${formData.city}, Norge`;
+      const geocodeUrl = `https://api.mapbox.com/geocoding/v5/mapbox.places/${encodeURIComponent(fullAddress)}.json?access_token=${tokenData.token}&limit=1&country=no`;
+      
+      const response = await fetch(geocodeUrl);
+      const data = await response.json();
+      
+      if (data.features && data.features.length > 0) {
+        const [lng, lat] = data.features[0].center;
+        setFormData(prev => ({
+          ...prev,
+          latitude: lat.toString(),
+          longitude: lng.toString()
+        }));
+        toast.success('Koordinater funnet!');
+      } else {
+        toast.error('Kunne ikke finne koordinater for denne adressen');
+      }
+    } catch (error) {
+      console.error('Geocoding error:', error);
+      toast.error('Kunne ikke søke etter koordinater');
+    } finally {
+      setIsGeocoding(false);
+    }
+  };
+
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
+    
+    if (!user) {
+      toast.error('Du må være innlogget for å legge til butikker');
+      return;
+    }
     
     if (!formData.name || !formData.address || !formData.latitude || !formData.longitude) {
       toast.error('Vennligst fyll ut alle påkrevde felt');
@@ -101,11 +151,15 @@ const AddStoreDialog: React.FC<AddStoreDialogProps> = ({ onStoreAdded }) => {
         setOpen(false);
         onStoreAdded?.();
       } else {
+        toast.error('Kunne ikke legge til butikk. Sjekk at du er innlogget.');
+      }
+    } catch (error: any) {
+      console.error('Error adding store:', error);
+      if (error?.message?.includes('row-level security')) {
+        toast.error('Du må være innlogget for å legge til butikker');
+      } else {
         toast.error('Kunne ikke legge til butikk');
       }
-    } catch (error) {
-      console.error('Error adding store:', error);
-      toast.error('Kunne ikke legge til butikk');
     } finally {
       setIsSubmitting(false);
     }
@@ -202,26 +256,44 @@ const AddStoreDialog: React.FC<AddStoreDialogProps> = ({ onStoreAdded }) => {
 
           <div className="space-y-2">
             <div className="flex items-center justify-between">
-              <Label>Koordinater *</Label>
-              <Button
-                type="button"
-                variant="outline"
-                size="sm"
-                onClick={handleGetCurrentLocation}
-                disabled={useCurrentLocation}
-              >
-                {useCurrentLocation ? (
-                  <>
-                    <Loader2 size={14} className="mr-2 animate-spin" />
-                    Henter...
-                  </>
-                ) : (
-                  <>
-                    <MapPin size={14} className="mr-2" />
-                    Bruk min posisjon
-                  </>
-                )}
-              </Button>
+              <Label>Koordinater</Label>
+              <div className="flex gap-2">
+                <Button
+                  type="button"
+                  variant="outline"
+                  size="sm"
+                  onClick={handleGeocodeAddress}
+                  disabled={isGeocoding || !formData.address || !formData.city}
+                >
+                  {isGeocoding ? (
+                    <>
+                      <Loader2 size={14} className="mr-2 animate-spin" />
+                      Søker...
+                    </>
+                  ) : (
+                    'Søk fra adresse'
+                  )}
+                </Button>
+                <Button
+                  type="button"
+                  variant="outline"
+                  size="sm"
+                  onClick={handleGetCurrentLocation}
+                  disabled={useCurrentLocation}
+                >
+                  {useCurrentLocation ? (
+                    <>
+                      <Loader2 size={14} className="mr-2 animate-spin" />
+                      Henter...
+                    </>
+                  ) : (
+                    <>
+                      <MapPin size={14} className="mr-2" />
+                      Min posisjon
+                    </>
+                  )}
+                </Button>
+              </div>
             </div>
             <div className="grid grid-cols-2 gap-3">
               <Input
@@ -230,7 +302,6 @@ const AddStoreDialog: React.FC<AddStoreDialogProps> = ({ onStoreAdded }) => {
                 step="any"
                 value={formData.latitude}
                 onChange={(e) => setFormData(prev => ({ ...prev, latitude: e.target.value }))}
-                required
               />
               <Input
                 placeholder="Lengdegrad"
@@ -238,11 +309,10 @@ const AddStoreDialog: React.FC<AddStoreDialogProps> = ({ onStoreAdded }) => {
                 step="any"
                 value={formData.longitude}
                 onChange={(e) => setFormData(prev => ({ ...prev, longitude: e.target.value }))}
-                required
               />
             </div>
             <p className="text-xs text-muted-foreground">
-              Klikk "Bruk min posisjon" eller søk koordinater på Google Maps
+              Klikk "Søk fra adresse" for automatisk koordinater
             </p>
           </div>
 
