@@ -65,7 +65,7 @@ const Scan: React.FC = () => {
   const { startScan, isScanning } = useBarcodeScanner();
   const { lookupProduct, isLoading: isLookingUp } = useProductLookup();
   const { lists, addItemToList } = useShoppingLists();
-  const { createScan } = usePriceScans();
+  const { createPriceScan, isLoading: isSavingScan } = usePriceScans();
   const { session } = useAuth();
   const [scanResult, setScanResult] = useState<DetectedProduct | null>(null);
   const [selectedStore, setSelectedStore] = useState<Store | null>(null);
@@ -251,7 +251,7 @@ const Scan: React.FC = () => {
     try {
       // Save to database if user is logged in
       if (session) {
-        await createScan({
+        await createPriceScan({
           product_name: scanResult.name,
           product_brand: scanResult.brand,
           product_category: scanResult.category,
@@ -276,11 +276,13 @@ const Scan: React.FC = () => {
           avgPrice: parseFloat(currentPrice),
           checked: false
         });
-        toast.success(`Added ${scanResult.name} to shopping list!`);
-      } else if (session) {
-        toast.success('Scan saved successfully!');
+      }
+
+      // Show appropriate success message
+      if (session) {
+        toast.success(selectedListId ? `Saved to database and added to shopping list!` : 'Scan saved to database!');
       } else {
-        toast.info('Please log in to save scans permanently');
+        toast.info(selectedListId ? `Added to shopping list! Log in to save scan history.` : 'Log in to save your scan history');
       }
       
       // Reset for next scan

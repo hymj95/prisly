@@ -1,10 +1,24 @@
-import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query';
+import { useState } from 'react';
 import { supabase } from '@/integrations/supabase/client';
 import { toast } from 'sonner';
 
 export interface PriceScan {
   id: string;
   user_id: string;
+  product_name: string;
+  product_brand: string | null;
+  product_category: string | null;
+  barcode: string;
+  price: number;
+  quantity: number;
+  store_name: string;
+  store_location: string | null;
+  product_image: string | null;
+  created_at: string;
+  updated_at: string;
+}
+
+export interface CreatePriceScanInput {
   product_name: string;
   product_brand?: string;
   product_category?: string;
@@ -14,76 +28,114 @@ export interface PriceScan {
   store_name: string;
   store_location?: string;
   product_image?: string;
-  created_at: string;
-  updated_at: string;
 }
 
 export const usePriceScans = () => {
-  const queryClient = useQueryClient();
+  const [isLoading, setIsLoading] = useState(false);
 
-  const { data: scans = [], isLoading } = useQuery({
-    queryKey: ['price-scans'],
-    queryFn: async () => {
-      const { data, error } = await supabase
-        .from('price_scans')
-        .select('*')
-        .order('created_at', { ascending: false });
-
-      if (error) throw error;
-      return data as PriceScan[];
-    },
-  });
-
-  const createScan = useMutation({
-    mutationFn: async (scan: Omit<PriceScan, 'id' | 'user_id' | 'created_at' | 'updated_at'>) => {
+  const createPriceScan = async (input: CreatePriceScanInput): Promise<PriceScan | null> => {
+    setIsLoading(true);
+    try {
       const { data: { user } } = await supabase.auth.getUser();
-      if (!user) throw new Error('Not authenticated');
+      
+      if (!user) {
+        toast.error('You must be logged in to save scans');
+        return null;
+      }
 
       const { data, error } = await supabase
         .from('price_scans')
         .insert({
-          ...scan,
           user_id: user.id,
+          product_name: input.product_name,
+          product_brand: input.product_brand || null,
+          product_category: input.product_category || null,
+          barcode: input.barcode,
+          price: input.price,
+          quantity: input.quantity,
+          store_name: input.store_name,
+          store_location: input.store_location || null,
+          product_image: input.product_image || null
         })
         .select()
         .single();
 
-      if (error) throw error;
-      return data;
-    },
-    onSuccess: () => {
-      queryClient.invalidateQueries({ queryKey: ['price-scans'] });
-      toast.success('Scan saved successfully!');
-    },
-    onError: (error) => {
-      console.error('Error saving scan:', error);
-      toast.error('Failed to save scan');
-    },
-  });
+      if (error) {
+        console.error('Error creating price scan:', error);
+        toast.error('Failed to save scan');
+        return null;
+      }
 
-  const deleteScan = useMutation({
-    mutationFn: async (scanId: string) => {
+      toast.success('Scan saved successfully!');
+      return data as PriceScan;
+    } catch (error) {
+      console.error('Error in createPriceScan:', error);
+      toast.error('Failed to save scan');
+      return null;
+    } finally {
+      setIsLoading(false);
+    }
+  };
+
+  const getPriceScans = async (): Promise<PriceScan[]> => {
+    setIsLoading(true);
+    try {
+      const { data: { user } } = await supabase.auth.getUser();
+      
+      if (!user) {
+        return [];
+      }
+
+      const { data, error } = await supabase
+        .from('price_scans')
+        .select('*')
+        .eq('user_id', user.id)
+        .order('created_at', { ascending: false });
+
+      if (error) {
+        console.error('Error fetching price scans:', error);
+        toast.error('Failed to load scans');
+        return [];
+      }
+
+      return (data as PriceScan[]) || [];
+    } catch (error) {
+      console.error('Error in getPriceScans:', error);
+      return [];
+    } finally {
+      setIsLoading(false);
+    }
+  };
+
+  const deletePriceScan = async (id: string): Promise<boolean> => {
+    setIsLoading(true);
+    try {
       const { error } = await supabase
         .from('price_scans')
         .delete()
-        .eq('id', scanId);
+        .eq('id', id);
 
-      if (error) throw error;
-    },
-    onSuccess: () => {
-      queryClient.invalidateQueries({ queryKey: ['price-scans'] });
+      if (error) {
+        console.error('Error deleting price scan:', error);
+        toast.error('Failed to delete scan');
+        return false;
+      }
+
       toast.success('Scan deleted');
-    },
-    onError: (error) => {
-      console.error('Error deleting scan:', error);
+      return true;
+    } catch (error) {
+      console.error('Error in deletePriceScan:', error);
       toast.error('Failed to delete scan');
-    },
-  });
+      return false;
+    } finally {
+      setIsLoading(false);
+    }
+  };
 
   return {
-    scans,
-    isLoading,
-    createScan: createScan.mutateAsync,
-    deleteScan: deleteScan.mutateAsync,
+    createPriceScan,
+    getPriceScans,
+    deletePriceScan,
+    isLoading
   };
 };
