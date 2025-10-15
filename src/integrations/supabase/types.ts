@@ -214,7 +214,23 @@ export type Database = {
       }
     }
     Views: {
-      [_ in never]: never
+      product_rating_summary: {
+        Row: {
+          avg_rating: number | null
+          five_star_count: number | null
+          four_star_count: number | null
+          one_star_count: number | null
+          positive_count: number | null
+          product_brand: string | null
+          product_name: string | null
+          rating_count: number | null
+          store_location: string | null
+          store_name: string | null
+          three_star_count: number | null
+          two_star_count: number | null
+        }
+        Relationships: []
+      }
     }
     Functions: {
       [_ in never]: never
