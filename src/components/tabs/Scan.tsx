@@ -29,6 +29,8 @@ import { useCurrency } from '@/hooks/useCurrency';
 import { useBarcodeScanner } from '@/hooks/useBarcodeScanner';
 import { useProductLookup } from '@/hooks/useProductLookup';
 import { useShoppingLists } from '@/hooks/useShoppingLists';
+import { usePriceScans } from '@/hooks/usePriceScans';
+import { useAuth } from '@/hooks/useAuth';
 import { Capacitor } from '@capacitor/core';
 import { toast } from 'sonner';
 import StoreLocationManager from '../StoreLocationManager';
@@ -48,7 +50,13 @@ interface Store {
   id: string;
   name: string;
   address: string;
+  latitude?: number;
+  longitude?: number;
+  verified?: boolean;
   distance?: number;
+  rating?: number;
+  category?: string;
+  hours?: string;
 }
 
 const Scan: React.FC = () => {
@@ -57,6 +65,8 @@ const Scan: React.FC = () => {
   const { startScan, isScanning } = useBarcodeScanner();
   const { lookupProduct, isLoading: isLookingUp } = useProductLookup();
   const { lists, addItemToList } = useShoppingLists();
+  const { createScan } = usePriceScans();
+  const { session } = useAuth();
   const [scanResult, setScanResult] = useState<DetectedProduct | null>(null);
   const [selectedStore, setSelectedStore] = useState<Store | null>(null);
   const [selectedListId, setSelectedListId] = useState<string | null>(null);
@@ -81,11 +91,14 @@ const Scan: React.FC = () => {
     }
   }, [lists, selectedListId]);
 
-  // Mock detected stores (Norwegian)
+  // Mock stores for demo
   const mockStores: Store[] = [
-    { id: '1', name: 'Rema 1000', address: 'Oslo Sentrum', distance: 0.8 },
-    { id: '2', name: 'ICA Maxi', address: 'Bergen Bryggen', distance: 1.2 },
-    { id: '3', name: 'Kiwi', address: 'Trondheim Midtbyen', distance: 1.5 }
+    { id: '1', name: 'Target', address: '123 Main St, Downtown', latitude: 40.7128, longitude: -74.006, verified: true, rating: 4.2, category: 'Department Store', hours: '8:00 AM - 10:00 PM' },
+    { id: '2', name: 'Walmart', address: '456 Shopping Center Blvd', latitude: 40.7589, longitude: -73.9851, verified: true, rating: 3.8, category: 'Grocery', hours: '6:00 AM - 11:00 PM' },
+    { id: '3', name: 'Whole Foods', address: '789 Organic Ave', latitude: 40.7282, longitude: -74.0776, verified: true, rating: 4.5, category: 'Grocery', hours: '7:00 AM - 10:00 PM' },
+    { id: '4', name: 'CVS Pharmacy', address: '321 Health Street', latitude: 40.7505, longitude: -73.9934, verified: true, rating: 4, category: 'Pharmacy', hours: '8:00 AM - 10:00 PM' },
+    { id: '5', name: 'Best Buy', address: '555 Electronics Way', latitude: 40.742, longitude: -74.003, verified: true, rating: 4.1, category: 'Electronics', hours: '10:00 AM - 9:00 PM' },
+    { id: '6', name: 'Home Depot', address: '777 Hardware Blvd', latitude: 40.735, longitude: -74.015, verified: true, rating: 4.3, category: 'Hardware', hours: '6:00 AM - 10:00 PM' }
   ];
 
   // Product categories
@@ -229,37 +242,63 @@ const Scan: React.FC = () => {
     }
   };
 
-  const handleConfirmSave = () => {
-    if (!scanResult || !selectedStore || !currentPrice || !selectedListId) {
+  const handleConfirmSave = async () => {
+    if (!scanResult || !selectedStore || !currentPrice) {
       toast.error('Please fill in all required fields');
       return;
     }
 
-    // Add the scanned product to the selected shopping list
-    addItemToList(selectedListId, {
-      product: scanResult.name,
-      quantity: parseFloat(quantity) || 1,
-      unit: 'item',
-      bestPrice: parseFloat(currentPrice),
-      bestStore: selectedStore.name,
-      bestStoreLocation: selectedStore.address,
-      avgPrice: parseFloat(currentPrice),
-      checked: false
-    });
+    try {
+      // Save to database if user is logged in
+      if (session) {
+        await createScan({
+          product_name: scanResult.name,
+          product_brand: scanResult.brand,
+          product_category: scanResult.category,
+          barcode: scanResult.barcode,
+          price: parseFloat(currentPrice),
+          quantity: parseFloat(quantity) || 1,
+          store_name: selectedStore.name,
+          store_location: selectedStore.address,
+          product_image: uploadedImage || scanResult.image
+        });
+      }
 
-    toast.success(`Added ${scanResult.name} to shopping list!`);
-    
-    // Reset for next scan
-    setScanResult(null);
-    setSelectedStore(null);
-    setSelectedArea(null);
-    setEditedProduct(null);
-    setCurrentPrice('');
-    setQuantity('1');
-    setIsEditing(false);
-    setError(null);
-    setShowStoreManager(false);
-    setShowAreaSelector(false);
+      // Also add to shopping list if selected
+      if (selectedListId) {
+        addItemToList(selectedListId, {
+          product: scanResult.name,
+          quantity: parseFloat(quantity) || 1,
+          unit: 'item',
+          bestPrice: parseFloat(currentPrice),
+          bestStore: selectedStore.name,
+          bestStoreLocation: selectedStore.address,
+          avgPrice: parseFloat(currentPrice),
+          checked: false
+        });
+        toast.success(`Added ${scanResult.name} to shopping list!`);
+      } else if (session) {
+        toast.success('Scan saved successfully!');
+      } else {
+        toast.info('Please log in to save scans permanently');
+      }
+      
+      // Reset for next scan
+      setScanResult(null);
+      setSelectedStore(null);
+      setSelectedArea(null);
+      setEditedProduct(null);
+      setCurrentPrice('');
+      setQuantity('1');
+      setIsEditing(false);
+      setError(null);
+      setShowStoreManager(false);
+      setShowAreaSelector(false);
+      setUploadedImage(null);
+    } catch (error) {
+      console.error('Error saving scan:', error);
+      toast.error('Failed to save scan');
+    }
   };
 
   const handleImageUpload = (event: React.ChangeEvent<HTMLInputElement>) => {
@@ -616,28 +655,35 @@ const Scan: React.FC = () => {
             </div>
           </Card>
 
-          {/* Shopping List Selection */}
-          <Card className="p-4">
-            <div className="space-y-4">
-              <h3 className="font-semibold">Add to Shopping List</h3>
-              <Select value={selectedListId || ''} onValueChange={setSelectedListId}>
-                <SelectTrigger className="rounded-card">
-                  <SelectValue placeholder="Select shopping list" />
-                </SelectTrigger>
-                <SelectContent className="bg-background border rounded-card shadow-card z-50">
-                  {lists.filter(l => l.status === 'active').map((list) => (
-                    <SelectItem 
-                      key={list.id} 
-                      value={list.id}
-                      className="cursor-pointer hover:bg-muted focus:bg-muted"
-                    >
-                      {list.name} ({list.items.length} items)
-                    </SelectItem>
-                  ))}
-                </SelectContent>
-              </Select>
-            </div>
-          </Card>
+          {/* Shopping List Selection (Optional) */}
+          {lists.filter(l => l.status === 'active').length > 0 && (
+            <Card className="p-4">
+              <div className="space-y-4">
+                <div className="flex items-center justify-between">
+                  <h3 className="font-semibold">Add to Shopping List (Optional)</h3>
+                  {!session && (
+                    <Badge variant="outline" className="text-xs">Login to use lists</Badge>
+                  )}
+                </div>
+                <Select value={selectedListId || ''} onValueChange={setSelectedListId} disabled={!session}>
+                  <SelectTrigger className="rounded-card">
+                    <SelectValue placeholder="Select shopping list (optional)" />
+                  </SelectTrigger>
+                  <SelectContent className="bg-background border rounded-card shadow-card z-50">
+                    {lists.filter(l => l.status === 'active').map((list) => (
+                      <SelectItem 
+                        key={list.id} 
+                        value={list.id}
+                        className="cursor-pointer hover:bg-muted focus:bg-muted"
+                      >
+                        {list.name} ({list.items.length} items)
+                      </SelectItem>
+                    ))}
+                  </SelectContent>
+                </Select>
+              </div>
+            </Card>
+          )}
 
           {/* Price and Quantity Information */}
           <Card className="p-4">
@@ -764,10 +810,10 @@ const Scan: React.FC = () => {
             <Button 
               className="w-full bg-primary-solid text-white" 
               onClick={handleConfirmSave}
-              disabled={!selectedStore || !currentPrice || !selectedListId}
+              disabled={!selectedStore || !currentPrice}
             >
               <Save size={16} className="mr-2" />
-              Save to Shopping List
+              {session ? 'Save Scan' : 'Save to List Only'}
             </Button>
             
             <div className="grid grid-cols-2 gap-3">

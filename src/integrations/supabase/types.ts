@@ -59,6 +59,54 @@ export type Database = {
         }
         Relationships: []
       }
+      price_scans: {
+        Row: {
+          barcode: string
+          created_at: string
+          id: string
+          price: number
+          product_brand: string | null
+          product_category: string | null
+          product_image: string | null
+          product_name: string
+          quantity: number
+          store_location: string | null
+          store_name: string
+          updated_at: string
+          user_id: string
+        }
+        Insert: {
+          barcode: string
+          created_at?: string
+          id?: string
+          price: number
+          product_brand?: string | null
+          product_category?: string | null
+          product_image?: string | null
+          product_name: string
+          quantity?: number
+          store_location?: string | null
+          store_name: string
+          updated_at?: string
+          user_id: string
+        }
+        Update: {
+          barcode?: string
+          created_at?: string
+          id?: string
+          price?: number
+          product_brand?: string | null
+          product_category?: string | null
+          product_image?: string | null
+          product_name?: string
+          quantity?: number
+          store_location?: string | null
+          store_name?: string
+          updated_at?: string
+          user_id?: string
+        }
+        Relationships: []
+      }
       profiles: {
         Row: {
           avatar_url: string | null
