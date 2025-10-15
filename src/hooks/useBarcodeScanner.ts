@@ -29,7 +29,7 @@ const useWebCamera = () => {
       });
       
       console.log('✅ Camera stream obtained');
-      toast.success('Camera ready! Please use manual barcode entry for now.');
+      toast.info('Opening camera...');
       
       // For now, we'll stop the stream and show manual entry
       // In a full implementation, you'd use a library like QuaggaJS or ZXing

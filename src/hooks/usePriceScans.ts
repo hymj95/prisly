@@ -43,6 +43,31 @@ export const usePriceScans = () => {
         return null;
       }
 
+      // Check if scan already exists for this barcode and store
+      const { data: existingScans, error: queryError } = await supabase
+        .from('price_scans')
+        .select('*')
+        .eq('user_id', user.id)
+        .eq('barcode', input.barcode)
+        .eq('store_name', input.store_name)
+        .order('created_at', { ascending: false })
+        .limit(1);
+
+      if (queryError) {
+        console.error('Error checking existing scans:', queryError);
+      }
+
+      // If exists and price is the same, don't save
+      if (existingScans && existingScans.length > 0) {
+        const existingScan = existingScans[0];
+        if (parseFloat(existingScan.price as any) === input.price) {
+          toast.info('This price is already in your history');
+          return existingScan as PriceScan;
+        } else {
+          toast.info(`Price updated from ${existingScan.price} to ${input.price}`);
+        }
+      }
+
       const { data, error } = await supabase
         .from('price_scans')
         .insert({
