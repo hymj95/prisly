@@ -20,9 +20,8 @@ interface Store {
   longitude: number;
   verified: boolean;
   distance?: number;
-  rating?: number;
   category?: string;
-  hours?: string;
+  city?: string;
 }
 
 interface ShoppingAreaSelectorProps {
@@ -32,7 +31,7 @@ interface ShoppingAreaSelectorProps {
 
 const ShoppingAreaSelector: React.FC<ShoppingAreaSelectorProps> = ({ onStoreSelect, onAreaSelect }) => {
   const { t } = useLanguage();
-  const { userLocation, getCurrentLocation, getNearbyStores } = useStoreLocation();
+  const { stores: dbStores, userLocation, getCurrentLocation, getNearbyStores, isLoading } = useStoreLocation();
   
   const [searchQuery, setSearchQuery] = useState('');
   const [selectedArea, setSelectedArea] = useState('');
@@ -40,96 +39,23 @@ const ShoppingAreaSelector: React.FC<ShoppingAreaSelectorProps> = ({ onStoreSele
   const [detectionError, setDetectionError] = useState<string | null>(null);
   const [selectedCategory, setSelectedCategory] = useState('all');
   const [sortBy, setSortBy] = useState('distance');
-  const [stores, setStores] = useState<Store[]>([]);
   const [showMap, setShowMap] = useState(false);
   const [mapboxToken, setMapboxToken] = useState('');
-  const [activeTab, setActiveTab] = useState('search');
+  const [activeTab, setActiveTab] = useState('browse');
   const [selectedStore, setSelectedStore] = useState<Store | null>(null);
   const [popularAreas] = useState([
-    'Downtown', 'Shopping District', 'Mall Area', 'Suburban Center', 'Business District'
+    'Oslo Sentrum', 'Grünerløkka', 'Majorstuen', 'Frogner', 'Grønland'
   ]);
   
   const mapContainer = useRef<HTMLDivElement>(null);
   const map = useRef<mapboxgl.Map | null>(null);
   const markers = useRef<mapboxgl.Marker[]>([]);
 
-  // Enhanced mock stores with more details
-  const mockStores: Store[] = [
-    {
-      id: '1',
-      name: 'Target',
-      address: '123 Main St, Downtown',
-      latitude: 40.7128,
-      longitude: -74.0060,
-      verified: true,
-      rating: 4.2,
-      category: 'Department Store',
-      hours: '8:00 AM - 10:00 PM'
-    },
-    {
-      id: '2',
-      name: 'Walmart Supercenter',
-      address: '456 Shopping Center Blvd',
-      latitude: 40.7589,
-      longitude: -73.9851,
-      verified: true,
-      rating: 3.8,
-      category: 'Grocery',
-      hours: '6:00 AM - 11:00 PM'
-    },
-    {
-      id: '3',
-      name: 'Whole Foods Market',
-      address: '789 Organic Ave',
-      latitude: 40.7282,
-      longitude: -74.0776,
-      verified: true,
-      rating: 4.5,
-      category: 'Grocery',
-      hours: '7:00 AM - 10:00 PM'
-    },
-    {
-      id: '4',
-      name: 'CVS Pharmacy',
-      address: '321 Health Street',
-      latitude: 40.7505,
-      longitude: -73.9934,
-      verified: true,
-      rating: 4.0,
-      category: 'Pharmacy',
-      hours: '8:00 AM - 10:00 PM'
-    },
-    {
-      id: '5',
-      name: 'Best Buy',
-      address: '555 Electronics Way',
-      latitude: 40.7420,
-      longitude: -74.0030,
-      verified: true,
-      rating: 4.1,
-      category: 'Electronics',
-      hours: '10:00 AM - 9:00 PM'
-    },
-    {
-      id: '6',
-      name: 'Home Depot',
-      address: '777 Hardware Blvd',
-      latitude: 40.7350,
-      longitude: -74.0150,
-      verified: true,
-      rating: 4.3,
-      category: 'Hardware',
-      hours: '6:00 AM - 10:00 PM'
-    }
-  ];
-
   const categories = [
-    { value: 'all', label: 'All Categories' },
-    { value: 'grocery', label: 'Grocery' },
-    { value: 'department', label: 'Department Store' },
-    { value: 'pharmacy', label: 'Pharmacy' },
-    { value: 'electronics', label: 'Electronics' },
-    { value: 'hardware', label: 'Hardware' }
+    { value: 'all', label: 'Alle kategorier' },
+    { value: 'Grocery', label: 'Dagligvare' },
+    { value: 'Electronics', label: 'Elektronikk' },
+    { value: 'Pharmacy', label: 'Apotek' }
   ];
 
   // Auto-detect current location
@@ -139,18 +65,17 @@ const ShoppingAreaSelector: React.FC<ShoppingAreaSelectorProps> = ({ onStoreSele
     
     try {
       const location = await getCurrentLocation();
-      const nearbyStores = simulateNearbyStores(location);
-      setStores(nearbyStores);
+      const nearbyStores = getNearbyStores(location, 20);
       
       if (onAreaSelect) {
         onAreaSelect({
-          location: 'Current Location',
+          location: 'Din posisjon',
           radius: 10,
           stores: nearbyStores
         });
       }
     } catch (error) {
-      setDetectionError(error instanceof Error ? error.message : 'Failed to detect location');
+      setDetectionError(error instanceof Error ? error.message : 'Kunne ikke finne din posisjon');
     } finally {
       setIsDetecting(false);
     }
@@ -161,13 +86,27 @@ const ShoppingAreaSelector: React.FC<ShoppingAreaSelectorProps> = ({ onStoreSele
     setSelectedArea(area);
     setSearchQuery(area);
     
-    // Simulate area-based store search
-    const areaStores = mockStores.map(store => ({
-      ...store,
-      distance: Math.random() * 15 + 1 // Random distance 1-16km
-    })).sort((a, b) => a.distance! - b.distance!);
-    
-    setStores(areaStores);
+    // Filter stores by city/area
+    const areaStores = dbStores
+      .filter(store => 
+        store.city?.toLowerCase().includes(area.toLowerCase()) ||
+        store.address?.toLowerCase().includes(area.toLowerCase())
+      )
+      .map(store => {
+        if (userLocation) {
+          return {
+            ...store,
+            distance: calculateDistance(
+              userLocation.lat,
+              userLocation.lng,
+              store.latitude,
+              store.longitude
+            )
+          };
+        }
+        return store;
+      })
+      .sort((a, b) => (a.distance || 0) - (b.distance || 0));
     
     if (onAreaSelect) {
       onAreaSelect({
@@ -176,14 +115,6 @@ const ShoppingAreaSelector: React.FC<ShoppingAreaSelectorProps> = ({ onStoreSele
         stores: areaStores
       });
     }
-  };
-
-  // Simulate nearby stores based on location
-  const simulateNearbyStores = (location: { lat: number; lng: number }) => {
-    return mockStores.map(store => {
-      const distance = calculateDistance(location.lat, location.lng, store.latitude, store.longitude);
-      return { ...store, distance };
-    }).filter(store => store.distance! < 20).sort((a, b) => a.distance! - b.distance!);
   };
 
   const calculateDistance = (lat1: number, lon1: number, lat2: number, lon2: number): number => {
@@ -197,21 +128,36 @@ const ShoppingAreaSelector: React.FC<ShoppingAreaSelectorProps> = ({ onStoreSele
     return R * c;
   };
 
+  // Get stores with distances if location available
+  const storesWithDistance = dbStores.map(store => {
+    if (userLocation) {
+      return {
+        ...store,
+        distance: calculateDistance(
+          userLocation.lat,
+          userLocation.lng,
+          store.latitude,
+          store.longitude
+        )
+      };
+    }
+    return store;
+  });
+
   // Filter and sort stores
-  const filteredStores = stores
+  const filteredStores = storesWithDistance
     .filter(store => {
       const matchesCategory = selectedCategory === 'all' || 
-        store.category?.toLowerCase().includes(selectedCategory.toLowerCase());
+        store.category?.toLowerCase() === selectedCategory.toLowerCase();
       const matchesSearch = store.name.toLowerCase().includes(searchQuery.toLowerCase()) ||
-        store.address.toLowerCase().includes(searchQuery.toLowerCase());
+        store.address.toLowerCase().includes(searchQuery.toLowerCase()) ||
+        store.city?.toLowerCase().includes(searchQuery.toLowerCase());
       return matchesCategory && matchesSearch;
     })
     .sort((a, b) => {
       switch (sortBy) {
         case 'distance':
-          return (a.distance || 0) - (b.distance || 0);
-        case 'rating':
-          return (b.rating || 0) - (a.rating || 0);
+          return (a.distance || Infinity) - (b.distance || Infinity);
         case 'name':
           return a.name.localeCompare(b.name);
         default:
@@ -229,7 +175,7 @@ const ShoppingAreaSelector: React.FC<ShoppingAreaSelectorProps> = ({ onStoreSele
     map.current = new mapboxgl.Map({
       container: mapContainer.current,
       style: 'mapbox://styles/mapbox/light-v11',
-      center: userLocation ? [userLocation.lng, userLocation.lat] : [-74.0060, 40.7128],
+      center: userLocation ? [userLocation.lng, userLocation.lat] : [10.7522, 59.9139], // Oslo center
       zoom: 12
     });
 
@@ -257,11 +203,8 @@ const ShoppingAreaSelector: React.FC<ShoppingAreaSelectorProps> = ({ onStoreSele
         <div class="p-2">
           <h3 class="font-semibold text-sm">${store.name}</h3>
           <p class="text-xs text-gray-600">${store.address}</p>
-          ${store.rating ? `<div class="flex items-center gap-1 mt-1">
-            <span class="text-yellow-500">★</span>
-            <span class="text-xs">${store.rating}</span>
-          </div>` : ''}
-          ${store.distance ? `<p class="text-xs text-gray-500">${store.distance.toFixed(1)} km away</p>` : ''}
+          ${store.category ? `<span class="text-xs text-gray-500">${store.category}</span>` : ''}
+          ${store.distance ? `<p class="text-xs text-gray-500 mt-1">${store.distance.toFixed(1)} km unna</p>` : ''}
         </div>
       `);
 
@@ -403,9 +346,8 @@ const ShoppingAreaSelector: React.FC<ShoppingAreaSelectorProps> = ({ onStoreSele
                     <SelectValue placeholder="Sort by" />
                   </SelectTrigger>
                   <SelectContent>
-                    <SelectItem value="distance">Distance</SelectItem>
-                    <SelectItem value="rating">Rating</SelectItem>
-                    <SelectItem value="name">Name</SelectItem>
+                    <SelectItem value="distance">Avstand</SelectItem>
+                    <SelectItem value="name">Navn</SelectItem>
                   </SelectContent>
                 </Select>
               </div>
@@ -525,16 +467,18 @@ const ShoppingAreaSelector: React.FC<ShoppingAreaSelectorProps> = ({ onStoreSele
                   <p className="text-sm text-muted-foreground mb-2">{store.address}</p>
                   
                   <div className="flex items-center gap-4 text-xs text-muted-foreground">
+                    {store.category && (
+                      <Badge variant="secondary" className="text-xs">{store.category}</Badge>
+                    )}
                     {store.distance !== undefined && (
-                      <span>{store.distance.toFixed(1)} km away</span>
+                      <span>{store.distance.toFixed(1)} km unna</span>
                     )}
-                    {store.rating && (
-                      <div className="flex items-center gap-1">
-                        <Star size={12} className="fill-yellow-400 text-yellow-400" />
-                        <span>{store.rating}</span>
-                      </div>
+                    {store.verified && (
+                      <Badge variant="outline" className="text-xs">
+                        <Check size={10} className="mr-1" />
+                        Verifisert
+                      </Badge>
                     )}
-                    {store.hours && <span>{store.hours}</span>}
                   </div>
                 </div>
                 

@@ -173,6 +173,57 @@ export type Database = {
         }
         Relationships: []
       }
+      stores: {
+        Row: {
+          address: string
+          category: string | null
+          city: string
+          created_at: string
+          id: string
+          latitude: number
+          longitude: number
+          name: string
+          opening_hours: Json | null
+          phone: string | null
+          postal_code: string | null
+          updated_at: string
+          verified: boolean
+          website: string | null
+        }
+        Insert: {
+          address: string
+          category?: string | null
+          city: string
+          created_at?: string
+          id?: string
+          latitude: number
+          longitude: number
+          name: string
+          opening_hours?: Json | null
+          phone?: string | null
+          postal_code?: string | null
+          updated_at?: string
+          verified?: boolean
+          website?: string | null
+        }
+        Update: {
+          address?: string
+          category?: string | null
+          city?: string
+          created_at?: string
+          id?: string
+          latitude?: number
+          longitude?: number
+          name?: string
+          opening_hours?: Json | null
+          phone?: string | null
+          postal_code?: string | null
+          updated_at?: string
+          verified?: boolean
+          website?: string | null
+        }
+        Relationships: []
+      }
       wishlists: {
         Row: {
           created_at: string

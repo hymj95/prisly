@@ -1,4 +1,5 @@
 import { useState, useEffect } from 'react';
+import { supabase } from '@/integrations/supabase/client';
 
 interface Store {
   id: string;
@@ -8,6 +9,8 @@ interface Store {
   longitude: number;
   verified: boolean;
   distance?: number;
+  city?: string;
+  category?: string;
 }
 
 interface UserLocation {
@@ -19,18 +22,45 @@ export const useStoreLocation = () => {
   const [stores, setStores] = useState<Store[]>([]);
   const [userLocation, setUserLocation] = useState<UserLocation | null>(null);
   const [selectedStore, setSelectedStore] = useState<Store | null>(null);
+  const [isLoading, setIsLoading] = useState(false);
 
-  // Load stores from localStorage
+  // Load stores from database
   useEffect(() => {
-    const savedStores = localStorage.getItem('prisly-stores');
-    if (savedStores) {
-      try {
-        setStores(JSON.parse(savedStores));
-      } catch (error) {
-        console.error('Error loading stores:', error);
-      }
-    }
+    fetchStores();
+    loadSavedLocation();
+    loadSelectedStore();
+  }, []);
 
+  const fetchStores = async () => {
+    setIsLoading(true);
+    try {
+      const { data, error } = await supabase
+        .from('stores')
+        .select('*')
+        .order('name');
+
+      if (error) throw error;
+
+      const formattedStores = data?.map(store => ({
+        id: store.id,
+        name: store.name,
+        address: store.address,
+        latitude: Number(store.latitude),
+        longitude: Number(store.longitude),
+        verified: store.verified,
+        city: store.city,
+        category: store.category
+      })) || [];
+
+      setStores(formattedStores);
+    } catch (error) {
+      console.error('Error fetching stores:', error);
+    } finally {
+      setIsLoading(false);
+    }
+  };
+
+  const loadSavedLocation = () => {
     const savedUserLocation = localStorage.getItem('prisly-user-location');
     if (savedUserLocation) {
       try {
@@ -39,7 +69,9 @@ export const useStoreLocation = () => {
         console.error('Error loading user location:', error);
       }
     }
+  };
 
+  const loadSelectedStore = () => {
     const savedSelectedStore = localStorage.getItem('prisly-selected-store');
     if (savedSelectedStore) {
       try {
@@ -48,13 +80,8 @@ export const useStoreLocation = () => {
         console.error('Error loading selected store:', error);
       }
     }
-  }, []);
-
-  // Save stores to localStorage
-  const saveStores = (newStores: Store[]) => {
-    setStores(newStores);
-    localStorage.setItem('prisly-stores', JSON.stringify(newStores));
   };
+
 
   // Save user location
   const saveUserLocation = (location: UserLocation) => {
@@ -72,27 +99,6 @@ export const useStoreLocation = () => {
     }
   };
 
-  // Add a new store
-  const addStore = (store: Omit<Store, 'id'>) => {
-    const newStore: Store = {
-      ...store,
-      id: Date.now().toString()
-    };
-    const updatedStores = [newStore, ...stores];
-    saveStores(updatedStores);
-    return newStore;
-  };
-
-  // Remove a store
-  const removeStore = (storeId: string) => {
-    const updatedStores = stores.filter(store => store.id !== storeId);
-    saveStores(updatedStores);
-    
-    // If the selected store was removed, clear selection
-    if (selectedStore?.id === storeId) {
-      saveSelectedStore(null);
-    }
-  };
 
   // Get current location using browser geolocation
   const getCurrentLocation = (): Promise<UserLocation> => {
@@ -158,11 +164,11 @@ export const useStoreLocation = () => {
     stores,
     userLocation,
     selectedStore,
-    addStore,
-    removeStore,
+    isLoading,
     saveSelectedStore,
     getCurrentLocation,
     getNearbyStores,
-    calculateDistance
+    calculateDistance,
+    refreshStores: fetchStores
   };
 };
