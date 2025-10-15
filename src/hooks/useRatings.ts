@@ -2,6 +2,7 @@ import { useState, useEffect } from 'react';
 import { supabase } from '@/integrations/supabase/client';
 import { useAuth } from './useAuth';
 import { toast } from 'sonner';
+import { ratingSchema } from '@/lib/validation';
 
 export interface Rating {
   id: string;
@@ -141,16 +142,26 @@ export const useRatings = () => {
       return { error: 'No user logged in' };
     }
 
+    // Validate input
+    const validationResult = ratingSchema.safeParse(ratingData);
+    if (!validationResult.success) {
+      const errorMessage = validationResult.error.errors[0].message;
+      toast.error(`Invalid input: ${errorMessage}`);
+      return { error: 'Validation failed' };
+    }
+
+    const validatedData = validationResult.data;
+
     try {
-      const existingRating = getUserRating(ratingData.product_name, ratingData.product_brand, ratingData.store_name);
+      const existingRating = getUserRating(validatedData.product_name, validatedData.product_brand, validatedData.store_name);
 
       if (existingRating) {
         // Update existing rating
         const { data, error } = await supabase
           .from('ratings')
           .update({
-            rating: ratingData.rating,
-            review: ratingData.review || null,
+            rating: validatedData.rating,
+            review: validatedData.review || null,
           })
           .eq('id', existingRating.id)
           .select()
@@ -172,11 +183,12 @@ export const useRatings = () => {
           .insert([
             {
               user_id: user.id,
-              ...ratingData,
-              product_brand: ratingData.product_brand || null,
-              store_name: ratingData.store_name || null,
-              store_location: ratingData.store_location || null,
-              review: ratingData.review || null,
+              product_name: validatedData.product_name,
+              product_brand: validatedData.product_brand || null,
+              store_name: validatedData.store_name || null,
+              store_location: validatedData.store_location || null,
+              rating: validatedData.rating,
+              review: validatedData.review || null,
             },
           ])
           .select()

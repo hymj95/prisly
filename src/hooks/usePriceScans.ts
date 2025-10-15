@@ -1,6 +1,7 @@
 import { useState } from 'react';
 import { supabase } from '@/integrations/supabase/client';
 import { toast } from 'sonner';
+import { priceScanSchema } from '@/lib/validation';
 
 export interface PriceScan {
   id: string;
@@ -43,6 +44,16 @@ export const usePriceScans = () => {
         return null;
       }
 
+      // Validate input
+      const validationResult = priceScanSchema.safeParse(input);
+      if (!validationResult.success) {
+        const errorMessage = validationResult.error.errors[0].message;
+        toast.error(`Invalid input: ${errorMessage}`);
+        return null;
+      }
+
+      const validatedData = validationResult.data;
+
       // Check if scan already exists for this barcode and store
       const { data: existingScans, error: queryError } = await supabase
         .from('price_scans')
@@ -60,11 +71,11 @@ export const usePriceScans = () => {
       // If exists and price is the same, don't save
       if (existingScans && existingScans.length > 0) {
         const existingScan = existingScans[0];
-        if (parseFloat(existingScan.price as any) === input.price) {
+        if (parseFloat(existingScan.price as any) === validatedData.price) {
           toast.info('This price is already in your history');
           return existingScan as PriceScan;
         } else {
-          toast.info(`Price updated from ${existingScan.price} to ${input.price}`);
+          toast.info(`Price updated from ${existingScan.price} to ${validatedData.price}`);
         }
       }
 
@@ -72,15 +83,15 @@ export const usePriceScans = () => {
         .from('price_scans')
         .insert({
           user_id: user.id,
-          product_name: input.product_name,
-          product_brand: input.product_brand || null,
-          product_category: input.product_category || null,
-          barcode: input.barcode,
-          price: input.price,
-          quantity: input.quantity,
-          store_name: input.store_name,
-          store_location: input.store_location || null,
-          product_image: input.product_image || null
+          product_name: validatedData.product_name,
+          product_brand: validatedData.product_brand || null,
+          product_category: validatedData.product_category || null,
+          barcode: validatedData.barcode,
+          price: validatedData.price,
+          quantity: validatedData.quantity,
+          store_name: validatedData.store_name,
+          store_location: validatedData.store_location || null,
+          product_image: validatedData.product_image || null
         })
         .select()
         .single();
