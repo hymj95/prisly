@@ -10,6 +10,7 @@ import { MapPin, Search, Navigation, Loader2, AlertCircle, Star, Map } from 'luc
 import { useLanguage } from '@/hooks/useLanguage';
 import { useStoreLocation } from '@/hooks/useStoreLocation';
 import { supabase } from '@/integrations/supabase/client';
+import AddStoreDialog from './AddStoreDialog';
 import mapboxgl from 'mapbox-gl';
 import 'mapbox-gl/dist/mapbox-gl.css';
 
@@ -267,6 +268,11 @@ const ShoppingAreaSelector: React.FC<ShoppingAreaSelectorProps> = ({ onStoreSele
 
   return (
     <div className="space-y-4">
+      <div className="flex items-center justify-between mb-4">
+        <h2 className="text-lg font-semibold">Finn butikker</h2>
+        <AddStoreDialog onStoreAdded={() => window.location.reload()} />
+      </div>
+
       <Tabs value={activeTab} onValueChange={setActiveTab} className="w-full">
         <TabsList className="grid w-full grid-cols-3">
           <TabsTrigger value="search">Søk område</TabsTrigger>
