@@ -6,9 +6,10 @@ import { Badge } from '@/components/ui/badge';
 import { Alert, AlertDescription } from '@/components/ui/alert';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
-import { MapPin, Search, Filter, Navigation, Loader2, AlertCircle, Check, Star, Map } from 'lucide-react';
+import { MapPin, Search, Navigation, Loader2, AlertCircle, Star, Map } from 'lucide-react';
 import { useLanguage } from '@/hooks/useLanguage';
 import { useStoreLocation } from '@/hooks/useStoreLocation';
+import { supabase } from '@/integrations/supabase/client';
 import mapboxgl from 'mapbox-gl';
 import 'mapbox-gl/dist/mapbox-gl.css';
 
@@ -31,7 +32,7 @@ interface ShoppingAreaSelectorProps {
 
 const ShoppingAreaSelector: React.FC<ShoppingAreaSelectorProps> = ({ onStoreSelect, onAreaSelect }) => {
   const { t } = useLanguage();
-  const { stores: dbStores, userLocation, getCurrentLocation, getNearbyStores, isLoading } = useStoreLocation();
+  const { stores: dbStores, userLocation, getCurrentLocation, getNearbyStores, calculateDistance, isLoading } = useStoreLocation();
   
   const [searchQuery, setSearchQuery] = useState('');
   const [selectedArea, setSelectedArea] = useState('');
@@ -41,10 +42,11 @@ const ShoppingAreaSelector: React.FC<ShoppingAreaSelectorProps> = ({ onStoreSele
   const [sortBy, setSortBy] = useState('distance');
   const [showMap, setShowMap] = useState(false);
   const [mapboxToken, setMapboxToken] = useState('');
+  const [loadingMapToken, setLoadingMapToken] = useState(true);
   const [activeTab, setActiveTab] = useState('browse');
   const [selectedStore, setSelectedStore] = useState<Store | null>(null);
   const [popularAreas] = useState([
-    'Oslo Sentrum', 'Grünerløkka', 'Majorstuen', 'Frogner', 'Grønland'
+    'Oslo', 'Sentrum', 'Grünerløkka', 'Majorstuen', 'Frogner', 'Grønland'
   ]);
   
   const mapContainer = useRef<HTMLDivElement>(null);
@@ -57,6 +59,24 @@ const ShoppingAreaSelector: React.FC<ShoppingAreaSelectorProps> = ({ onStoreSele
     { value: 'Electronics', label: 'Elektronikk' },
     { value: 'Pharmacy', label: 'Apotek' }
   ];
+
+  // Fetch Mapbox token on mount
+  useEffect(() => {
+    const fetchMapboxToken = async () => {
+      try {
+        const { data, error } = await supabase.functions.invoke('get-mapbox-token');
+        if (error) throw error;
+        if (data?.token) {
+          setMapboxToken(data.token);
+        }
+      } catch (error) {
+        console.error('Error fetching Mapbox token:', error);
+      } finally {
+        setLoadingMapToken(false);
+      }
+    };
+    fetchMapboxToken();
+  }, []);
 
   // Auto-detect current location
   const handleAutoDetect = async () => {
@@ -86,7 +106,6 @@ const ShoppingAreaSelector: React.FC<ShoppingAreaSelectorProps> = ({ onStoreSele
     setSelectedArea(area);
     setSearchQuery(area);
     
-    // Filter stores by city/area
     const areaStores = dbStores
       .filter(store => 
         store.city?.toLowerCase().includes(area.toLowerCase()) ||
@@ -117,42 +136,30 @@ const ShoppingAreaSelector: React.FC<ShoppingAreaSelectorProps> = ({ onStoreSele
     }
   };
 
-  const calculateDistance = (lat1: number, lon1: number, lat2: number, lon2: number): number => {
-    const R = 6371;
-    const dLat = (lat2 - lat1) * Math.PI / 180;
-    const dLon = (lon2 - lon1) * Math.PI / 180;
-    const a = Math.sin(dLat / 2) * Math.sin(dLat / 2) +
-      Math.cos(lat1 * Math.PI / 180) * Math.cos(lat2 * Math.PI / 180) *
-      Math.sin(dLon / 2) * Math.sin(dLon / 2);
-    const c = 2 * Math.atan2(Math.sqrt(a), Math.sqrt(1 - a));
-    return R * c;
-  };
-
-  // Get stores with distances if location available
-  const storesWithDistance = dbStores.map(store => {
-    if (userLocation) {
-      return {
-        ...store,
-        distance: calculateDistance(
-          userLocation.lat,
-          userLocation.lng,
-          store.latitude,
-          store.longitude
-        )
-      };
-    }
-    return store;
-  });
-
   // Filter and sort stores
-  const filteredStores = storesWithDistance
+  const filteredStores = dbStores
     .filter(store => {
       const matchesCategory = selectedCategory === 'all' || 
         store.category?.toLowerCase() === selectedCategory.toLowerCase();
-      const matchesSearch = store.name.toLowerCase().includes(searchQuery.toLowerCase()) ||
+      const matchesSearch = !searchQuery || 
+        store.name.toLowerCase().includes(searchQuery.toLowerCase()) ||
         store.address.toLowerCase().includes(searchQuery.toLowerCase()) ||
         store.city?.toLowerCase().includes(searchQuery.toLowerCase());
       return matchesCategory && matchesSearch;
+    })
+    .map(store => {
+      if (userLocation) {
+        return {
+          ...store,
+          distance: calculateDistance(
+            userLocation.lat,
+            userLocation.lng,
+            store.latitude,
+            store.longitude
+          )
+        };
+      }
+      return store;
     })
     .sort((a, b) => {
       switch (sortBy) {
@@ -169,13 +176,12 @@ const ShoppingAreaSelector: React.FC<ShoppingAreaSelectorProps> = ({ onStoreSele
   useEffect(() => {
     if (!showMap || !mapContainer.current || map.current || !mapboxToken) return;
 
-    // Set Mapbox access token
     mapboxgl.accessToken = mapboxToken;
     
     map.current = new mapboxgl.Map({
       container: mapContainer.current,
       style: 'mapbox://styles/mapbox/light-v11',
-      center: userLocation ? [userLocation.lng, userLocation.lat] : [10.7522, 59.9139], // Oslo center
+      center: userLocation ? [userLocation.lng, userLocation.lat] : [10.7522, 59.9139], // Oslo default
       zoom: 12
     });
 
@@ -203,8 +209,8 @@ const ShoppingAreaSelector: React.FC<ShoppingAreaSelectorProps> = ({ onStoreSele
         <div class="p-2">
           <h3 class="font-semibold text-sm">${store.name}</h3>
           <p class="text-xs text-gray-600">${store.address}</p>
-          ${store.category ? `<span class="text-xs text-gray-500">${store.category}</span>` : ''}
-          ${store.distance ? `<p class="text-xs text-gray-500 mt-1">${store.distance.toFixed(1)} km unna</p>` : ''}
+          ${store.city ? `<p class="text-xs text-gray-500">${store.city}</p>` : ''}
+          ${store.distance ? `<p class="text-xs text-gray-500">${store.distance.toFixed(1)} km unna</p>` : ''}
         </div>
       `);
 
@@ -250,19 +256,28 @@ const ShoppingAreaSelector: React.FC<ShoppingAreaSelectorProps> = ({ onStoreSele
     onStoreSelect?.(store);
   };
 
+  if (isLoading) {
+    return (
+      <div className="flex items-center justify-center p-8">
+        <Loader2 className="animate-spin" size={32} />
+        <span className="ml-3">Laster butikker...</span>
+      </div>
+    );
+  }
+
   return (
     <div className="space-y-4">
       <Tabs value={activeTab} onValueChange={setActiveTab} className="w-full">
         <TabsList className="grid w-full grid-cols-3">
-          <TabsTrigger value="search">Search Area</TabsTrigger>
-          <TabsTrigger value="browse">Browse Stores</TabsTrigger>
-          <TabsTrigger value="map">Map View</TabsTrigger>
+          <TabsTrigger value="search">Søk område</TabsTrigger>
+          <TabsTrigger value="browse">Se butikker</TabsTrigger>
+          <TabsTrigger value="map">Kart</TabsTrigger>
         </TabsList>
 
         <TabsContent value="search" className="space-y-4">
           <Card className="p-4 space-y-4">
             <div className="flex items-center justify-between">
-              <h3 className="font-semibold">Find Your Shopping Area</h3>
+              <h3 className="font-semibold">Finn ditt handleområde</h3>
               <Button 
                 variant="outline" 
                 size="sm"
@@ -272,12 +287,12 @@ const ShoppingAreaSelector: React.FC<ShoppingAreaSelectorProps> = ({ onStoreSele
                 {isDetecting ? (
                   <>
                     <Loader2 size={14} className="mr-2 animate-spin" />
-                    Detecting...
+                    Finner posisjon...
                   </>
                 ) : (
                   <>
                     <Navigation size={14} className="mr-2" />
-                    Use Current Location
+                    Bruk min posisjon
                   </>
                 )}
               </Button>
@@ -294,7 +309,7 @@ const ShoppingAreaSelector: React.FC<ShoppingAreaSelectorProps> = ({ onStoreSele
               <div className="relative">
                 <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 text-muted-foreground" size={16} />
                 <Input
-                  placeholder="Search by city, neighborhood, or zip code..."
+                  placeholder="Søk etter by eller område..."
                   value={searchQuery}
                   onChange={(e) => setSearchQuery(e.target.value)}
                   onKeyPress={(e) => e.key === 'Enter' && handleAreaSearch(searchQuery)}
@@ -303,7 +318,7 @@ const ShoppingAreaSelector: React.FC<ShoppingAreaSelectorProps> = ({ onStoreSele
               </div>
 
               <div className="space-y-2">
-                <p className="text-sm font-medium text-muted-foreground">Popular Areas:</p>
+                <p className="text-sm font-medium text-muted-foreground">Populære områder:</p>
                 <div className="flex flex-wrap gap-2">
                   {popularAreas.map((area) => (
                     <Button
@@ -328,7 +343,7 @@ const ShoppingAreaSelector: React.FC<ShoppingAreaSelectorProps> = ({ onStoreSele
               <div className="flex-1">
                 <Select value={selectedCategory} onValueChange={setSelectedCategory}>
                   <SelectTrigger>
-                    <SelectValue placeholder="Filter by category" />
+                    <SelectValue placeholder="Filtrer etter kategori" />
                   </SelectTrigger>
                   <SelectContent>
                     {categories.map((category) => (
@@ -343,7 +358,7 @@ const ShoppingAreaSelector: React.FC<ShoppingAreaSelectorProps> = ({ onStoreSele
               <div className="flex-1">
                 <Select value={sortBy} onValueChange={setSortBy}>
                   <SelectTrigger>
-                    <SelectValue placeholder="Sort by" />
+                    <SelectValue placeholder="Sorter etter" />
                   </SelectTrigger>
                   <SelectContent>
                     <SelectItem value="distance">Avstand</SelectItem>
@@ -357,8 +372,8 @@ const ShoppingAreaSelector: React.FC<ShoppingAreaSelectorProps> = ({ onStoreSele
               <div className="mb-4 p-3 bg-primary/5 rounded-lg border border-primary/20">
                 <div className="flex items-center gap-2">
                   <MapPin size={16} className="text-primary" />
-                  <span className="font-medium">Shopping in: {selectedArea}</span>
-                  <Badge variant="secondary">{filteredStores.length} stores found</Badge>
+                  <span className="font-medium">Handler i: {selectedArea}</span>
+                  <Badge variant="secondary">{filteredStores.length} butikker funnet</Badge>
                 </div>
               </div>
             )}
@@ -368,30 +383,22 @@ const ShoppingAreaSelector: React.FC<ShoppingAreaSelectorProps> = ({ onStoreSele
         <TabsContent value="map" className="space-y-4">
           <Card className="p-4">
             <div className="flex items-center justify-between mb-4">
-              <h3 className="font-semibold">Store Locations</h3>
+              <h3 className="font-semibold">Butikklokasjon</h3>
               <Button 
                 variant="outline" 
                 size="sm"
                 onClick={() => setShowMap(!showMap)}
-                disabled={!mapboxToken}
+                disabled={!mapboxToken || loadingMapToken}
               >
                 <Map size={14} className="mr-2" />
-                {showMap ? 'Hide Map' : 'Show Map'}
+                {showMap ? 'Skjul kart' : 'Vis kart'}
               </Button>
             </div>
             
-            {!mapboxToken && (
+            {loadingMapToken && (
               <div className="mb-4 p-4 bg-muted/50 rounded-lg">
-                <p className="text-sm font-medium mb-2">Enter your Mapbox Public Token</p>
-                <p className="text-xs text-muted-foreground mb-3">
-                  Get your free public token from <a href="https://mapbox.com" target="_blank" rel="noopener noreferrer" className="text-primary hover:underline">mapbox.com</a>
-                </p>
-                <Input
-                  placeholder="pk.eyJ1IjoieW91cnVzZXJuYW1lIiwiYSI6ImNr..."
-                  value={mapboxToken}
-                  onChange={(e) => setMapboxToken(e.target.value)}
-                  className="font-mono text-xs"
-                />
+                <p className="text-sm font-medium mb-2">Laster kart...</p>
+                <Loader2 className="animate-spin" size={16} />
               </div>
             )}
             
@@ -405,7 +412,7 @@ const ShoppingAreaSelector: React.FC<ShoppingAreaSelectorProps> = ({ onStoreSele
                 {filteredStores.length > 0 && (
                   <div className="flex items-center justify-between text-sm">
                     <span className="text-muted-foreground">
-                      Showing {filteredStores.length} stores on map. Click markers to select stores.
+                      Viser {filteredStores.length} butikker. Klikk på markører for å velge.
                     </span>
                     {selectedStore && (
                       <div className="flex items-center gap-2 px-2 py-1 bg-destructive/10 text-destructive rounded text-xs">
@@ -422,7 +429,7 @@ const ShoppingAreaSelector: React.FC<ShoppingAreaSelectorProps> = ({ onStoreSele
               <div className="text-center py-8">
                 <Map className="mx-auto mb-3 text-muted-foreground" size={32} />
                 <p className="text-sm text-muted-foreground">
-                  Click "Show Map" to view store locations visually
+                  Klikk "Vis kart" for å se butikklokasjon visuelt
                 </p>
               </div>
             )}
@@ -434,72 +441,64 @@ const ShoppingAreaSelector: React.FC<ShoppingAreaSelectorProps> = ({ onStoreSele
       {filteredStores.length > 0 && (
         <div className="space-y-2">
           <h4 className="text-sm font-medium text-muted-foreground">
-            {selectedArea ? `Stores in ${selectedArea}` : 'Available Stores'} ({filteredStores.length})
+            {selectedArea ? `Butikker i ${selectedArea}` : 'Tilgjengelige butikker'} ({filteredStores.length})
           </h4>
-          
-          {filteredStores.map((store) => (
-            <Card 
-              key={store.id} 
-              className={`p-4 hover:shadow-md transition-all cursor-pointer border-l-4 ${
-                selectedStore?.id === store.id 
-                  ? 'border-l-destructive bg-destructive/5' 
-                  : 'border-l-primary/20 hover:border-l-primary'
-              }`}
-              onClick={() => handleStoreClick(store)}
-            >
-              <div className="flex items-start justify-between">
-                <div className="flex-1">
-                  <div className="flex items-center gap-2 mb-1">
-                    <h5 className="font-medium">{store.name}</h5>
-                    {store.verified && (
-                      <Badge variant="secondary" className="text-xs bg-success/10 text-success">
-                        <Check size={12} className="mr-1" />
-                        Verified
-                      </Badge>
-                    )}
-                    {store.category && (
-                      <Badge variant="outline" className="text-xs">
-                        {store.category}
-                      </Badge>
-                    )}
+          <div className="grid gap-3">
+            {filteredStores.map((store) => (
+              <Card 
+                key={store.id}
+                className={`p-4 cursor-pointer hover:shadow-md transition-all ${
+                  selectedStore?.id === store.id ? 'ring-2 ring-primary' : ''
+                }`}
+                onClick={() => handleStoreClick(store)}
+              >
+                <div className="flex items-start justify-between">
+                  <div className="flex-1">
+                    <div className="flex items-center gap-2 mb-1">
+                      <h3 className="font-semibold">{store.name}</h3>
+                      {store.verified && (
+                        <Badge variant="secondary" className="text-xs">
+                          Verifisert
+                        </Badge>
+                      )}
+                    </div>
+                    <div className="space-y-1 text-sm text-muted-foreground">
+                      <div className="flex items-center gap-1">
+                        <MapPin size={14} />
+                        <span>{store.address}</span>
+                      </div>
+                      {store.city && (
+                        <p className="text-xs">{store.city}</p>
+                      )}
+                      {store.category && (
+                        <Badge variant="outline" className="text-xs">
+                          {store.category}
+                        </Badge>
+                      )}
+                    </div>
                   </div>
-                  
-                  <p className="text-sm text-muted-foreground mb-2">{store.address}</p>
-                  
-                  <div className="flex items-center gap-4 text-xs text-muted-foreground">
-                    {store.category && (
-                      <Badge variant="secondary" className="text-xs">{store.category}</Badge>
-                    )}
-                    {store.distance !== undefined && (
-                      <span>{store.distance.toFixed(1)} km unna</span>
-                    )}
-                    {store.verified && (
-                      <Badge variant="outline" className="text-xs">
-                        <Check size={10} className="mr-1" />
-                        Verifisert
-                      </Badge>
-                    )}
-                  </div>
+                  {store.distance !== undefined && (
+                    <div className="text-right">
+                      <div className="text-sm font-medium text-primary">
+                        {store.distance.toFixed(1)} km
+                      </div>
+                      <div className="text-xs text-muted-foreground">unna</div>
+                    </div>
+                  )}
                 </div>
-                
-                <MapPin className="text-muted-foreground flex-shrink-0" size={16} />
-              </div>
-            </Card>
-          ))}
+              </Card>
+            ))}
+          </div>
         </div>
       )}
 
-      {filteredStores.length === 0 && !isDetecting && (
+      {filteredStores.length === 0 && !isLoading && (
         <Card className="p-8 text-center">
-          <MapPin className="mx-auto mb-3 text-muted-foreground" size={32} />
-          <h4 className="font-medium mb-2">No Stores Found</h4>
-          <p className="text-sm text-muted-foreground mb-4">
-            Try searching for a different area or use auto-detection to find nearby stores.
+          <MapPin className="mx-auto mb-3 text-muted-foreground" size={48} />
+          <h3 className="font-semibold mb-2">Ingen butikker funnet</h3>
+          <p className="text-sm text-muted-foreground">
+            Prøv å endre søkekriteriene eller bruk en annen kategori
           </p>
-          <Button onClick={handleAutoDetect} className="w-full">
-            <Navigation size={14} className="mr-2" />
-            Find Stores Near Me
-          </Button>
         </Card>
       )}
     </div>

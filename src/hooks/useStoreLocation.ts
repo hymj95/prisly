@@ -5,12 +5,13 @@ interface Store {
   id: string;
   name: string;
   address: string;
+  city?: string;
+  postal_code?: string;
   latitude: number;
   longitude: number;
+  category?: string;
   verified: boolean;
   distance?: number;
-  city?: string;
-  category?: string;
 }
 
 interface UserLocation {
@@ -24,43 +25,41 @@ export const useStoreLocation = () => {
   const [selectedStore, setSelectedStore] = useState<Store | null>(null);
   const [isLoading, setIsLoading] = useState(false);
 
-  // Load stores from database
+  // Load stores from Supabase
   useEffect(() => {
-    fetchStores();
-    loadSavedLocation();
-    loadSelectedStore();
-  }, []);
+    const loadStores = async () => {
+      setIsLoading(true);
+      try {
+        const { data, error } = await supabase
+          .from('stores')
+          .select('*')
+          .order('name');
+        
+        if (error) throw error;
+        
+        if (data) {
+          const formattedStores = data.map(store => ({
+            id: store.id,
+            name: store.name,
+            address: store.address,
+            city: store.city || undefined,
+            postal_code: store.postal_code || undefined,
+            latitude: Number(store.latitude),
+            longitude: Number(store.longitude),
+            category: store.category || undefined,
+            verified: store.verified
+          }));
+          setStores(formattedStores);
+        }
+      } catch (error) {
+        console.error('Error loading stores:', error);
+      } finally {
+        setIsLoading(false);
+      }
+    };
+    
+    loadStores();
 
-  const fetchStores = async () => {
-    setIsLoading(true);
-    try {
-      const { data, error } = await supabase
-        .from('stores')
-        .select('*')
-        .order('name');
-
-      if (error) throw error;
-
-      const formattedStores = data?.map(store => ({
-        id: store.id,
-        name: store.name,
-        address: store.address,
-        latitude: Number(store.latitude),
-        longitude: Number(store.longitude),
-        verified: store.verified,
-        city: store.city,
-        category: store.category
-      })) || [];
-
-      setStores(formattedStores);
-    } catch (error) {
-      console.error('Error fetching stores:', error);
-    } finally {
-      setIsLoading(false);
-    }
-  };
-
-  const loadSavedLocation = () => {
     const savedUserLocation = localStorage.getItem('prisly-user-location');
     if (savedUserLocation) {
       try {
@@ -69,9 +68,7 @@ export const useStoreLocation = () => {
         console.error('Error loading user location:', error);
       }
     }
-  };
 
-  const loadSelectedStore = () => {
     const savedSelectedStore = localStorage.getItem('prisly-selected-store');
     if (savedSelectedStore) {
       try {
@@ -80,8 +77,7 @@ export const useStoreLocation = () => {
         console.error('Error loading selected store:', error);
       }
     }
-  };
-
+  }, []);
 
   // Save user location
   const saveUserLocation = (location: UserLocation) => {
@@ -99,6 +95,66 @@ export const useStoreLocation = () => {
     }
   };
 
+  // Add a new store
+  const addStore = async (store: Omit<Store, 'id'>) => {
+    try {
+      const { data, error } = await supabase
+        .from('stores')
+        .insert([{
+          name: store.name,
+          address: store.address,
+          city: store.city,
+          postal_code: store.postal_code,
+          latitude: store.latitude,
+          longitude: store.longitude,
+          category: store.category,
+          verified: store.verified
+        }])
+        .select()
+        .single();
+
+      if (error) throw error;
+      
+      if (data) {
+        const newStore: Store = {
+          id: data.id,
+          name: data.name,
+          address: data.address,
+          city: data.city || undefined,
+          postal_code: data.postal_code || undefined,
+          latitude: Number(data.latitude),
+          longitude: Number(data.longitude),
+          category: data.category || undefined,
+          verified: data.verified
+        };
+        setStores(prev => [newStore, ...prev]);
+        return newStore;
+      }
+    } catch (error) {
+      console.error('Error adding store:', error);
+    }
+    return null;
+  };
+
+  // Remove a store
+  const removeStore = async (storeId: string) => {
+    try {
+      const { error } = await supabase
+        .from('stores')
+        .delete()
+        .eq('id', storeId);
+
+      if (error) throw error;
+
+      setStores(prev => prev.filter(store => store.id !== storeId));
+      
+      if (selectedStore?.id === storeId) {
+        saveSelectedStore(null);
+      }
+    } catch (error) {
+      console.error('Error removing store:', error);
+    }
+  };
 
   // Get current location using browser geolocation
   const getCurrentLocation = (): Promise<UserLocation> => {
@@ -165,10 +221,11 @@ export const useStoreLocation = () => {
     userLocation,
     selectedStore,
     isLoading,
+    addStore,
+    removeStore,
     saveSelectedStore,
     getCurrentLocation,
     getNearbyStores,
-    calculateDistance,
-    refreshStores: fetchStores
+    calculateDistance
   };
 };
