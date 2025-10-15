@@ -78,10 +78,22 @@ const Scan: React.FC = () => {
   const [editedProduct, setEditedProduct] = useState<DetectedProduct | null>(null);
   const [currentPrice, setCurrentPrice] = useState<string>('');
   const [quantity, setQuantity] = useState<string>('1');
+  const [productSize, setProductSize] = useState<string>('');
+  const [sizeUnit, setSizeUnit] = useState<string>('ml');
   const [manualBarcode, setManualBarcode] = useState<string>('');
   const [showManualEntry, setShowManualEntry] = useState(false);
   const [uploadedImage, setUploadedImage] = useState<string | null>(null);
   const fileInputRef = useRef<HTMLInputElement>(null);
+
+  // Common size/volume units
+  const sizeUnits = [
+    { value: 'ml', label: 'ml (milliliter)' },
+    { value: 'l', label: 'L (liter)' },
+    { value: 'g', label: 'g (gram)' },
+    { value: 'kg', label: 'kg (kilogram)' },
+    { value: 'stk', label: 'stk (pieces)' },
+    { value: 'pk', label: 'pk (package)' }
+  ];
 
   // Auto-select first active list
   React.useEffect(() => {
@@ -690,10 +702,48 @@ const Scan: React.FC = () => {
           {/* Price and Quantity Information */}
           <Card className="p-4">
             <div className="space-y-4">
-              <h3 className="font-semibold">Price & Quantity</h3>
+              <h3 className="font-semibold">Pris, Størrelse & Antall</h3>
+              
+              {/* Size/Volume Section */}
+              <div className="space-y-3">
+                <label className="text-sm font-medium text-muted-foreground">Produktstørrelse (valgfritt)</label>
+                <div className="grid grid-cols-2 gap-3">
+                  <Input
+                    type="number"
+                    step="0.01"
+                    placeholder="Størrelse (f.eks. 500)"
+                    value={productSize}
+                    onChange={(e) => setProductSize(e.target.value)}
+                    className="rounded-card"
+                  />
+                  <Select value={sizeUnit} onValueChange={setSizeUnit}>
+                    <SelectTrigger className="rounded-card">
+                      <SelectValue placeholder="Velg enhet" />
+                    </SelectTrigger>
+                    <SelectContent className="bg-background border rounded-card shadow-card z-50">
+                      {sizeUnits.map((unit) => (
+                        <SelectItem 
+                          key={unit.value} 
+                          value={unit.value}
+                          className="cursor-pointer hover:bg-muted focus:bg-muted"
+                        >
+                          {unit.label}
+                        </SelectItem>
+                      ))}
+                    </SelectContent>
+                  </Select>
+                </div>
+                {productSize && (
+                  <p className="text-xs text-muted-foreground">
+                    Produktstørrelse: {productSize} {sizeUnit}
+                  </p>
+                )}
+              </div>
+
+              {/* Price and Quantity */}
               <div className="grid grid-cols-2 gap-4">
                 <div>
-                  <label className="text-sm font-medium text-muted-foreground mb-2 block">Price</label>
+                  <label className="text-sm font-medium text-muted-foreground mb-2 block">Pris *</label>
                   <div className="flex items-center gap-2">
                     <DollarSign className="text-muted-foreground" size={20} />
                     <Input
@@ -702,12 +752,12 @@ const Scan: React.FC = () => {
                       placeholder="0.00"
                       value={currentPrice}
                       onChange={(e) => setCurrentPrice(e.target.value)}
-                      className="flex-1"
+                      className="flex-1 rounded-card"
                     />
                   </div>
                 </div>
                 <div>
-                  <label className="text-sm font-medium text-muted-foreground mb-2 block">Quantity</label>
+                  <label className="text-sm font-medium text-muted-foreground mb-2 block">Antall</label>
                   <Input
                     type="number"
                     min="1"
@@ -715,13 +765,22 @@ const Scan: React.FC = () => {
                     placeholder="1"
                     value={quantity}
                     onChange={(e) => setQuantity(e.target.value)}
+                    className="rounded-card"
                   />
                 </div>
               </div>
+              
               {currentPrice && (
-                <p className="text-sm text-muted-foreground">
-                  Total: {formatPrice(parseFloat(currentPrice) * (parseFloat(quantity) || 1))}
-                </p>
+                <div className="space-y-1">
+                  <p className="text-sm text-muted-foreground">
+                    Total: {formatPrice(parseFloat(currentPrice) * (parseFloat(quantity) || 1))}
+                  </p>
+                  {productSize && (
+                    <p className="text-xs text-muted-foreground">
+                      Pris per {sizeUnit}: {formatPrice(parseFloat(currentPrice) / parseFloat(productSize))}
+                    </p>
+                  )}
+                </div>
               )}
             </div>
           </Card>
