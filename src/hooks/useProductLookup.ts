@@ -62,19 +62,34 @@ export const useProductLookup = () => {
     setIsLoading(true);
     
     try {
-      // Simulate API delay
-      await new Promise(resolve => setTimeout(resolve, 500));
+      // Try OpenFoodFacts API
+      const response = await fetch(`https://world.openfoodfacts.org/api/v0/product/${barcode}.json`);
+      const data = await response.json();
       
-      // Check mock database
-      const product = mockProductDatabase[barcode];
-      
-      if (product) {
-        toast.success(`Product found: ${product.name}`);
-        return product;
+      if (data.status === 1 && data.product) {
+        const product = data.product;
+        const productInfo: ProductInfo = {
+          name: product.product_name || 'Unknown Product',
+          brand: product.brands || 'Unknown Brand',
+          category: product.categories_tags?.[0]?.replace('en:', '') || 'Unknown',
+          barcode: barcode,
+          price: undefined,
+          image: product.image_url || product.image_front_url,
+          description: product.generic_name || product.product_name || 'Product details not available'
+        };
+        
+        toast.success(`Product found: ${productInfo.name}`);
+        return productInfo;
       } else {
-        // In a real app, you might call multiple APIs here
-        // For now, return a template for unknown products
-        toast.info('Product not found in database. Please enter details manually.');
+        // Check mock database as fallback
+        const mockProduct = mockProductDatabase[barcode];
+        
+        if (mockProduct) {
+          toast.success(`Product found: ${mockProduct.name}`);
+          return mockProduct;
+        }
+        
+        toast.info('Product not found. Please enter details manually.');
         return {
           name: 'Unknown Product',
           brand: 'Unknown Brand',
@@ -85,6 +100,14 @@ export const useProductLookup = () => {
       }
     } catch (error) {
       console.error('Product lookup error:', error);
+      
+      // Try mock database as fallback on error
+      const mockProduct = mockProductDatabase[barcode];
+      if (mockProduct) {
+        toast.success(`Product found: ${mockProduct.name}`);
+        return mockProduct;
+      }
+      
       toast.error('Failed to lookup product');
       return null;
     } finally {
