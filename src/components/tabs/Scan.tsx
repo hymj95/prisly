@@ -28,7 +28,9 @@ import { useLanguage } from '@/hooks/useLanguage';
 import { useCurrency } from '@/hooks/useCurrency';
 import { useBarcodeScanner } from '@/hooks/useBarcodeScanner';
 import { useProductLookup } from '@/hooks/useProductLookup';
+import { useShoppingLists } from '@/hooks/useShoppingLists';
 import { Capacitor } from '@capacitor/core';
+import { toast } from 'sonner';
 import StoreLocationManager from '../StoreLocationManager';
 import ShoppingAreaSelector from '../ShoppingAreaSelector';
 import Map from '../Map';
@@ -54,8 +56,10 @@ const Scan: React.FC = () => {
   const { formatPrice } = useCurrency();
   const { startScan, isScanning } = useBarcodeScanner();
   const { lookupProduct, isLoading: isLookingUp } = useProductLookup();
+  const { lists, addItemToList } = useShoppingLists();
   const [scanResult, setScanResult] = useState<DetectedProduct | null>(null);
   const [selectedStore, setSelectedStore] = useState<Store | null>(null);
+  const [selectedListId, setSelectedListId] = useState<string | null>(null);
   const [showStoreManager, setShowStoreManager] = useState(false);
   const [showAreaSelector, setShowAreaSelector] = useState(false);
   const [selectedArea, setSelectedArea] = useState<{ location: string; radius: number; stores: Store[] } | null>(null);
@@ -63,10 +67,19 @@ const Scan: React.FC = () => {
   const [error, setError] = useState<string | null>(null);
   const [editedProduct, setEditedProduct] = useState<DetectedProduct | null>(null);
   const [currentPrice, setCurrentPrice] = useState<string>('');
+  const [quantity, setQuantity] = useState<string>('1');
   const [manualBarcode, setManualBarcode] = useState<string>('');
   const [showManualEntry, setShowManualEntry] = useState(false);
   const [uploadedImage, setUploadedImage] = useState<string | null>(null);
   const fileInputRef = useRef<HTMLInputElement>(null);
+
+  // Auto-select first active list
+  React.useEffect(() => {
+    if (!selectedListId && lists.length > 0) {
+      const activeList = lists.find(l => l.status === 'active') || lists[0];
+      setSelectedListId(activeList.id);
+    }
+  }, [lists, selectedListId]);
 
   // Mock detected stores (Norwegian)
   const mockStores: Store[] = [
@@ -217,14 +230,24 @@ const Scan: React.FC = () => {
   };
 
   const handleConfirmSave = () => {
-    // Here you would save the scan result to your backend
-    console.log('Saving scan result:', {
-      product: scanResult,
-      store: selectedStore,
-      area: selectedArea,
-      price: currentPrice,
-      timestamp: new Date().toISOString()
+    if (!scanResult || !selectedStore || !currentPrice || !selectedListId) {
+      toast.error('Please fill in all required fields');
+      return;
+    }
+
+    // Add the scanned product to the selected shopping list
+    addItemToList(selectedListId, {
+      product: scanResult.name,
+      quantity: parseFloat(quantity) || 1,
+      unit: 'item',
+      bestPrice: parseFloat(currentPrice),
+      bestStore: selectedStore.name,
+      bestStoreLocation: selectedStore.address,
+      avgPrice: parseFloat(currentPrice),
+      checked: false
     });
+
+    toast.success(`Added ${scanResult.name} to shopping list!`);
     
     // Reset for next scan
     setScanResult(null);
@@ -232,6 +255,7 @@ const Scan: React.FC = () => {
     setSelectedArea(null);
     setEditedProduct(null);
     setCurrentPrice('');
+    setQuantity('1');
     setIsEditing(false);
     setError(null);
     setShowStoreManager(false);
@@ -592,24 +616,63 @@ const Scan: React.FC = () => {
             </div>
           </Card>
 
-          {/* Price Information */}
+          {/* Shopping List Selection */}
           <Card className="p-4">
             <div className="space-y-4">
-              <h3 className="font-semibold">{t('scan.currentPrice')}</h3>
-              <div className="flex items-center gap-3">
-                <DollarSign className="text-muted-foreground" size={20} />
-                <Input
-                  type="number"
-                  step="0.01"
-                  placeholder="0.00"
-                  value={currentPrice}
-                  onChange={(e) => setCurrentPrice(e.target.value)}
-                  className="flex-1"
-                />
+              <h3 className="font-semibold">Add to Shopping List</h3>
+              <Select value={selectedListId || ''} onValueChange={setSelectedListId}>
+                <SelectTrigger className="rounded-card">
+                  <SelectValue placeholder="Select shopping list" />
+                </SelectTrigger>
+                <SelectContent className="bg-background border rounded-card shadow-card z-50">
+                  {lists.filter(l => l.status === 'active').map((list) => (
+                    <SelectItem 
+                      key={list.id} 
+                      value={list.id}
+                      className="cursor-pointer hover:bg-muted focus:bg-muted"
+                    >
+                      {list.name} ({list.items.length} items)
+                    </SelectItem>
+                  ))}
+                </SelectContent>
+              </Select>
+            </div>
+          </Card>
+
+          {/* Price and Quantity Information */}
+          <Card className="p-4">
+            <div className="space-y-4">
+              <h3 className="font-semibold">Price & Quantity</h3>
+              <div className="grid grid-cols-2 gap-4">
+                <div>
+                  <label className="text-sm font-medium text-muted-foreground mb-2 block">Price</label>
+                  <div className="flex items-center gap-2">
+                    <DollarSign className="text-muted-foreground" size={20} />
+                    <Input
+                      type="number"
+                      step="0.01"
+                      placeholder="0.00"
+                      value={currentPrice}
+                      onChange={(e) => setCurrentPrice(e.target.value)}
+                      className="flex-1"
+                    />
+                  </div>
+                </div>
+                <div>
+                  <label className="text-sm font-medium text-muted-foreground mb-2 block">Quantity</label>
+                  <Input
+                    type="number"
+                    min="1"
+                    step="1"
+                    placeholder="1"
+                    value={quantity}
+                    onChange={(e) => setQuantity(e.target.value)}
+                  />
+                </div>
               </div>
               {currentPrice && (
                 <p className="text-sm text-muted-foreground">
-                  {t('scan.price')}: {formatPrice(parseFloat(currentPrice))}
+                  Total: {formatPrice(parseFloat(currentPrice) * (parseFloat(quantity) || 1))}
                 </p>
               )}
             </div>
@@ -701,10 +764,10 @@ const Scan: React.FC = () => {
             <Button 
               className="w-full bg-primary-solid text-white" 
               onClick={handleConfirmSave}
-              disabled={!selectedStore || !currentPrice}
+              disabled={!selectedStore || !currentPrice || !selectedListId}
             >
               <Save size={16} className="mr-2" />
-              {t('scan.confirmSave')}
+              Save to Shopping List
             </Button>
             
             <div className="grid grid-cols-2 gap-3">
